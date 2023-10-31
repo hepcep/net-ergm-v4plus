@@ -6,11 +6,12 @@ rm(list=ls())
 # Libraries ----------
 
 library(dplyr)
+library(here)
 
 
 # Data ----------
 
-demog_data <- read.csv("data/synthpop-2023-10-12 12_01_32.csv")
+demog_data <- read.csv(here("data", "synthpop-2023-10-12 12_01_32.csv"))
 glimpse(demog_data)
 str(demog_data)
 
@@ -43,6 +44,6 @@ colnames(demog_dt_props)
 
 
 # Write data ----------
-
-write.csv(demog_dt_props, file = "data/demog_dt_props.csv")                
+write.csv(demog_dt_props, file = here("data", "demog_dt_props.csv"))
+             
   
