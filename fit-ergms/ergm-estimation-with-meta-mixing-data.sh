@@ -9,5 +9,6 @@
 
 
 module load R/4.3.1
+module load gcc/10.2 pcre2/10.35 intel/2020.2 texlive/2018
 
 R CMD BATCH --no-restore fit-ergms/ergm-estimation-with-meta-data.R 
