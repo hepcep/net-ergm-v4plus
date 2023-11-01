@@ -75,6 +75,16 @@
       ],
       "Hash": "2a4dbc2502d3fd9f1c5d24b14a223583"
     },
+    "Rglpk": {
+      "Package": "Rglpk",
+      "Version": "0.6-5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "slam"
+      ],
+      "Hash": "5190f2200c77e13f66b26b6db549ba08"
+    },
     "cachem": {
       "Package": "cachem",
       "Version": "1.0.8",
@@ -442,6 +452,17 @@
         "R"
       ],
       "Hash": "1de7ab598047a87bba48434ba35d497d"
+    },
+    "slam": {
+      "Package": "slam",
+      "Version": "0.1-50",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "stats"
+      ],
+      "Hash": "e25793551cbdb843154152e5ee88cbd6"
     },
     "statnet.common": {
       "Package": "statnet.common",
