@@ -68,6 +68,7 @@ set.vertex.attribute(n0, colnames(data), data)
 
 ## For sex variable
 identical(n0%v%"sex", data$sex)
+table(n0%v%"sex", exclude=NULL)
 
 ## For all variables:
 ### get vertex attribute names from the n0 graph object
@@ -262,19 +263,19 @@ fit.metadata.mixing <-
   ergm(
     n0 ~
       edges, #+
-      # nodemix("sex", base=1)+
-      # nodemix("young", base=1)+
-      # nodemix("race.num", base=1)+
+      nodemix("sex", levels=c("F", "M"))+
+      nodemix("young", levels=c(1,0))+
+      nodemix("race", levels=c("Wh", "Bl", "Hi", "Ot"))+
       # idegree(indeg.terms)+
       # odegree(deg.terms)+
       # dist(dist.terms),
     target.stats = c(edges_target#,
-                    #  c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
-                    #  c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
-                    #  c(            target.b.w, target.h.w, target.o.w,
-                    #                target.w.b, target.b.b, target.h.b, target.o.b,
-                    #                target.w.h, target.b.h, target.h.h, target.o.h,
-                    #                target.w.o, target.b.o, target.h.o, target.o.o),
+                    c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
+                    c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
+                    c(            target.b.w, target.h.w, target.o.w,
+                                  target.w.b, target.b.b, target.h.b, target.o.b,
+                                  target.w.h, target.b.h, target.h.h, target.o.h,
+                                  target.w.o, target.b.o, target.h.o, target.o.o),
                     #  #c(indegree_targets[c(indeg.terms)+1]),
                     #  #c(outdegree_stargets[c(deg.terms+1)]),
                     #  c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
@@ -285,7 +286,7 @@ fit.metadata.mixing <-
     control = control.ergm(MCMLE.maxit = 500,
                            MCMC.interval = 1e5,
                            MCMC.samplesize = 1e5,
-                           SAN.control = control.san(
+                           SAN = control.san(
                              SAN.maxit = 500, 
                              #SAN.init.maxedges = 20000*10, 
                              SAN.nsteps = 1e8
