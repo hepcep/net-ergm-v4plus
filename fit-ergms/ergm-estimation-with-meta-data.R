@@ -262,10 +262,10 @@ dist.terms <- 1:3 #fourth is left out
 fit.metadata.mixing <-
   ergm(
     n0 ~
-      edges, #+
-      nodemix("sex", levels=c("F", "M"))+
-      nodemix("young", levels=c(1,0))+
-      nodemix("race", levels=c("Wh", "Bl", "Hi", "Ot")),
+      edges+
+      nodemix("sex", base=1)+
+      nodemix("young", base=1)+
+      nodemix("race.num", base=1),
       # idegree(indeg.terms)+
       # odegree(deg.terms)+
       # dist(dist.terms),
@@ -275,7 +275,7 @@ fit.metadata.mixing <-
                     c(            target.b.w, target.h.w, target.o.w,
                                   target.w.b, target.b.b, target.h.b, target.o.b,
                                   target.w.h, target.b.h, target.h.h, target.o.h,
-                                  target.w.o, target.b.o, target.h.o, target.o.o),
+                                  target.w.o, target.b.o, target.h.o, target.o.o)
                     #  #c(indegree_targets[c(indeg.terms)+1]),
                     #  #c(outdegree_stargets[c(deg.terms+1)]),
                     #  c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
