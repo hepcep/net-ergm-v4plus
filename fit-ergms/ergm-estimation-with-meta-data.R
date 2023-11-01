@@ -4,7 +4,10 @@
 
 rm(list=ls())
 
-# Initiate environment ------------------------------
+# Activate R environment ------------------------------
+
+library(renv)
+renv::activate()
 
 
 # Libraries ----------
@@ -265,18 +268,18 @@ fit.metadata.mixing <-
       idegree(indeg.terms)+
       odegree(deg.terms)+
       dist(dist.terms),
-    target.stats = c(edges_target,
-                     c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
-                     c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
-                     c(            target.b.w, target.h.w, target.o.w,
-                                   target.w.b, target.b.b, target.h.b, target.o.b,
-                                   target.w.h, target.b.h, target.h.h, target.o.h,
-                                   target.w.o, target.b.o, target.h.o, target.o.o),
-                     #c(indegree_targets[c(indeg.terms)+1]),
-                     #c(outdegree_targets[c(deg.terms+1)]),
-                     c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
-                     c(outedges$n_nodes[c(deg.terms+1)]),
-                     c(dist.nedge.distribution[dist.terms])
+    target.stats = c(edges_target#,
+                    #  c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
+                    #  c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
+                    #  c(            target.b.w, target.h.w, target.o.w,
+                    #                target.w.b, target.b.b, target.h.b, target.o.b,
+                    #                target.w.h, target.b.h, target.h.h, target.o.h,
+                    #                target.w.o, target.b.o, target.h.o, target.o.o),
+                    #  #c(indegree_targets[c(indeg.terms)+1]),
+                    #  #c(outdegree_stargets[c(deg.terms+1)]),
+                    #  c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
+                    #  c(outedges$n_nodes[c(deg.terms+1)]),
+                    #  c(dist.nedge.distribution[dist.terms])
     ),
     eval.loglik = FALSE,
     control = control.ergm(MCMLE.maxit = 500,
@@ -297,4 +300,5 @@ fit.metadata.mixing <-
 
 
 
-save.image(file=here("fit-ergm", "out", "updated-with-oct2023-synthpop-ergmv4-5-indeg0-outdeg0.RData")
+#save.image(file=here("fit-ergm", "out", "updated-with-oct2023-synthpop-ergmv4-5-indeg0-outdeg0.RData")
+save.image(file=here("fit-ergm", "out", "updated-with-oct2023-synthpop-ergmv4-5-edges-only.RData")
