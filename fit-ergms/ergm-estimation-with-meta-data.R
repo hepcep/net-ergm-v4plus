@@ -265,7 +265,7 @@ fit.metadata.mixing <-
       edges, #+
       nodemix("sex", levels=c("F", "M"))+
       nodemix("young", levels=c(1,0))+
-      nodemix("race", levels=c("Wh", "Bl", "Hi", "Ot"))+
+      nodemix("race", levels=c("Wh", "Bl", "Hi", "Ot")),
       # idegree(indeg.terms)+
       # odegree(deg.terms)+
       # dist(dist.terms),
@@ -302,4 +302,4 @@ fit.metadata.mixing <-
 
 
 #save.image(file=here("fit-ergm", "out", "updated-with-oct2023-synthpop-ergmv4-5-indeg0-outdeg0.RData")
-save.image(file=here("fit-ergms", "out", "updated-with-oct2023-synthpop-ergmv4-5-edges-only.RData"))
+save.image(file=here("fit-ergms", "out", "updated-with-oct2023-synthpop-ergmv4-5-edges-all-nodemix-only.RData"))
