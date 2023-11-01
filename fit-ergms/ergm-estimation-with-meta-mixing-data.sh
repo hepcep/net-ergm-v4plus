@@ -6,6 +6,9 @@
 #SBATCH --ntasks=1
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=aditya_khanna@brown.edu
+#SBATCH --output=slurm_output/output_%j.log
+#SBATCH --error=slurm_output/error_%j.log
+
 
 
 module load R/4.3.1
