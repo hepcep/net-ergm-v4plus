@@ -301,4 +301,4 @@ fit.metadata.mixing <-
 
 
 #save.image(file=here("fit-ergm", "out", "updated-with-oct2023-synthpop-ergmv4-5-indeg0-outdeg0.RData")
-save.image(file=here("fit-ergm", "out", "updated-with-oct2023-synthpop-ergmv4-5-edges-only.RData")
+save.image(file=here("fit-ergms", "out", "updated-with-oct2023-synthpop-ergmv4-5-edges-only.RData"))
