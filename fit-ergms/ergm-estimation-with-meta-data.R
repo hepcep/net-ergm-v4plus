@@ -269,7 +269,7 @@ fit.metadata.mixing <-
       # idegree(indeg.terms)+
       # odegree(deg.terms)+
       # dist(dist.terms),
-    target.stats = c(edges_target#,
+    target.stats = c(edges_target,
                     c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
                     c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
                     c(            target.b.w, target.h.w, target.o.w,
