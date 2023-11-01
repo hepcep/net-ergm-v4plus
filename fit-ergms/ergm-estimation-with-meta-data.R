@@ -261,13 +261,13 @@ dist.terms <- 1:3 #fourth is left out
 fit.metadata.mixing <-
   ergm(
     n0 ~
-      edges +
-      nodemix("sex", base=1)+
-      nodemix("young", base=1)+
-      nodemix("race.num", base=1)+
-      idegree(indeg.terms)+
-      odegree(deg.terms)+
-      dist(dist.terms),
+      edges, #+
+      # nodemix("sex", base=1)+
+      # nodemix("young", base=1)+
+      # nodemix("race.num", base=1)+
+      # idegree(indeg.terms)+
+      # odegree(deg.terms)+
+      # dist(dist.terms),
     target.stats = c(edges_target#,
                     #  c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
                     #  c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
