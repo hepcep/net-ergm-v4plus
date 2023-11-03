@@ -266,8 +266,8 @@ fit.metadata.mixing <-
       nodemix("sex", base=1)+
       nodemix("young", base=1)+
       nodemix("race.num", base=1),
-      # idegree(indeg.terms)+
-      # odegree(deg.terms)+
+       idegree(indeg.terms)+
+       odegree(deg.terms),
       # dist(dist.terms),
     target.stats = c(edges_target,
                     c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
@@ -275,11 +275,11 @@ fit.metadata.mixing <-
                     c(            target.b.w, target.h.w, target.o.w,
                                   target.w.b, target.b.b, target.h.b, target.o.b,
                                   target.w.h, target.b.h, target.h.h, target.o.h,
-                                  target.w.o, target.b.o, target.h.o, target.o.o)
-                    #  #c(indegree_targets[c(indeg.terms)+1]),
+                                  target.w.o, target.b.o, target.h.o, target.o.o),
+                    #  #c(indegree_targets[c(indeg.terms)+1]), #for using simulated networks as a basis
                     #  #c(outdegree_stargets[c(deg.terms+1)]),
-                    #  c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
-                    #  c(outedges$n_nodes[c(deg.terms+1)]),
+                      c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
+                      c(outedges$n_nodes[c(deg.terms+1)])
                     #  c(dist.nedge.distribution[dist.terms])
     ),
     eval.loglik = FALSE,
@@ -302,4 +302,5 @@ fit.metadata.mixing <-
 
 
 #save.image(file=here("fit-ergm", "out", "updated-with-oct2023-synthpop-ergmv4-5-indeg0-outdeg0.RData")
-save.image(file=here("fit-ergms", "out", "updated-with-oct2023-synthpop-ergmv4-5-edges-all-nodemix-only.RData"))
+#save.image(file=here("fit-ergms", "out", "updated-with-oct2023-synthpop-ergmv4-5-edges-all-nodemix-only.RData"))
+save.image(file=here("fit-ergms", "out", "updated-with-oct2023-synthpop-ergmv4-5-edges-all-nodemix-in-out-degree0-only.RData"))
