@@ -262,27 +262,8 @@ dist.terms <- 1:3 #fourth is left out
 fit.metadata.mixing <-
   ergm(
     n0 ~
-      edges+
-      nodemix("sex", base=1)+
-      nodemix("young", base=1)+
-      nodemix("race.num", base=1)+
-      #idegree(indeg.terms)+
-      #odegree(deg.terms),
-      dist(dist.terms),
-    target.stats = c(edges_target,
-                    c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
-                    c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
-                    c(            target.b.w, target.h.w, target.o.w,
-                                  target.w.b, target.b.b, target.h.b, target.o.b,
-                                  target.w.h, target.b.h, target.h.h, target.o.h,
-                                  target.w.o, target.b.o, target.h.o, target.o.o),
-                    #  #c(indegree_targets[c(indeg.terms)+1]), #for using simulated networks as a basis
-                    #  #c(outdegree_stargets[c(deg.terms+1)]),
-                    #  c(negbin_inedges$n_nodes[c(indeg.terms+1)])
-                    #  c(inedges$n_nodes[c(deg.terms+1)]),
-                    #  c(outedges$n_nodes[c(deg.terms+1)])
-                    c(dist.nedge.distribution[dist.terms])
-    ),
+      edges,
+    target.stats = c(edges_target),
     eval.loglik = FALSE,
     control = control.ergm(MCMLE.maxit = 500,
                            MCMC.interval = 1e5,
@@ -302,8 +283,5 @@ fit.metadata.mixing <-
 
 
 
-#save.image(file=here("fit-ergm", "out", "updated-with-oct2023-synthpop-ergmv4-5-indeg0-outdeg0.RData"))
-save.image(file=here("fit-ergm", "out", "updated-with-oct2023-synthpop-ergmv4-5-all-ind-terms.RData"))
-#save.image(file=here("fit-ergms", "out", "updated-with-oct2023-synthpop-ergmv4-5-edges-all-nodemix-only.RData"))
-#save.image(file=here("fit-ergms", "out", "updated-with-oct2023-synthpop-ergmv4-5-edges-all-nodemix-in-degree0-only.RData"))
-#save.image(file=here("fit-ergms", "out", "updated-with-oct2023-synthpop-ergmv4-5-edges-all-nodemix-out-degree0-only.RData"))
+
+save.image(file=here("fit-ergm", "out", "updated-with-oct2023-synthpop-ergmv4-5-only-edges.RData"))
