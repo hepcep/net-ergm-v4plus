@@ -262,8 +262,20 @@ dist.terms <- 1:3 #fourth is left out
 fit.metadata.mixing <-
   ergm(
     n0 ~
-      edges,
-    target.stats = c(edges_target),
+      edges+
+      nodemix("sex", base=1)+
+      nodemix("young", base=1)+
+      nodemix("race.num", base=1),
+    target.stats = 
+    c(
+      edges_target,
+      c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
+      c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
+      c(target.b.w, target.h.w, target.o.w,
+        target.w.b, target.b.b, target.h.b, target.o.b,
+        target.w.h, target.b.h, target.h.h, target.o.h,
+        target.w.o, target.b.o, target.h.o, target.o.o),
+    ),
     eval.loglik = FALSE,
     control = control.ergm(MCMLE.maxit = 500,
                            MCMC.interval = 1e5,
@@ -277,4 +289,6 @@ fit.metadata.mixing <-
     )
   )
 
-save.image(file=here("fit-ergms", "out", "updated-with-oct2023-synthpop-ergmv4-6-only-edges.RData"))
+
+
+save.image(file=here("fit-ergms", "out", "updated-with-oct2023-synthpop-ergmv4-6-edges-all-nodemix.RData"))
