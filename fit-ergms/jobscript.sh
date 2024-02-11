@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#SBATCH --time=10:00:00
+#SBATCH --time=60:00:00
 #SBATCH --mem=60000
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
