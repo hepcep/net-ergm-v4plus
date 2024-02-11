@@ -274,7 +274,7 @@ fit.metadata.mixing <-
       c(target.b.w, target.h.w, target.o.w,
         target.w.b, target.b.b, target.h.b, target.o.b,
         target.w.h, target.b.h, target.h.h, target.o.h,
-        target.w.o, target.b.o, target.h.o, target.o.o),
+        target.w.o, target.b.o, target.h.o, target.o.o)
     ),
     eval.loglik = FALSE,
     control = control.ergm(MCMLE.maxit = 500,
