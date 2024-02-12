@@ -240,20 +240,8 @@ dist.nedge.distribution <- edges_target*dist.prop.distribution
 
 # Fit ERGM (with SATHCAP mixing) ----------
 
-
-#deg.terms <- 0:3
-#indeg.terms <- 0:1
 deg.terms <- 0
 indeg.terms <- 0  
-
-#indegree_targets <- c(degree_distribution_target_stats$indegrees_0_target, 
-#                      degree_distribution_target_stats$indegrees_1_target)
-
-# outdegree_targets <- c(degree_distribution_target_stats$outdegrees_0_target, 
-#                       degree_distribution_target_stats$outdegrees_1_target,
-#                       degree_distribution_target_stats$outdegrees_2_target,
-#                       degree_distribution_target_stats$outdegrees_3_target)
-
 
 
 dist.terms <- 1:3 #fourth is left out
@@ -266,7 +254,8 @@ fit.metadata.mixing <-
       nodemix("sex", base=1)+
       nodemix("young", base=1)+
       nodemix("race.num", base=1)+
-      dist(dist.terms),
+      idegree(indeg.terms)+
+      odegree(deg.terms),
     target.stats = 
     c(
       edges_target,
@@ -276,7 +265,8 @@ fit.metadata.mixing <-
         target.w.b, target.b.b, target.h.b, target.o.b,
         target.w.h, target.b.h, target.h.h, target.o.h,
         target.w.o, target.b.o, target.h.o, target.o.o),
-      c(dist.nedge.distribution[dist.terms])
+      c(inedges$n_nodes[c(deg.terms+1)]),
+      c(outedges$n_nodes[c(deg.terms+1)])
     ),
     eval.loglik = FALSE,
     control = control.ergm(MCMLE.maxit = 500,
@@ -291,6 +281,4 @@ fit.metadata.mixing <-
     )
   )
 
-
-
-save.image(file=here("fit-ergms", "out", "updated-with-oct2023-synthpop-ergmv4-6-dyad-ind.RData"))
+save.image(file=here("fit-ergms", "out", "updated-with-oct2023-synthpop-ergmv4-6-edges-allnodemix-in0-out0.RData"))
