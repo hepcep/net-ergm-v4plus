@@ -1,0 +1,1 @@
+/oscar/rt/9.2/software/0.20-generic/0.20.1/opt/spack/linux-rhel9-x86_64_v3/gcc-11.3.1/r-4.3.1-lmofgb4ggmztfpsknzgazhhiwaua5ocd/rlib/R/bin/BATCH: line 60: 1920833 Segmentation fault      (core dumped) ${R_HOME}/bin/R -f ${in} ${opts} ${R_BATCH_OPTIONS} > ${out} 2>&1
