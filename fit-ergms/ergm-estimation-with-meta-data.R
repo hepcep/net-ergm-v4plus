@@ -254,8 +254,7 @@ fit.metadata.mixing <-
       nodemix("sex", base=1)+
       nodemix("young", base=1)+
       nodemix("race.num", base=1)+
-      idegree(indeg.terms)+
-      odegree(deg.terms),
+      idegree(indeg.terms),
     target.stats = 
     c(
       edges_target,
@@ -265,8 +264,7 @@ fit.metadata.mixing <-
         target.w.b, target.b.b, target.h.b, target.o.b,
         target.w.h, target.b.h, target.h.h, target.o.h,
         target.w.o, target.b.o, target.h.o, target.o.o),
-      c(inedges$n_nodes[c(deg.terms+1)]),
-      c(outedges$n_nodes[c(deg.terms+1)])
+      c(inedges$n_nodes[c(deg.terms+1)])
     ),
     eval.loglik = FALSE,
     control = control.ergm(MCMLE.maxit = 500,
@@ -281,4 +279,4 @@ fit.metadata.mixing <-
     )
   )
 
-save.image(file=here("fit-ergms", "out", "updated-with-oct2023-synthpop-ergmv4-6-edges-allnodemix-in0-out0.RData"))
+save.image(file=here("fit-ergms", "out", "updated-with-oct2023-synthpop-ergmv4-6-edges-allnodemix-in0-only.RData"))
