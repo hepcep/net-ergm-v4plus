@@ -75,16 +75,6 @@
       ],
       "Hash": "3e1384ada5d3948b392e98b11434d972"
     },
-    "Rglpk": {
-      "Package": "Rglpk",
-      "Version": "0.6-5.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "slam"
-      ],
-      "Hash": "3214828c7e274287df2ce88aac1b359b"
-    },
     "brio": {
       "Package": "brio",
       "Version": "1.1.4",
@@ -243,18 +233,6 @@
         "trust"
       ],
       "Hash": "aee1ba632c48b2e4004302a800c301dc"
-    },
-    "ergm.userterms": {
-      "Package": "ergm.userterms",
-      "Version": "3.1.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "ergm",
-        "network",
-        "statnet.common"
-      ],
-      "Hash": "b767352ea9103e66310d19000797bc86"
     },
     "evaluate": {
       "Package": "evaluate",
