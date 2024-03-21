@@ -21,7 +21,7 @@ library(here)
 
 # Read Synthpop Data ------------------------------ 
 
-data_path <- here("data", "synthpop-2023-10-12 12_01_32.csv")
+data_path <- here("data", "synthpop-2022-07-25 13_21_04.csv")
 data <- read.csv(data_path, header=TRUE)
 glimpse(data)
 
@@ -240,9 +240,8 @@ dist.nedge.distribution <- edges_target*dist.prop.distribution
 
 # Fit ERGM (with SATHCAP mixing) ----------
 
-deg.terms <- 0
-indeg.terms <- 0  
-
+deg.terms <- 0:3
+indeg.terms <- 0:1  
 
 dist.terms <- 1:3 #fourth is left out
 
@@ -254,6 +253,8 @@ fit.metadata.mixing <-
       nodemix("sex", base=1)+
       nodemix("young", base=1)+
       nodemix("race.num", base=1)+
+      idegree(indeg.terms)+
+      odegree(deg.terms)+
       dist(dist.terms),
     target.stats = 
     c(
@@ -264,6 +265,8 @@ fit.metadata.mixing <-
         target.w.b, target.b.b, target.h.b, target.o.b,
         target.w.h, target.b.h, target.h.h, target.o.h,
         target.w.o, target.b.o, target.h.o, target.o.o),
+      c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
+      c(outedges$n_nodes[c(deg.terms+1)]),
       c(dist.nedge.distribution[dist.terms])
     ),
     eval.loglik = FALSE,
@@ -273,11 +276,10 @@ fit.metadata.mixing <-
                            #MCMLE.density.guard = 1e4, 
                            SAN = control.san(
                              SAN.maxit = 500, 
-                             #SAN.init.maxedges = 20000*10, 
                              SAN.nsteps = 1e8
                            )
                            
     )
   )
 
-save.image(file=here("fit-ergms", "out", "updated-with-oct2023-synthpop-ergmv4-6-edges-3nodemix-dist.RData"))
+save.image(file=here("fit-ergms", "out", "updated-with-july25-2022-synthpop-ergmv4-6-all-plosone-terms.RData"))
