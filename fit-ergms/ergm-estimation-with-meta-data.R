@@ -250,9 +250,9 @@ fit.metadata.mixing <-
   ergm(
     n0 ~
       edges+
-      nodemix("sex", base=1)+
-      nodemix("young", base=1)+
-      nodemix("race.num", base=1)+
+      nodemix("sex", levels2=-1)+
+      nodemix("young", levels2=-1)+
+      nodemix("race.num", levels2=-1)+
       idegree(indeg.terms)+
       odegree(deg.terms)+
       dist(dist.terms),
