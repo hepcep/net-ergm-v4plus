@@ -271,13 +271,13 @@ fit.metadata.mixing <-
     ),
     eval.loglik = FALSE,
     control = control.ergm(MCMLE.maxit = 500,
-                           MCMC.interval = 2e5,
-                           MCMC.samplesize = 2e5,
-                           checkpoint="step_%04d.RData",
+                           MCMC.interval = 1e5,
+                           MCMC.samplesize = 1e5,
+                           #checkpoint="step_%04d.RData",
                            #MCMLE.density.guard = 1e4, 
                            SAN = control.san(
                              SAN.maxit = 500, 
-                             SAN.nsteps = 2e8
+                             SAN.nsteps = 1e8
                              #SAN.nsteps.times = 16
                            )
                            
