@@ -269,6 +269,7 @@ fit.metadata.mixing <-
     ),
     eval.loglik = FALSE,
     control = control.ergm(MCMLE.maxit = 500,
+                           main.method = c("Stochastic-Approximation"),
                            MCMC.interval = 1e5,
                            MCMC.samplesize = 1e5,
                           #MPLE.samplesize = 50000, #MATCH ERGM3

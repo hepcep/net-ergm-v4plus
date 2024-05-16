@@ -1,6 +1,7 @@
 #!/bin/sh
 
-#SBATCH --time=60:00:00
+#SBATCH --job-name="main_stochastic"
+#SBATCH --time=20:00:00
 #SBATCH --mem=60000
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
@@ -12,4 +13,4 @@
 module load r/4.3.1-lmofgb4  
 module load glpk/5.0-zifs7bb
 
-R CMD BATCH --no-restore fit-ergms/ergm-estimation-with-meta-data.R slurm_output/$SLURM_JOB_ID.Rout
+R CMD BATCH --no-restore fit-ergms/ergm-estimation-with-meta-data.R slurm_output/$SLURM_JOB_ID_$SLURM_JOB_NAME.Rout
