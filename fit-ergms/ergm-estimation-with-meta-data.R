@@ -254,8 +254,7 @@ fit.metadata.mixing <-
       nodemix("young", levels2=-1)+
       nodemix("race.num", levels2=-1)+
       idegree(indeg.terms)+
-      odegree(deg.terms)+
-      dist(dist.terms),
+      odegree(deg.terms),
     target.stats = 
     c(
       edges_target,
@@ -266,22 +265,22 @@ fit.metadata.mixing <-
         target.w.h, target.b.h, target.h.h, target.o.h,
         target.w.o, target.b.o, target.h.o, target.o.o),
       c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
-      c(outedges$n_nodes[c(deg.terms+1)]),
-      c(dist.nedge.distribution[dist.terms])
+      c(outedges$n_nodes[c(deg.terms+1)])
     ),
     eval.loglik = FALSE,
     control = control.ergm(MCMLE.maxit = 500,
                            MCMC.interval = 1e5,
                            MCMC.samplesize = 1e5,
-                           #checkpoint="step_%04d.RData",
-                           #MCMLE.density.guard = 1e4, 
+                          #MPLE.samplesize = 50000, #MATCH ERGM3
                            SAN = control.san(
                              SAN.maxit = 500, 
                              SAN.nsteps = 1e8
                              #SAN.nsteps.times = 16
                            )
+    )
                            
     )
-  )
+  
+  
 
 save.image(file=here("fit-ergms", "out", "updated-with-july25-2022-synthpop-ergmv4-6-all-plosone-terms-checkpointing-increased-san-and-mcmc.RData"))
