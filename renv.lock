@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.3.1",
+    "Version": "4.4.0",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -254,7 +254,7 @@
         "network",
         "statnet.common"
       ],
-      "Hash": "b767352ea9103e66310d19000797bc86"
+      "Hash": "47060fea1334fb66f351f0a28fea08a0"
     },
     "evaluate": {
       "Package": "evaluate",
