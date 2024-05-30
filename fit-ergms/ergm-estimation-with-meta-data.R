@@ -15,7 +15,7 @@ renv::activate()
 library(network)
 library(ergm)
 library(dplyr)
-library(ergm.userterms)
+#library(ergm.userterms)
 library(here)
 
 
