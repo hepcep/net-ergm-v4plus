@@ -21,7 +21,7 @@ library(here)
 
 # Read Synthpop Data ------------------------------ 
 
-data_path <- here("data", "synthpop-2022-07-25 13_21_04.csv")
+data_path <- here("data", "synthpop-2023-10-12 12_01_32.csv")
 data <- read.csv(data_path, header=TRUE)
 glimpse(data)
 
