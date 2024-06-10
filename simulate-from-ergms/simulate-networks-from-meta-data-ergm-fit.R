@@ -6,9 +6,9 @@ rm(list=ls())
 
 # Initiate environment ------------------------------
 
-setwd(".")
+library(renv)
+renv::activate()
 
-packrat::init()
 .libPaths()
 
 
@@ -18,11 +18,13 @@ library(network)
 library(ergm)
 library(dplyr)
 library(ergm.userterms)
+library(here)
 
 
 # Data ----------
 
-load("fit-ergms/out/on-revamped-oscar-non-randomized-indeg-0-only.RData")
+load(here("fit-ergms", "out", "updated-with-oct12-2024-synthpop-ergmv4-6-all-plosone-terms.RData"))
+
 
 # Model summary
 summary(fit.metadata.mixing)
@@ -119,4 +121,4 @@ young <- unlist(lapply(sim_results,
 #summary(sim_results[[10]] ~ nodemix("young"))
 round(c(tgt.old.pctold, tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung))
 
-save.image("simulate-from-ergms/out/on-revamped-oscar-non-randomized-indeg-0-only.RData")
+save.image(here("simulate-from-ergms", "out", "on-revamped-oscar-non-randomized-indeg-0-only.RData"))
