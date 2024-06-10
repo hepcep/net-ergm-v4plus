@@ -15,7 +15,7 @@ renv::activate()
 library(network)
 library(ergm)
 library(dplyr)
-#library(ergm.userterms)
+library(ergm.userterms)
 library(here)
 
 
@@ -254,7 +254,8 @@ fit.metadata.mixing <-
       nodemix("young", levels2=-1)+
       nodemix("race.num", levels2=-1)+
       idegree(indeg.terms)+
-      odegree(deg.terms),
+      odegree(deg.terms)+
+      dist(dist.terms),
     target.stats = 
     c(
       edges_target,
@@ -265,7 +266,8 @@ fit.metadata.mixing <-
         target.w.h, target.b.h, target.h.h, target.o.h,
         target.w.o, target.b.o, target.h.o, target.o.o),
       c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
-      c(outedges$n_nodes[c(deg.terms+1)])
+      c(outedges$n_nodes[c(deg.terms+1)]),
+      c(dist.nedge.distribution[dist.terms])
     ),
     eval.loglik = FALSE,
     control = control.ergm(MCMLE.maxit = 500,
@@ -284,4 +286,4 @@ fit.metadata.mixing <-
   
   
 
-save.image(file=here("fit-ergms", "out", "updated-with-july25-2022-synthpop-ergmv4-6-all-plosone-terms-checkpointing-increased-san-and-mcmc.RData"))
+save.image(file=here("fit-ergms", "out", "updated-with-oct12-2024-synthpop-ergmv4-6-all-plosone-terms.RData"))
