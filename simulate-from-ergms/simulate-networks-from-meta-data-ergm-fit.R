@@ -25,6 +25,7 @@ library(here)
 
 load(here("fit-ergms", "out", "updated-with-oct12-2024-synthpop-ergmv4-6-all-plosone-terms.RData"))
 
+#load(here("fit-ergms", "out", "updated-with-july25-2022-synthpop-ergmv4-6-all-plosone-terms-checkpointing-increased-san-and-mcmc.RData"))
 
 # Model summary
 summary(fit.metadata.mixing)
@@ -32,7 +33,8 @@ summary(fit.metadata.mixing)
 
 # Simulate 100 networks ----------
 
-nsim.vec <- 1:100
+#nsim.vec <- 1:100
+nsim.vec <- 1:5
 sim_results <- as.list(nsim.vec)
 set.seed(Sys.time())
 
@@ -121,4 +123,4 @@ young <- unlist(lapply(sim_results,
 #summary(sim_results[[10]] ~ nodemix("young"))
 round(c(tgt.old.pctold, tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung))
 
-save.image(here("simulate-from-ergms", "out", "on-revamped-oscar-non-randomized-indeg-0-only.RData"))
+save.image(here("simulate-from-ergms", "out", "simulated-with-all-plos-terms.RData"))
