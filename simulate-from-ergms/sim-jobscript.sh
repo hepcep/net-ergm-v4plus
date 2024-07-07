@@ -13,4 +13,4 @@
 module load r/4.4.0-yycctsj  
 module load glpk/5.0-zifs7bb
 
-R CMD BATCH --no-restore fit-ergms/ergm-estimation-with-meta-data.R slurm_output/$SLURM_JOB_ID_$SLURM_JOB_NAME.Rout
+R CMD BATCH --no-restore simulate-from-ergms/simulate-networks-from-meta-data-ergm-fit.R slurm_output/$SLURM_JOB_ID_$SLURM_JOB_NAME.Rout
