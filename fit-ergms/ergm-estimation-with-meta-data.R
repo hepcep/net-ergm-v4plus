@@ -272,8 +272,8 @@ fit.metadata.mixing <-
     eval.loglik = FALSE,
     control = control.ergm(MCMLE.maxit = 500,
                            main.method = c("Stochastic-Approximation"),
-                           MCMC.interval = 5e5,
-                           MCMC.samplesize = 5e5,
+                           MCMC.interval = 1e6,
+                           MCMC.samplesize = 1e6,
                           #MPLE.samplesize = 50000, #MATCH ERGM3
                            SAN = control.san(
                              SAN.maxit = 500, 
@@ -286,4 +286,4 @@ fit.metadata.mixing <-
   
   
 
-save.image(file=here("fit-ergms", "out", "updated-with-oct12-2024-synthpop-ergmv4-6-all-plosone-terms-increase-mcmc-5e5.RData"))
+save.image(file=here("fit-ergms", "out", "updated-with-oct12-2024-synthpop-ergmv4-6-all-plosone-terms-increase-mcmc-1e6.RData"))
