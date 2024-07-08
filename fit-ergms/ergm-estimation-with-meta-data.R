@@ -245,6 +245,19 @@ indeg.terms <- 0:1
 
 dist.terms <- 1:3 #fourth is left out
 
+# Specify initial coefs ----------
+
+edges <- -9.319 
+mix.race.num.4.1  <- 0.16349
+odegree0 <- -0.1386842 
+mix.race.num.2.4 <- 0.13625
+mix.race.num.4.4 <- 0.20408 
+
+initial_coeffs <- c("edges" = -9.319, 
+                    "mix.race.num.4.1" = 0.16349, 
+                    "odegree0" = -0.1386842, 
+                    "mix.race.num.2.4" = 0.13625, 
+                    "mix.race.num.4.4" = 0.20408)
 
 fit.metadata.mixing <-
   ergm(
@@ -270,15 +283,17 @@ fit.metadata.mixing <-
       c(dist.nedge.distribution[dist.terms])
     ),
     eval.loglik = FALSE,
-    control = control.ergm(MCMLE.maxit = 500,
-                           main.method = c("Stochastic-Approximation"),
-                           MCMC.interval = 1e10,
-                           MCMC.samplesize = 1e10,
-                          #MPLE.samplesize = 50000, #MATCH ERGM3
-                           SAN = control.san(
-                             SAN.maxit = 500, 
-                             SAN.nsteps = 1e8
-                             #SAN.nsteps.times = 16
+    control = control.ergm(
+      init = initial_coeffs,
+      MCMLE.maxit = 500,
+      main.method = c("Stochastic-Approximation"),
+      MCMC.interval = 1e6,
+      MCMC.samplesize = 1e10,
+    #MPLE.samplesize = 50000, #MATCH ERGM3
+      SAN = control.san(
+      SAN.maxit = 500, 
+      SAN.nsteps = 1e8
+        #SAN.nsteps.times = 16
                            )
     )
                            
@@ -286,4 +301,4 @@ fit.metadata.mixing <-
   
   
 
-save.image(file=here("fit-ergms", "out", "updated-with-oct12-2024-synthpop-ergmv4-6-all-plosone-terms-increase-mcmc-1e10.RData"))
+save.image(file=here("fit-ergms", "out", "updated-with-oct12-2024-synthpop-ergmv4-6-all-plosone-terms-increase-mcmc-samplesize-1e10-mcmcint-1e06-init-coefs.RData"))
