@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#SBATCH --job-name="synthpop-2023-10-12-w-dist-all-plos-one-increase-mcmc-1e6"
+#SBATCH --job-name="synthpop-2023-10-12-w-dist-all-plos-one-increase-mcmc-1e10"
 #SBATCH --time=5:00:00
 #SBATCH --mem=10000
 #SBATCH --nodes=1
