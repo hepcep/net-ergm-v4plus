@@ -108,7 +108,7 @@ here() starts at /oscar/home/akhann16/code/net-ergm-v4plus
 > 
 > # Data ----------
 > 
-> load(here("fit-ergms", "out", "updated-with-oct12-2024-synthpop-ergmv4-6-all-plosone-terms.RData"))
+> load(here("fit-ergms", "out", "updated-with-oct12-2024-synthpop-ergmv4-6-all-plosone-terms-increase-mcmc-1e6.RData"))
 > 
 > #load(here("fit-ergms", "out", "updated-with-july25-2022-synthpop-ergmv4-6-all-plosone-terms-checkpointing-increased-san-and-mcmc.RData"))
 > 
@@ -126,43 +126,43 @@ ergm(formula = n0 ~ edges + nodemix("sex", levels2 = -1) + nodemix("young",
     c(negbin_inedges$n_nodes[c(indeg.terms + 1)]), c(outedges$n_nodes[c(deg.terms + 
         1)]), c(dist.nedge.distribution[dist.terms])), eval.loglik = FALSE, 
     control = control.ergm(MCMLE.maxit = 500, main.method = c("Stochastic-Approximation"), 
-        MCMC.interval = 1e+05, MCMC.samplesize = 1e+05, SAN = control.san(SAN.maxit = 500, 
+        MCMC.interval = 1e+06, MCMC.samplesize = 1e+06, SAN = control.san(SAN.maxit = 500, 
             SAN.nsteps = 1e+08)))
 
 Stochastic Approximation Maximum Likelihood Results:
 
                  Estimate Std. Error MCMC %  z value Pr(>|z|)    
-edges            -8.49207    0.04613      0 -184.090   <1e-04 ***
-mix.sex.M.F       0.50692    0.03323      0   15.254   <1e-04 ***
-mix.sex.F.M       0.31074    0.03285      0    9.458   <1e-04 ***
-mix.sex.M.M       0.04044    0.03309      0    1.222    0.222    
-mix.young.1.0    -0.48915    0.02153      0  -22.719   <1e-04 ***
-mix.young.0.1    -1.31032    0.03514      0  -37.292   <1e-04 ***
-mix.young.1.1     0.39304    0.02672      0   14.708   <1e-04 ***
-mix.race.num.2.1 -1.73354    0.05056      0  -34.289   <1e-04 ***
-mix.race.num.3.1 -1.33014    0.04308      0  -30.873   <1e-04 ***
-mix.race.num.4.1 -0.58691    0.06513      0   -9.011   <1e-04 ***
-mix.race.num.1.2 -1.69035    0.03877      0  -43.598   <1e-04 ***
-mix.race.num.2.2  0.49380    0.02039      0   24.223   <1e-04 ***
-mix.race.num.3.2 -1.87276    0.05669      0  -33.037   <1e-04 ***
-mix.race.num.4.2 -1.92514    0.11796      0  -16.321   <1e-04 ***
-mix.race.num.1.3 -1.15523    0.03360      0  -34.382   <1e-04 ***
-mix.race.num.2.3 -1.14233    0.04634      0  -24.653   <1e-04 ***
-mix.race.num.3.3  0.57731    0.02313      0   24.959   <1e-04 ***
-mix.race.num.4.3 -0.49552    0.12106      0   -4.093   <1e-04 ***
-mix.race.num.1.4 -0.26797    0.05025      0   -5.333   <1e-04 ***
-mix.race.num.2.4 -1.24344    0.08368      0  -14.859   <1e-04 ***
-mix.race.num.3.4 -0.94878    0.07726      0  -12.281   <1e-04 ***
-mix.race.num.4.4  0.07343    0.09904      0    0.741    0.458    
-idegree0          4.53275    0.04685      0   96.746   <1e-04 ***
-idegree1          1.81934    0.03977      0   45.742   <1e-04 ***
-odegree0         -1.43975    0.12942      0  -11.124   <1e-04 ***
-odegree1         -2.30432    0.10106      0  -22.801   <1e-04 ***
-odegree2         -2.03088    0.07399      0  -27.449   <1e-04 ***
-odegree3         -1.39747    0.05163      0  -27.070   <1e-04 ***
-dist1             6.94339    0.02250      1  308.608   <1e-04 ***
-dist2             2.87303    0.01970      1  145.813   <1e-04 ***
-dist3            -1.16957    0.01889      0  -61.905   <1e-04 ***
+edges            -9.31970    0.03637      0 -256.253   <1e-04 ***
+mix.sex.M.F       0.81028    0.02200      0   36.825   <1e-04 ***
+mix.sex.F.M       0.71477    0.02204      0   32.434   <1e-04 ***
+mix.sex.M.M       0.39896    0.01918      0   20.803   <1e-04 ***
+mix.young.1.0    -0.38080    0.01910      0  -19.937   <1e-04 ***
+mix.young.0.1    -1.02309    0.03017      0  -33.908   <1e-04 ***
+mix.young.1.1     0.47755    0.02060      0   23.181   <1e-04 ***
+mix.race.num.2.1 -1.63733    0.03985      0  -41.086   <1e-04 ***
+mix.race.num.3.1 -1.16130    0.03728      0  -31.153   <1e-04 ***
+mix.race.num.4.1 -0.66973    0.05912      0  -11.329   <1e-04 ***
+mix.race.num.1.2 -1.65304    0.03242      0  -50.993   <1e-04 ***
+mix.race.num.2.2  0.42777    0.01385      0   30.892   <1e-04 ***
+mix.race.num.3.2 -1.73134    0.04234      0  -40.895   <1e-04 ***
+mix.race.num.4.2 -1.76374    0.10151      0  -17.375   <1e-04 ***
+mix.race.num.1.3 -1.12914    0.03040      0  -37.146   <1e-04 ***
+mix.race.num.2.3 -1.24297    0.03922      0  -31.693   <1e-04 ***
+mix.race.num.3.3  0.41220    0.01772      0   23.257   <1e-04 ***
+mix.race.num.4.3 -1.43272    0.10127      0  -14.148   <1e-04 ***
+mix.race.num.1.4 -0.42909    0.04113      0  -10.431   <1e-04 ***
+mix.race.num.2.4 -0.87882    0.06746      0  -13.027   <1e-04 ***
+mix.race.num.3.4 -0.57458    0.06063      0   -9.478   <1e-04 ***
+mix.race.num.4.4  0.20408    0.08161      0    2.501   0.0124 *  
+idegree0          4.06746    0.04394      0   92.567   <1e-04 ***
+idegree1          1.50557    0.03838      0   39.229   <1e-04 ***
+odegree0         -2.76729    0.12196      0  -22.691   <1e-04 ***
+odegree1         -3.26439    0.09529      0  -34.257   <1e-04 ***
+odegree2         -2.56967    0.06870      0  -37.403   <1e-04 ***
+odegree3         -1.64296    0.04976      0  -33.019   <1e-04 ***
+dist1             6.01869    0.03318      1  181.382   <1e-04 ***
+dist2             3.01495    0.01582      0  190.622   <1e-04 ***
+dist3            -1.00597    0.01637      0  -61.461   <1e-04 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
@@ -171,8 +171,8 @@ Log-likelihood was not estimated for this fit. To get deviances, AIC, and/or BIC
 > 
 > # Simulate 100 networks ----------
 > 
-> #nsim.vec <- 1:100
-> nsim.vec <- 1:5
+> nsim.vec <- 1:25
+> #nsim.vec <- 1:5
 > sim_results <- as.list(nsim.vec)
 > set.seed(Sys.time())
 > 
@@ -189,7 +189,7 @@ Log-likelihood was not estimated for this fit. To get deviances, AIC, and/or BIC
 > ecount <- unlist(lapply(sim_results, network.edgecount))
 > summary(ecount)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-  33213   33303   33335   33378   33473   33568 
+  27314   27668   27859   27894   28123   28434 
 > edges_target
 [1] 24652
 > 
@@ -212,7 +212,7 @@ Log-likelihood was not estimated for this fit. To get deviances, AIC, and/or BIC
 > 
 > 
 > c(mean(outdeg0), mean(outdeg1), mean(outdeg2), mean(outdeg3), mean(outdeg4))
-[1] 18105.6  5524.2  2926.8  1819.4  2345.2
+[1] 19204.12  5530.28  2995.92  1672.60  1920.68
 > outedges$n_nodes[1:5] #target
 [1] 20377.6703  5368.0248  2578.1790  1424.6254   838.6959
 > 
@@ -235,7 +235,7 @@ Log-likelihood was not estimated for this fit. To get deviances, AIC, and/or BIC
 > 
 > 
 > c(mean(indeg0), mean(indeg1), mean(indeg2), mean(indeg3), mean(indeg4))
-[1] 21741.4  4152.8  1056.4  1121.2  1061.2
+[1] 22224.48  4234.80  1252.48  1230.48  1004.72
 > inedges$n_nodes[1:5]
 [1] 23163.897  4160.120  1896.771  1039.539   617.605
 > 
@@ -246,13 +246,13 @@ Log-likelihood was not estimated for this fit. To get deviances, AIC, and/or BIC
 > 
 > summary(sim_results[[1]] ~ nodemix("race.num"))
 mix.race.num.2.1 mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 
-            1097             1205              421             1439 
+             818             1073              322             1181 
 mix.race.num.2.2 mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 
-           10474              749              150             1697 
+            8759              612              106             1296 
 mix.race.num.2.3 mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 
-            1317             4903              249              729 
+             866             3672              126              504 
 mix.race.num.2.4 mix.race.num.3.4 mix.race.num.4.4 
-             247              300              209 
+             215              257              135 
 > round(
 +   c(target.w.w, target.b.w, target.h.w, target.o.w,
 +     target.w.b, target.b.b, target.h.b, target.o.b,
@@ -280,8 +280,8 @@ mix.race.num.2.4 mix.race.num.3.4 mix.race.num.4.4
 > round(c(tgt.old.pctold, tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung))
 [1] 19081  3106   986  1479
 > 
-> save.image(here("simulate-from-ergms", "out", "simulated-with-all-plos-terms.RData"))
+> save.image(here("simulate-from-ergms", "out", "simulated-updated-with-oct12-2024-synthpop-ergmv4-6-all-plosone-terms-increase-mcmc-1e6.pdf"))
 > 
 > proc.time()
    user  system elapsed 
- 58.225   1.632  64.117 
+344.780   4.822 352.848 
