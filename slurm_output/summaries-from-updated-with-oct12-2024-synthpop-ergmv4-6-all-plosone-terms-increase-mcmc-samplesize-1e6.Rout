@@ -1,0 +1,342 @@
+
+R version 4.4.0 (2024-04-24) -- "Puppy Cup"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+- Project '/oscar/home/akhann16/code/net-ergm-v4plus' loaded. [renv 1.0.7]
+> # Summarize simulated statistics across multiple networks
+> 
+> rm(list=ls())
+> 
+> # Activate R environment ------------------------------
+> 
+> library(renv)
+
+Attaching package: ‘renv’
+
+The following objects are masked from ‘package:stats’:
+
+    embed, update
+
+The following objects are masked from ‘package:utils’:
+
+    history, upgrade
+
+The following objects are masked from ‘package:base’:
+
+    autoload, load, remove, use
+
+> renv::activate()
+> 
+> 
+> # Libraries ----------
+> 
+> library(network)
+
+‘network’ 1.18.2 (2023-12-04), part of the Statnet Project
+* ‘news(package="network")’ for changes since last version
+* ‘citation("network")’ for citation information
+* ‘https://statnet.org’ for help, support, and other information
+
+> library(ergm)
+
+‘ergm’ 4.6.0 (2023-12-17), part of the Statnet Project
+* ‘news(package="ergm")’ for changes since last version
+* ‘citation("ergm")’ for citation information
+* ‘https://statnet.org’ for help, support, and other information
+
+‘ergm’ 4 is a major update that introduces some backwards-incompatible
+changes. Please type ‘news(package="ergm")’ for a list of major
+changes.
+
+> library(ergm.userterms)
+Loading required package: statnet.common
+
+Attaching package: ‘statnet.common’
+
+The following objects are masked from ‘package:base’:
+
+    attr, order
+
+
+‘ergm.userterms’ 3.1.1 (2020-02-01), part of the Statnet Project
+* ‘news(package="ergm.userterms")’ for changes since last version
+* ‘citation("ergm.userterms")’ for citation information
+* ‘https://statnet.org’ for help, support, and other information
+
+NOTE: If you use custom ERGM terms based on ‘ergm.userterms’ version
+prior to 3.1, you will need to perform a one-time update of the package
+boilerplate files (the files that you did not write or modify) from
+‘ergm.userterms’ 3.1 or later. See help('eut-upgrade') for
+instructions.
+
+> library(here)
+here() starts at /oscar/home/akhann16/code/net-ergm-v4plus
+> 
+> here()
+[1] "/oscar/home/akhann16/code/net-ergm-v4plus"
+> 
+> 
+> # Data ----------
+> 
+> load(here("simulate-from-ergms", "out", "simulated-updated-with-oct12-2024-synthpop-ergmv4-6-all-plos1-mcmc-int1e6-samp1e6-hotelling.RData"))
+> 
+> 
+> 
+> # Compute summaries and IQRs ----------
+> 
+> nsim.vec <- 1:10 
+> 
+> sim_results <- sim_results[nsim.vec]
+> 
+> edgecount.sim.data <- (unlist(lapply(sim_results, function (x) network.edgecount(x)))) #edge count summary
+> mean(edgecount.sim.data)
+[1] 26078.8
+> quantile(edgecount.sim.data, probs = c(2.5/100, 97.5/100))
+    2.5%    97.5% 
+25477.25 26714.75 
+> 
+> summary(outdeg0); quantile(outdeg0, probs = c(2.5/100, 97.5/100))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  19452   19691   19771   19776   19856   20103 
+    2.5%    97.5% 
+19551.50 20060.85 
+> summary(outdeg1); quantile(outdeg1, probs = c(2.5/100, 97.5/100)) 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   5432    5536    5584    5592    5653    5736 
+    2.5%    97.5% 
+5451.025 5705.525 
+> summary(outdeg2); quantile(outdeg2, probs = c(2.5/100, 97.5/100))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   2625    2758    2808    2800    2842    2924 
+    2.5%    97.5% 
+2694.950 2894.825 
+> summary(outdeg3); quantile(outdeg3, probs = c(2.5/100, 97.5/100))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   1330    1424    1455    1455    1481    1561 
+    2.5%    97.5% 
+1368.225 1540.100 
+> summary(outdeg4); quantile(outdeg4, probs = c(2.5/100, 97.5/100))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   1575    1678    1706    1709    1742    1813 
+    2.5%    97.5% 
+1610.175 1804.775 
+> 
+> summary(indeg0); quantile(indeg0, probs = c(2.5/100, 97.5/100))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  22503   22702   22782   22783   22856   23127 
+    2.5%    97.5% 
+22588.85 23026.53 
+> summary(indeg1); quantile(indeg1, probs = c(2.5/100, 97.5/100)) 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   4083    4222    4262    4260    4310    4399 
+    2.5%    97.5% 
+4117.325 4378.400 
+> summary(indeg2); quantile(indeg2, probs = c(2.5/100, 97.5/100))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    960    1031    1052    1054    1076    1140 
+    2.5%    97.5% 
+ 988.225 1124.200 
+> summary(indeg3); quantile(indeg3, probs = c(2.5/100, 97.5/100))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    980    1038    1056    1057    1075    1128 
+    2.5%    97.5% 
+ 993.375 1116.150 
+> summary(indeg4); quantile(indeg4, probs = c(2.5/100, 97.5/100))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  819.0   866.5   888.5   884.7   902.2   945.0 
+   2.5%   97.5% 
+829.375 940.100 
+> 
+> indeg.gr.0.1 <- n - (indeg0 + indeg1)
+> summary(indeg.gr.0.1)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   4735    4918    4966    4959    5014    5109 
+> quantile(indeg.gr.0.1, probs = c(2.5/100, 97.5/100))
+    2.5%    97.5% 
+4784.825 5097.625 
+> 
+> outdeg.gr.0.3 <- n - (outdeg0 + outdeg1 + outdeg2 + outdeg3)
+> summary(outdeg.gr.0.3)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   2237    2343    2379    2379    2418    2523 
+> quantile(outdeg.gr.0.3, probs = c(2.5/100, 97.5/100))
+  2.5%  97.5% 
+2260.9 2476.3 
+> 
+> sim.race.num <- lapply(nsim.vec, function (x) summary(sim_results[[x]] ~ nodemix("race.num")))
+> #summary(unlist(lapply(sim.race.num, function (x) x["mix.race.num.1.1"])))
+> summary(unlist(lapply(sim.race.num, function (x) x["mix.race.num.2.1"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  769.0   800.2   841.0   836.9   877.0   888.0 
+> summary(unlist(lapply(sim.race.num, function (x) x["mix.race.num.3.1"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  950.0   968.0   986.0   985.5  1005.8  1013.0 
+> summary(unlist(lapply(sim.race.num, function (x) x["mix.race.num.4.1"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  314.0   343.8   356.0   354.1   367.2   382.0 
+> summary(unlist(lapply(sim.race.num, function (x) x["mix.race.num.1.2"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    908     975    1030    1022    1060    1128 
+> summary(unlist(lapply(sim.race.num, function (x) x["mix.race.num.2.2"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   8255    8328    8419    8429    8510    8624 
+> summary(unlist(lapply(sim.race.num, function (x) x["mix.race.num.3.2"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  586.0   596.0   618.5   620.5   641.8   670.0 
+> summary(unlist(lapply(sim.race.num, function (x) x["mix.race.num.4.2"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   75.0    80.5    88.0    89.8    98.5   108.0 
+> summary(unlist(lapply(sim.race.num, function (x) x["mix.race.num.1.3"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   1133    1170    1204    1202    1219    1274 
+> summary(unlist(lapply(sim.race.num, function (x) x["mix.race.num.2.3"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  742.0   765.0   771.0   769.7   777.5   788.0 
+> summary(unlist(lapply(sim.race.num, function (x) x["mix.race.num.3.3"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   3524    3539    3567    3565    3582    3617 
+> summary(unlist(lapply(sim.race.num, function (x) x["mix.race.num.4.3"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  76.00   80.75   91.00   88.90   96.50  100.00 
+> summary(unlist(lapply(sim.race.num, function (x) x["mix.race.num.1.4"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  487.0   504.5   522.5   528.2   549.8   588.0 
+> summary(unlist(lapply(sim.race.num, function (x) x["mix.race.num.2.4"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  213.0   241.8   252.0   250.8   266.5   277.0 
+> summary(unlist(lapply(sim.race.num, function (x) x["mix.race.num.3.4"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  232.0   250.8   260.5   262.3   268.8   316.0 
+> summary(unlist(lapply(sim.race.num, function (x) x["mix.race.num.4.4"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  158.0   165.5   176.5   173.6   181.8   186.0 
+> 
+> #quantile(unlist(lapply(sim.race.num, function (x) x["mix.race.num.1.1"])), probs = c(2.5/100, 97.5/100))
+> quantile(unlist(lapply(sim.race.num, function (x) x["mix.race.num.2.1"])), probs = c(2.5/100, 97.5/100))
+ 2.5% 97.5% 
+771.7 887.1 
+> quantile(unlist(lapply(sim.race.num, function (x) x["mix.race.num.3.1"])), probs = c(2.5/100, 97.5/100))
+    2.5%    97.5% 
+ 952.475 1012.325 
+> quantile(unlist(lapply(sim.race.num, function (x) x["mix.race.num.4.1"])), probs = c(2.5/100, 97.5/100))
+   2.5%   97.5% 
+320.300 379.075 
+> quantile(unlist(lapply(sim.race.num, function (x) x["mix.race.num.1.2"])), probs = c(2.5/100, 97.5/100))
+    2.5%    97.5% 
+ 921.725 1117.875 
+> quantile(unlist(lapply(sim.race.num, function (x) x["mix.race.num.2.2"])), probs = c(2.5/100, 97.5/100))
+   2.5%   97.5% 
+8267.60 8612.75 
+> quantile(unlist(lapply(sim.race.num, function (x) x["mix.race.num.3.2"])), probs = c(2.5/100, 97.5/100))
+   2.5%   97.5% 
+586.900 665.275 
+> quantile(unlist(lapply(sim.race.num, function (x) x["mix.race.num.4.2"])), probs = c(2.5/100, 97.5/100))
+  2.5%  97.5% 
+ 75.45 106.65 
+> quantile(unlist(lapply(sim.race.num, function (x) x["mix.race.num.1.3"])), probs = c(2.5/100, 97.5/100))
+    2.5%    97.5% 
+1136.825 1271.750 
+> quantile(unlist(lapply(sim.race.num, function (x) x["mix.race.num.2.3"])), probs = c(2.5/100, 97.5/100))
+   2.5%   97.5% 
+746.050 786.425 
+> quantile(unlist(lapply(sim.race.num, function (x) x["mix.race.num.3.3"])), probs = c(2.5/100, 97.5/100))
+    2.5%    97.5% 
+3524.900 3613.175 
+> quantile(unlist(lapply(sim.race.num, function (x) x["mix.race.num.4.3"])), probs = c(2.5/100, 97.5/100))
+ 2.5% 97.5% 
+76.45 99.55 
+> quantile(unlist(lapply(sim.race.num, function (x) x["mix.race.num.1.4"])), probs = c(2.5/100, 97.5/100))
+   2.5%   97.5% 
+488.575 580.125 
+> quantile(unlist(lapply(sim.race.num, function (x) x["mix.race.num.2.4"])), probs = c(2.5/100, 97.5/100))
+   2.5%   97.5% 
+215.925 275.650 
+> quantile(unlist(lapply(sim.race.num, function (x) x["mix.race.num.3.4"])), probs = c(2.5/100, 97.5/100))
+   2.5%   97.5% 
+233.575 307.225 
+> quantile(unlist(lapply(sim.race.num, function (x) x["mix.race.num.4.4"])), probs = c(2.5/100, 97.5/100))
+   2.5%   97.5% 
+158.675 185.325 
+> 
+> 
+> 
+> # sim.sex <- lapply(nsim.vec, function (x) summary(sim_results[[x]] ~ nodemix("sex")))
+> # summary(unlist(lapply(sim.sex, function (x) x["mix.sex.1.1"])))
+> # summary(unlist(lapply(sim.sex, function (x) x["mix.sex.2.1"])))
+> # summary(unlist(lapply(sim.sex, function (x) x["mix.sex.1.2"])))
+> # summary(unlist(lapply(sim.sex, function (x) x["mix.sex.2.2"])))
+> 
+> # #quantile(unlist(lapply(sim.sex, function (x) x["mix.sex.1.1"])), probs = c(2.5/100, 97.5/100))
+> # quantile(unlist(lapply(sim.sex, function (x) x["mix.sex.2.1"])), probs = c(2.5/100, 97.5/100))
+> # quantile(unlist(lapply(sim.sex, function (x) x["mix.sex.1.2"])), probs = c(2.5/100, 97.5/100))
+> # quantile(unlist(lapply(sim.sex, function (x) x["mix.sex.2.2"])), probs = c(2.5/100, 97.5/100))
+> 
+> 
+> sim.young <- lapply(nsim.vec, function (x) summary(sim_results[[x]] ~ nodemix("young")))
+> summary(unlist(lapply(sim.young, function (x) x["mix.young.0.0"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+     NA      NA      NA     NaN      NA      NA      10 
+> summary(unlist(lapply(sim.young, function (x) x["mix.young.1.0"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   3290    3317    3430    3400    3466    3493 
+> summary(unlist(lapply(sim.young, function (x) x["mix.young.0.1"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    951    1058    1090    1088    1133    1193 
+> summary(unlist(lapply(sim.young, function (x) x["mix.young.1.1"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   1537    1565    1622    1618    1641    1751 
+> 
+> #quantile(unlist(lapply(sim.young, function (x) x["mix.young.0.0"])), probs = c(2.5/100, 97.5/100))
+> quantile(unlist(lapply(sim.young, function (x) x["mix.young.1.0"])), probs = c(2.5/100, 97.5/100))
+   2.5%   97.5% 
+3294.05 3489.40 
+> quantile(unlist(lapply(sim.young, function (x) x["mix.young.0.1"])), probs = c(2.5/100, 97.5/100))
+    2.5%    97.5% 
+ 973.050 1181.975 
+> quantile(unlist(lapply(sim.young, function (x) x["mix.young.1.1"])), probs = c(2.5/100, 97.5/100))
+    2.5%    97.5% 
+1538.125 1732.775 
+> 
+> 
+> sim.dist <- lapply(nsim.vec, function (x) summary(sim_results[[x]] ~ dist(1:4)))
+> summary(unlist(lapply(sim.dist, function (x) x["dist1"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   3911    3933    3956    3962    3984    4026 
+> summary(unlist(lapply(sim.dist, function (x) x["dist2"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   8567    8772    8787    8799    8890    8970 
+> summary(unlist(lapply(sim.dist, function (x) x["dist3"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   6127    6322    6430    6402    6473    6584 
+> #summary(unlist(lapply(sim.dist, function (x) x["dist4"])))
+> 
+> quantile(unlist(lapply(sim.dist, function (x) x["dist1"])), probs = c(2.5/100, 97.5/100))
+    2.5%    97.5% 
+3912.575 4023.975 
+> quantile(unlist(lapply(sim.dist, function (x) x["dist2"])), probs = c(2.5/100, 97.5/100))
+    2.5%    97.5% 
+8584.100 8967.075 
+> quantile(unlist(lapply(sim.dist, function (x) x["dist3"])), probs = c(2.5/100, 97.5/100))
+    2.5%    97.5% 
+6168.400 6576.125 
+> #quantile(unlist(lapply(sim.dist, function (x) x["dist4"])), probs = c(2.5/100, 97.5/100))
+> 
+> 
+> proc.time()
+   user  system elapsed 
+ 92.852   7.598 102.346 
