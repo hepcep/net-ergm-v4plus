@@ -244,14 +244,9 @@ deg.terms <- 0:3
 indeg.terms <- 0:1  
 
 dist.terms <- 1:3 #fourth is left out
+#dist.terms <- 3 #only try the third term
 
 # Specify initial coefs ----------
-
-edges <- -9.319 
-mix.race.num.4.1  <- 0.16349
-odegree0 <- -0.1386842 
-mix.race.num.2.4 <- 0.13625
-mix.race.num.4.4 <- 0.20408 
 
 initial_coeffs <- c("edges" = -9.319, 
                     "mix.race.num.4.1" = 0.16349, 
@@ -262,7 +257,7 @@ initial_coeffs <- c("edges" = -9.319,
 fit.metadata.mixing <-
   ergm(
     n0 ~
-      edges+
+      edges + 
       nodemix("sex", levels2=-1)+
       nodemix("young", levels2=-1)+
       nodemix("race.num", levels2=-1)+
@@ -284,11 +279,12 @@ fit.metadata.mixing <-
     ),
     eval.loglik = FALSE,
     control = control.ergm(
-      init = initial_coeffs,
-      MCMLE.maxit = 500,
+      MCMLE.maxit = 500,  
       main.method = c("Stochastic-Approximation"),
-      MCMC.interval = 1e6,
-      MCMC.samplesize = 1e10,
+      MCMC.interval = 1e5,
+      MCMC.samplesize = 1e6,
+      MCMLE.termination = "Hummel",
+      MCMC.effectiveSize=NULL,
     #MPLE.samplesize = 50000, #MATCH ERGM3
       SAN = control.san(
       SAN.maxit = 500, 
@@ -301,4 +297,4 @@ fit.metadata.mixing <-
   
   
 
-save.image(file=here("fit-ergms", "out", "updated-with-oct12-2024-synthpop-ergmv4-6-all-plosone-terms-increase-mcmc-samplesize-1e10-mcmcint-1e06-init-coefs.RData"))
+save.image(file=here("fit-ergms", "out", "updated-with-oct12-2024-synthpop-ergmv4-6-all-plos1-mcmc-int1e5-samp1e6-hummel.RData"))  
