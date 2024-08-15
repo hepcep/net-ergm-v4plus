@@ -1,5 +1,6 @@
 # Summarize simulated statistics across multiple networks
 
+
 rm(list=ls())
 
 
@@ -8,21 +9,13 @@ rm(list=ls())
 library(network)
 library(ergm)
 library(ergm.userterms)
-library(here)
-
-# Set the root directory ----------
-
-here::set_here("/users/akhann16/code/hepcep_networks/")
-
 
 # Data ----------
 
-load(here("simulate-from-ergms/out/on-revamped-oscar-non-randomized-indeg-0-only.RData"))
+
+load("out/simulate-racemix-plus-dist-plus-negbin-odeg0-3-indeg0-1-orignialdata.RData")
 
 # Compute summaries and IQRs ----------
-
-nsim.vec <- 1:5 #only taking 5 to ease computation
-sim_results <- sim_results[nsim.vec]
 
 edgecount.sim.data <- (unlist(lapply(sim_results, function (x) network.edgecount(x)))) #edge count summary
 mean(edgecount.sim.data)
@@ -85,16 +78,16 @@ quantile(unlist(lapply(sim.race.num, function (x) x["mix.race.num.4.4"])), probs
 
 
 
-sim.sex <- lapply(nsim.vec, function (x) summary(sim_results[[x]] ~ nodemix("sex")))
-summary(unlist(lapply(sim.sex, function (x) x["mix.sex.1.1"])))
-summary(unlist(lapply(sim.sex, function (x) x["mix.sex.2.1"])))
-summary(unlist(lapply(sim.sex, function (x) x["mix.sex.1.2"])))
-summary(unlist(lapply(sim.sex, function (x) x["mix.sex.2.2"])))
+sim.gender <- lapply(nsim.vec, function (x) summary(sim_results[[x]] ~ nodemix("gender")))
+summary(unlist(lapply(sim.gender, function (x) x["mix.gender.female.female"])))
+summary(unlist(lapply(sim.gender, function (x) x["mix.gender.male.female"])))
+summary(unlist(lapply(sim.gender, function (x) x["mix.gender.female.male"])))
+summary(unlist(lapply(sim.gender, function (x) x["mix.gender.male.male"])))
 
-quantile(unlist(lapply(sim.sex, function (x) x["mix.sex.1.1"])), probs = c(2.5/100, 97.5/100))
-quantile(unlist(lapply(sim.sex, function (x) x["mix.sex.2.1"])), probs = c(2.5/100, 97.5/100))
-quantile(unlist(lapply(sim.sex, function (x) x["mix.sex.1.2"])), probs = c(2.5/100, 97.5/100))
-quantile(unlist(lapply(sim.sex, function (x) x["mix.sex.2.2"])), probs = c(2.5/100, 97.5/100))
+quantile(unlist(lapply(sim.gender, function (x) x["mix.gender.female.female"])), probs = c(2.5/100, 97.5/100))
+quantile(unlist(lapply(sim.gender, function (x) x["mix.gender.male.female"])), probs = c(2.5/100, 97.5/100))
+quantile(unlist(lapply(sim.gender, function (x) x["mix.gender.female.male"])), probs = c(2.5/100, 97.5/100))
+quantile(unlist(lapply(sim.gender, function (x) x["mix.gender.male.male"])), probs = c(2.5/100, 97.5/100))
 
 
 sim.young <- lapply(nsim.vec, function (x) summary(sim_results[[x]] ~ nodemix("young")))
