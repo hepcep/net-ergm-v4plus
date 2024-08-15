@@ -13,10 +13,10 @@ renv::activate()
 
 # Libraries ----------
 
-# library(network)
-# library(ergm)
-# library(dplyr)
-# library(ergm.userterms)
+library(network)
+library(ergm)
+library(dplyr)
+library(ergm.userterms)
 library(here)
 library(ggplot2)
 
@@ -43,30 +43,29 @@ quantile(edgecount.sim.data, probs = c(2.5 / 100, 97.5 / 100))
 edges_target
 
 
-## indegree
+## outdegree
 ### simulated
-summary(indeg0)
-quantile(indeg0, probs = c(2.5 / 100, 97.5 / 100))
-summary(indeg1)
-quantile(indeg1, probs = c(2.5 / 100, 97.5 / 100))
-summary(indeg2)
-quantile(indeg2, probs = c(2.5 / 100, 97.5 / 100))
-summary(indeg3)
-quantile(indeg3, probs = c(2.5 / 100, 97.5 / 100))
-# summary(indeg4); quantile(indeg4, probs = c(2.5/100, 97.5/100))
+summary(outdeg0)
+quantile(outdeg0, probs = c(2.5 / 100, 97.5 / 100))
+summary(outdeg1)
+quantile(outdeg1, probs = c(2.5 / 100, 97.5 / 100))
+summary(outdeg2)
+quantile(outdeg2, probs = c(2.5 / 100, 97.5 / 100))
+summary(outdeg3)
+quantile(outdeg3, probs = c(2.5 / 100, 97.5 / 100))
+# summary(outdeg4); quantile(outdeg4, probs = c(2.5/100, 97.5/100))
 
-indeg.gr.0.3 <- n - (indeg0 + indeg1 + indeg2 + indeg3)
-summary(indeg.gr.0.3)
-quantile(indeg.gr.0.3, probs = c(2.5 / 100, 97.5 / 100))
+outdeg.gr.0.3 <- n - (outdeg0 + outdeg1 + outdeg2 + outdeg3)
+summary(outdeg.gr.0.3)
+quantile(outdeg.gr.0.3, probs = c(2.5 / 100, 97.5 / 100))
 
 
 ### target
-target_stats_indeg
+target_stats_outdeg
 
 
 
 ## indegree
-
 ### simulated
 summary(indeg0)
 quantile(indeg0, probs = c(2.5 / 100, 97.5 / 100))
@@ -214,30 +213,30 @@ ggplot(edgecount_df, aes(x = category, y = count)) +
   ) +
   ggtitle("EDGES") # Add "edges" as the title
 
-ggsave(here("simulate-from-ergms", "in", "edges_violin_plot.png"), width = 8, height = 6)
+ggsave(here("simulate-from-ergms", "out", "edges_violin_plot.png"), width = 8, height = 6)
 
-## indegree
-indeg_df <- data.frame(
-  indegree = c(indeg0, indeg1, indeg2, indeg3),
-  category = rep(c("indeg0", "indeg1", "indeg2", "indeg3"),
-    times = c(length(indeg0), length(indeg1), length(indeg2), length(indeg3))
+## outdegree
+outdeg_df <- data.frame(
+  outdegree = c(outdeg0, outdeg1, outdeg2, outdeg3),
+  category = rep(c("outdeg0", "outdeg1", "outdeg2", "outdeg3"),
+    times = c(length(outdeg0), length(outdeg1), length(outdeg2), length(outdeg3))
   )
 )
 
-target_values <- target_stats_indeg
+target_values <- target_stats_outdeg
 
-ggplot(indeg_df, aes(x = category, y = indegree)) +
+ggplot(outdeg_df, aes(x = category, y = outdegree)) +
   geom_violin(trim = FALSE, fill = "#66C2A5") +
   geom_hline(
     data = data.frame(
-      category = c("indeg0", "indeg1", "indeg2", "indeg3"),
+      category = c("outdeg0", "outdeg1", "outdeg2", "outdeg3"),
       y = target_values
     ), aes(yintercept = y),
     linetype = "solid", color = "black", size = 1.5
   ) +
   facet_wrap(~category, scales = "free_y") +
   theme_minimal() +
-  labs(y = "indegree", x = "") +
+  labs(y = "outdegree", x = "") +
   theme(
     axis.text = element_text(size = 12),
     axis.title = element_text(size = 14),
@@ -245,7 +244,7 @@ ggplot(indeg_df, aes(x = category, y = indegree)) +
     panel.grid.minor = element_blank(),
     strip.text = element_text(size = 14, face = "bold")
   )
-  ggsave(here("simulate-from-ergms", "in", "indeg_violin_plot.png"), width = 8, height = 6)
+  ggsave(here("simulate-from-ergms", "out", "outdeg_violin_plot.png"), width = 8, height = 6)
 
 
 ## indegree
@@ -259,16 +258,22 @@ indeg_df <- data.frame(
 
 target_values <- target_stats_indeg[1:2]
 
-ggplot(indeg_df, aes(x = category, y = indegree)) +
+# Filter the data to include only the desired categories
+indeg_df_filtered <- subset(indeg_df, category %in% c("indeg0", "indeg1"))
+
+# Check if filtering worked
+unique(indeg_df_filtered$category)
+
+ggplot(indeg_df_filtered, aes(x = category, y = indegree)) +
   geom_violin(trim = FALSE, fill = "#66C2A5") +
   geom_hline(
     data = data.frame(
-      category = c("indeg0", "indeg1", "indeg2", "indeg3"),
+      category = c("indeg0", "indeg1"),
       y = target_values
     ), aes(yintercept = y),
     linetype = "solid", color = "black", size = 1.5
   ) +
-  facet_wrap(~category, scales = "free_y") +
+  facet_wrap(~category, scales = "free_y", nrow = 1, ncol = 2) +
   theme_minimal() +
   labs(y = "indegree", x = "") +
   theme(
@@ -278,8 +283,43 @@ ggplot(indeg_df, aes(x = category, y = indegree)) +
     panel.grid.minor = element_blank(),
     strip.text = element_text(size = 14, face = "bold")
   )
-  ggsave(here("simulate-from-ergms", "out", "indeg_violin_plot.png"), width = 8, height = 6)
+
+
+  ggsave(here("simulate-from-ergms", "out", "indeg_violin_plot2.png"), width = 8, height = 6)
 
 ## race
+race_mixing_df <- do.call(rbind, lapply(sim.race.num, as.data.frame))
+race_mixing_df <- stack(race_mixing_df)
+
+# Rename the columns to more intuitive names
+colnames(race_mixing_df) <- c("count", "category")
+
+# Plot the violin plots with faceting
+ggplot(race_mixing_df, aes(x = category, y = count)) +
+  geom_violin(trim = FALSE, fill = "#66C2A5") +
+  geom_hline(data = data.frame(category = unique(race_mixing_df$category), 
+                               y = target_race_mixing), aes(yintercept = y), 
+             linetype = "solid", color = "red", linewidth = 1.5) +
+  facet_wrap(~ category, scales = "free_y") +
+  theme_minimal() +
+  labs(y = "Race Mixing Count", x = NULL) +
+  theme(
+    axis.text.x = element_blank(),  # Hide x-axis text
+    axis.title.x = element_blank(),  # Hide x-axis title
+    axis.title.y = element_text(size = 14),
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    strip.text = element_text(size = 14, face = "bold")  # Make panel titles more prominent
+  )
+
+  ggsave(here("simulate-from-ergms", "out", "racemix_violin_plot.png"), width = 8, height = 6)
 
 ## gender
+
+
+
+## age
+
+
+
+## distance
