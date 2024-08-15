@@ -24,7 +24,7 @@ library(ggplot2)
 # Data ----------
 
 
-load(here("simulate-from-ergms", "in", "sim-updated-with-oct12-2024-synthpop-ergmv4-6-all-plos1-mcmc-int1e6-samp1e6-hotelling.RData"))
+load(here("simulate-from-ergms", "out", "sim-updated-with-oct12-2024-synthpop-ergmv4-6-all-plos1-mcmc-int1e6-samp1e6-hotelling.RData"))
 
 # Compute summaries and IQRs ----------
 
@@ -87,7 +87,7 @@ quantile(indeg.gr.0.1, probs = c(2.5 / 100, 97.5 / 100))
 target_stats_indeg
 
 ## race
-
+### simulated
 sim.race.num <- lapply(nsim.vec, function(x) summary(sim_results[[x]] ~ nodemix("race.num")))
 summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.1.1"])))
 summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.2.1"])))
@@ -106,7 +106,7 @@ summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.2.4"])))
 summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.3.4"])))
 summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.4.4"])))
 
-quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.1.1"])), probs = c(2.5 / 100, 97.5 / 100))
+#quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.1.1"])), probs = c(2.5 / 100, 97.5 / 100))
 quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.2.1"])), probs = c(2.5 / 100, 97.5 / 100))
 quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.3.1"])), probs = c(2.5 / 100, 97.5 / 100))
 quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.4.1"])), probs = c(2.5 / 100, 97.5 / 100))
@@ -123,8 +123,16 @@ quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.2.4"])), probs 
 quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.3.4"])), probs = c(2.5 / 100, 97.5 / 100))
 quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.4.4"])), probs = c(2.5 / 100, 97.5 / 100))
 
+### target
+target_race_mixing <- 
+    c(target.w.w, target.b.w, target.h.w, target.o.w,
+      target.w.b, target.b.b, target.h.b, target.o.b,
+      target.w.h, target.b.h, target.h.h, target.o.h,
+      target.o.w, target.o.b, target.o.h, target.o.w)
 
+## gender
 
+### simulated
 sim.gender <- lapply(nsim.vec, function(x) summary(sim_results[[x]] ~ nodemix("gender")))
 summary(unlist(lapply(sim.gender, function(x) x["mix.gender.female.female"])))
 summary(unlist(lapply(sim.gender, function(x) x["mix.gender.male.female"])))
@@ -136,7 +144,13 @@ quantile(unlist(lapply(sim.gender, function(x) x["mix.gender.male.female"])), pr
 quantile(unlist(lapply(sim.gender, function(x) x["mix.gender.female.male"])), probs = c(2.5 / 100, 97.5 / 100))
 quantile(unlist(lapply(sim.gender, function(x) x["mix.gender.male.male"])), probs = c(2.5 / 100, 97.5 / 100))
 
+### 
+target_gender_mixing <- 
+    c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale)        
 
+
+## age
+### simulated
 sim.young <- lapply(nsim.vec, function(x) summary(sim_results[[x]] ~ nodemix("young")))
 summary(unlist(lapply(sim.young, function(x) x["mix.young.0.0"])))
 summary(unlist(lapply(sim.young, function(x) x["mix.young.1.0"])))
@@ -148,7 +162,12 @@ quantile(unlist(lapply(sim.young, function(x) x["mix.young.1.0"])), probs = c(2.
 quantile(unlist(lapply(sim.young, function(x) x["mix.young.0.1"])), probs = c(2.5 / 100, 97.5 / 100))
 quantile(unlist(lapply(sim.young, function(x) x["mix.young.1.1"])), probs = c(2.5 / 100, 97.5 / 100))
 
+### target
+target_age_mixing <- c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung)
 
+
+## distance
+### simulated
 sim.dist <- lapply(nsim.vec, function(x) summary(sim_results[[x]] ~ dist(1:4)))
 summary(unlist(lapply(sim.dist, function(x) x["dist1"])))
 summary(unlist(lapply(sim.dist, function(x) x["dist2"])))
@@ -159,6 +178,10 @@ quantile(unlist(lapply(sim.dist, function(x) x["dist1"])), probs = c(2.5 / 100, 
 quantile(unlist(lapply(sim.dist, function(x) x["dist2"])), probs = c(2.5 / 100, 97.5 / 100))
 quantile(unlist(lapply(sim.dist, function(x) x["dist3"])), probs = c(2.5 / 100, 97.5 / 100))
 quantile(unlist(lapply(sim.dist, function(x) x["dist4"])), probs = c(2.5 / 100, 97.5 / 100))
+
+### target
+target_distance <- c(dist.nedge.distribution[dist.terms])
+
 
 # Violin Plots ----------
 
@@ -256,3 +279,7 @@ ggplot(indeg_df, aes(x = category, y = indegree)) +
     strip.text = element_text(size = 14, face = "bold")
   )
   ggsave(here("simulate-from-ergms", "out", "indeg_violin_plot.png"), width = 8, height = 6)
+
+## race
+
+## gender
