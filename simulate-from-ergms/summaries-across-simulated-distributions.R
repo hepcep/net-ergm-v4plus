@@ -249,22 +249,17 @@ ggplot(outdeg_df, aes(x = category, y = outdegree)) +
 
 ## indegree
 
-indeg_df <- data.frame(
-  indegree = c(indeg0, indeg1, indeg2, indeg3),
-  category = rep(c("indeg0", "indeg1"),
-    times = c(length(indeg0), length(indeg1))
-  )
-)
-
 target_values <- target_stats_indeg[1:2]
 
-# Filter the data to include only the desired categories
-indeg_df_filtered <- subset(indeg_df, category %in% c("indeg0", "indeg1"))
+# Manually create a new data frame
+indeg_df_clean <- data.frame(
+  indegree = c(indeg0, indeg1),
+  category = rep(c("indeg0", "indeg1"), each = length(indeg0))
+)
 
-# Check if filtering worked
-unique(indeg_df_filtered$category)
-
-ggplot(indeg_df_filtered, aes(x = category, y = indegree)) +
+# Plot the clean data frame
+# Create the plot with target lines
+ggplot(indeg_df_clean, aes(x = category, y = indegree)) +
   geom_violin(trim = FALSE, fill = "#66C2A5") +
   geom_hline(
     data = data.frame(
