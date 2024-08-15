@@ -405,3 +405,39 @@ target_distance <- c(dist.nedge.distribution[dist.terms])
 
 
   ## distance
+    distance_mixing_df <- do.call(rbind, lapply(seq_along(sim.dist), function(i) {
+      data.frame(
+        run = i,
+        category = names(sim.dist[[i]]),
+        count = as.numeric(sim.dist[[i]])
+      )
+    }))
+
+    distance_mixing_df$category <- factor(distance_mixing_df$category)
+
+    distance_mixing_df_filtered <- distance_mixing_df[distance_mixing_df$category != "dist4", ]
+
+    names(target_distance) <- c("dist1", "dist2", "dist3")
+
+    # Plot the violin plot excluding dist4
+    ggplot(distance_mixing_df_filtered, aes(x = category, y = count)) +
+      geom_violin(trim = FALSE, fill = "#66C2A5") +
+      geom_hline(data = data.frame(category = names(target_distance), 
+                                  y = as.numeric(target_distance)), aes(yintercept = y), 
+                linetype = "solid", color = "black", linewidth = 1.5) +
+      facet_wrap(~ category, scales = "free_y") +
+      theme_minimal() +
+      labs(y = "Distance Metric Count", x = NULL) +
+      theme(
+        axis.text.x = element_blank(),  # Hide x-axis text
+        axis.title.x = element_blank(),  # Hide x-axis title
+        axis.title.y = element_text(size = 14),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        strip.text = element_text(size = 14, face = "bold")  # Make panel titles more prominent
+      )
+
+    # Save the plot
+    ggsave(here("simulate-from-ergms", "out", "distance_violin_plot.png"), width = 8, height = 6)
+
+
