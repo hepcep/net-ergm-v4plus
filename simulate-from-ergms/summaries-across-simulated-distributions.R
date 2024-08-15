@@ -282,38 +282,55 @@ ggplot(indeg_df_clean, aes(x = category, y = indegree)) +
   ggsave(here("simulate-from-ergms", "out", "indeg_violin_plot.png"), width = 8, height = 6)
 
 ## race
-race_mixing_df <- do.call(rbind, lapply(sim.race.num, as.data.frame))
-race_mixing_df <- stack(race_mixing_df)
+  ## create an empty data frame
+  race_mixing_df <- data.frame()
 
-# Rename the columns to more intuitive names
-colnames(race_mixing_df) <- c("count", "category")
+  ## loop through sim.race.num and extract data into a proper format
+  for (i in seq_along(sim.race.num)) {
+    temp_df <- as.data.frame(t(sim.race.num[[i]]))  # Transpose to get each category in columns
+    temp_df <- stack(temp_df)  # Stack to get a long format
+    race_mixing_df <- rbind(race_mixing_df, temp_df)  # Bind to the main data frame
+  }
 
-# Plot the violin plots with faceting
-ggplot(race_mixing_df, aes(x = category, y = count)) +
-  geom_violin(trim = FALSE, fill = "#66C2A5") +
-  geom_hline(data = data.frame(category = unique(race_mixing_df$category), 
-                               y = target_race_mixing), aes(yintercept = y), 
-             linetype = "solid", color = "red", linewidth = 1.5) +
-  facet_wrap(~ category, scales = "free_y") +
-  theme_minimal() +
-  labs(y = "Race Mixing Count", x = NULL) +
-  theme(
-    axis.text.x = element_blank(),  # Hide x-axis text
-    axis.title.x = element_blank(),  # Hide x-axis title
-    axis.title.y = element_text(size = 14),
-    panel.grid.major = element_blank(), 
-    panel.grid.minor = element_blank(),
-    strip.text = element_text(size = 14, face = "bold")  # Make panel titles more prominent
-  )
+  str(race_mixing_df)
+
+  # Rename the columns
+  colnames(race_mixing_df) <- c("count", "category")
+
+  # convert category to factor
+  race_mixing_df$category <- factor(race_mixing_df$category)
+
+  # Remove the first target value
+  target_race_mixing_filtered <- target_race_mixing[-1]
+
+  # plot the data
+  ggplot(race_mixing_df, aes(x = category, y = count)) +
+    geom_violin(trim = FALSE, fill = "#66C2A5") +
+    geom_hline(data = data.frame(category = unique(race_mixing_df$category), 
+                                y = target_race_mixing_filtered), aes(yintercept = y), 
+              linetype = "solid", color = "black", linewidth = 1.5) +
+    facet_wrap(~ category, scales = "free_y") +
+    theme_minimal() +
+    labs(y = "Race Mixing Count", x = NULL) +
+    theme(
+      axis.text.x = element_blank(),  # Hide x-axis text
+      axis.title.x = element_blank(),  # Hide x-axis title
+      axis.title.y = element_text(size = 14),
+      panel.grid.major = element_blank(), 
+      panel.grid.minor = element_blank(),
+      strip.text = element_text(size = 14, face = "bold")  # Make panel titles more prominent
+    )
 
   ggsave(here("simulate-from-ergms", "out", "racemix_violin_plot.png"), width = 8, height = 6)
 
-## gender
+
+
+  ## gender
 
 
 
-## age
+  ## age
 
 
 
-## distance
+  ## distance
