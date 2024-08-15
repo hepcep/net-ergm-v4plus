@@ -279,8 +279,7 @@ ggplot(indeg_df_clean, aes(x = category, y = indegree)) +
     strip.text = element_text(size = 14, face = "bold")
   )
 
-
-  ggsave(here("simulate-from-ergms", "out", "indeg_violin_plot2.png"), width = 8, height = 6)
+  ggsave(here("simulate-from-ergms", "out", "indeg_violin_plot.png"), width = 8, height = 6)
 
 ## race
 race_mixing_df <- do.call(rbind, lapply(sim.race.num, as.data.frame))
