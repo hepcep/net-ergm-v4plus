@@ -16,6 +16,7 @@ renv::activate()
 library(network)
 library(ergm)
 library(dplyr)
+library(reshape2)
 library(ergm.userterms)
 library(here)
 library(ggplot2)
@@ -129,22 +130,22 @@ target_race_mixing <-
       target.w.h, target.b.h, target.h.h, target.o.h,
       target.o.w, target.o.b, target.o.h, target.o.w)
 
-## gender
+## sex
 
 ### simulated
-sim.gender <- lapply(nsim.vec, function(x) summary(sim_results[[x]] ~ nodemix("gender")))
-summary(unlist(lapply(sim.gender, function(x) x["mix.gender.female.female"])))
-summary(unlist(lapply(sim.gender, function(x) x["mix.gender.male.female"])))
-summary(unlist(lapply(sim.gender, function(x) x["mix.gender.female.male"])))
-summary(unlist(lapply(sim.gender, function(x) x["mix.gender.male.male"])))
+sim.sex <- lapply(nsim.vec, function(x) summary(sim_results[[x]] ~ nodemix("sex")))
+summary(unlist(lapply(sim.sex, function(x) x["mix.sex.F.F"])))
+summary(unlist(lapply(sim.sex, function(x) x["mix.sex.M.F"])))
+summary(unlist(lapply(sim.sex, function(x) x["mix.sex.F.M"])))
+summary(unlist(lapply(sim.sex, function(x) x["mix.sex.M.M"])))
 
-quantile(unlist(lapply(sim.gender, function(x) x["mix.gender.female.female"])), probs = c(2.5 / 100, 97.5 / 100))
-quantile(unlist(lapply(sim.gender, function(x) x["mix.gender.male.female"])), probs = c(2.5 / 100, 97.5 / 100))
-quantile(unlist(lapply(sim.gender, function(x) x["mix.gender.female.male"])), probs = c(2.5 / 100, 97.5 / 100))
-quantile(unlist(lapply(sim.gender, function(x) x["mix.gender.male.male"])), probs = c(2.5 / 100, 97.5 / 100))
+quantile(unlist(lapply(sim.sex, function(x) x["mix.sex.F.F"])), probs = c(2.5 / 100, 97.5 / 100))
+quantile(unlist(lapply(sim.sex, function(x) x["mix.sex.M.F"])), probs = c(2.5 / 100, 97.5 / 100))
+quantile(unlist(lapply(sim.sex, function(x) x["mix.sex.F.M"])), probs = c(2.5 / 100, 97.5 / 100))
+quantile(unlist(lapply(sim.sex, function(x) x["mix.sex.M.M"])), probs = c(2.5 / 100, 97.5 / 100))
 
 ### 
-target_gender_mixing <- 
+target_sex_mixing <- 
     c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale)        
 
 
@@ -325,8 +326,40 @@ ggplot(indeg_df_clean, aes(x = category, y = indegree)) +
 
 
 
-  ## gender
+## sex
+  sex_mixing_df <- do.call(rbind, lapply(seq_along(sim.sex), function(i) {
+  data.frame(
+    run = i,
+    category = names(sim.sex[[i]]),
+    count = as.numeric(sim.sex[[i]])
+  )
+}))
 
+
+  sex_mixing_df$category <- factor(sex_mixing_df$category)
+  head(sex_mixing_df)
+
+  target_sex_mixing
+  names(target_sex_mixing) <- c("mix.sex.M.F",   "mix.sex.F.M",  "mix.sex.M.M")
+
+  ggplot(sex_mixing_df, aes(x = category, y = count)) +
+    geom_violin(trim = FALSE, fill = "#66C2A5") +
+    geom_hline(data = data.frame(category = names(target_sex_mixing), 
+                                y = as.numeric(target_sex_mixing)), aes(yintercept = y), 
+              linetype = "solid", color = "black", linewidth = 1.5) +
+    facet_wrap(~ category, scales = "free_y") +
+    theme_minimal() +
+    labs(y = "Sex Mixing Count", x = NULL) +
+    theme(
+      axis.text.x = element_blank(),  # Hide x-axis text
+      axis.title.x = element_blank(),  # Hide x-axis title
+      axis.title.y = element_text(size = 14),
+      panel.grid.major = element_blank(), 
+      panel.grid.minor = element_blank(),
+      strip.text = element_text(size = 14, face = "bold")  # Make panel titles more prominent
+    )
+
+      ggsave(here("simulate-from-ergms", "out", "sexmix_violin_plot.png"), width = 8, height = 6)
 
 
   ## age
