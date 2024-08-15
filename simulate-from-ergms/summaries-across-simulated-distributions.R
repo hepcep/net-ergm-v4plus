@@ -186,101 +186,101 @@ target_distance <- c(dist.nedge.distribution[dist.terms])
 # Violin Plots ----------
 
 ## edges
-edgecount_df <- data.frame(
-  count = edgecount.sim.data,
-  category = "edges"
-)
+  edgecount_df <- data.frame(
+    count = edgecount.sim.data,
+    category = "edges"
+  )
 
-ggplot(edgecount_df, aes(x = category, y = count)) +
-  geom_violin(trim = FALSE, fill = "#66C2A5") +
-  geom_hline(
-    yintercept = edges_target, linetype = "solid",
-    color = "black", size = 1.5
-  ) +
-  scale_y_continuous(
-    limits = c(min(edgecount.sim.data) - 1000, max(edgecount.sim.data) + 1000),
-    breaks = seq(24000, 27000, by = 1000),
-    labels = scales::comma # Format labels with commas
-  ) +
-  theme_minimal() +
-  labs(y = "Edge Count", x = "") +
-  theme(
-    axis.text.x = element_blank(), # Hide x-axis text
-    axis.title.x = element_blank(), # Hide x-axis title
-    axis.title.y = element_text(size = 14),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    plot.title = element_text(size = 16, face = "bold") # Make "edges" prominent
-  ) +
-  ggtitle("EDGES") # Add "edges" as the title
+  ggplot(edgecount_df, aes(x = category, y = count)) +
+    geom_violin(trim = FALSE, fill = "#66C2A5") +
+    geom_hline(
+      yintercept = edges_target, linetype = "solid",
+      color = "black", size = 1.5
+    ) +
+    scale_y_continuous(
+      limits = c(min(edgecount.sim.data) - 1000, max(edgecount.sim.data) + 1000),
+      breaks = seq(24000, 27000, by = 1000),
+      labels = scales::comma # Format labels with commas
+    ) +
+    theme_minimal() +
+    labs(y = "Edge Count", x = "") +
+    theme(
+      axis.text.x = element_blank(), # Hide x-axis text
+      axis.title.x = element_blank(), # Hide x-axis title
+      axis.title.y = element_text(size = 14),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(size = 16, face = "bold") # Make "edges" prominent
+    ) +
+    ggtitle("EDGES") # Add "edges" as the title
 
-ggsave(here("simulate-from-ergms", "out", "edges_violin_plot.png"), width = 8, height = 6)
+  ggsave(here("simulate-from-ergms", "out", "edges_violin_plot.png"), width = 8, height = 6)
 
 ## outdegree
-outdeg_df <- data.frame(
-  outdegree = c(outdeg0, outdeg1, outdeg2, outdeg3),
-  category = rep(c("outdeg0", "outdeg1", "outdeg2", "outdeg3"),
-    times = c(length(outdeg0), length(outdeg1), length(outdeg2), length(outdeg3))
+  outdeg_df <- data.frame(
+    outdegree = c(outdeg0, outdeg1, outdeg2, outdeg3),
+    category = rep(c("outdeg0", "outdeg1", "outdeg2", "outdeg3"),
+      times = c(length(outdeg0), length(outdeg1), length(outdeg2), length(outdeg3))
+    )
   )
-)
 
-target_values <- target_stats_outdeg
+  target_values <- target_stats_outdeg
 
-ggplot(outdeg_df, aes(x = category, y = outdegree)) +
-  geom_violin(trim = FALSE, fill = "#66C2A5") +
-  geom_hline(
-    data = data.frame(
-      category = c("outdeg0", "outdeg1", "outdeg2", "outdeg3"),
-      y = target_values
-    ), aes(yintercept = y),
-    linetype = "solid", color = "black", size = 1.5
-  ) +
-  facet_wrap(~category, scales = "free_y") +
-  theme_minimal() +
-  labs(y = "outdegree", x = "") +
-  theme(
-    axis.text = element_text(size = 12),
-    axis.title = element_text(size = 14),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    strip.text = element_text(size = 14, face = "bold")
-  )
-  ggsave(here("simulate-from-ergms", "out", "outdeg_violin_plot.png"), width = 8, height = 6)
+  ggplot(outdeg_df, aes(x = category, y = outdegree)) +
+    geom_violin(trim = FALSE, fill = "#66C2A5") +
+    geom_hline(
+      data = data.frame(
+        category = c("outdeg0", "outdeg1", "outdeg2", "outdeg3"),
+        y = target_values
+      ), aes(yintercept = y),
+      linetype = "solid", color = "black", size = 1.5
+    ) +
+    facet_wrap(~category, scales = "free_y") +
+    theme_minimal() +
+    labs(y = "outdegree", x = "") +
+    theme(
+      axis.text = element_text(size = 12),
+      axis.title = element_text(size = 14),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      strip.text = element_text(size = 14, face = "bold")
+    )
+    ggsave(here("simulate-from-ergms", "out", "outdeg_violin_plot.png"), width = 8, height = 6)
 
 
 ## indegree
 
-target_values <- target_stats_indeg[1:2]
+  target_values <- target_stats_indeg[1:2]
 
-# Manually create a new data frame
-indeg_df_clean <- data.frame(
-  indegree = c(indeg0, indeg1),
-  category = rep(c("indeg0", "indeg1"), each = length(indeg0))
-)
-
-# Plot the clean data frame
-# Create the plot with target lines
-ggplot(indeg_df_clean, aes(x = category, y = indegree)) +
-  geom_violin(trim = FALSE, fill = "#66C2A5") +
-  geom_hline(
-    data = data.frame(
-      category = c("indeg0", "indeg1"),
-      y = target_values
-    ), aes(yintercept = y),
-    linetype = "solid", color = "black", size = 1.5
-  ) +
-  facet_wrap(~category, scales = "free_y", nrow = 1, ncol = 2) +
-  theme_minimal() +
-  labs(y = "indegree", x = "") +
-  theme(
-    axis.text = element_text(size = 12),
-    axis.title = element_text(size = 14),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    strip.text = element_text(size = 14, face = "bold")
+  # Manually create a new data frame
+  indeg_df_clean <- data.frame(
+    indegree = c(indeg0, indeg1),
+    category = rep(c("indeg0", "indeg1"), each = length(indeg0))
   )
 
-  ggsave(here("simulate-from-ergms", "out", "indeg_violin_plot.png"), width = 8, height = 6)
+  # Plot the clean data frame
+  # Create the plot with target lines
+  ggplot(indeg_df_clean, aes(x = category, y = indegree)) +
+    geom_violin(trim = FALSE, fill = "#66C2A5") +
+    geom_hline(
+      data = data.frame(
+        category = c("indeg0", "indeg1"),
+        y = target_values
+      ), aes(yintercept = y),
+      linetype = "solid", color = "black", size = 1.5
+    ) +
+    facet_wrap(~category, scales = "free_y", nrow = 1, ncol = 2) +
+    theme_minimal() +
+    labs(y = "indegree", x = "") +
+    theme(
+      axis.text = element_text(size = 12),
+      axis.title = element_text(size = 14),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      strip.text = element_text(size = 14, face = "bold")
+    )
+
+    ggsave(here("simulate-from-ergms", "out", "indeg_violin_plot.png"), width = 8, height = 6)
 
 ## race
   ## create an empty data frame
@@ -362,7 +362,45 @@ ggplot(indeg_df_clean, aes(x = category, y = indegree)) +
       ggsave(here("simulate-from-ergms", "out", "sexmix_violin_plot.png"), width = 8, height = 6)
 
 
-  ## age
+## age
+  # Combine the list elements into a data frame, excluding the base category
+  age_mixing_df <- do.call(rbind, lapply(seq_along(sim.young), function(i) {
+    data.frame(
+      run = i,
+      category = names(sim.young[[i]]),
+      count = as.numeric(sim.young[[i]])
+    )
+  }))
+
+  # Filter out the base category
+  age_mixing_df <- age_mixing_df[!age_mixing_df$category %in% "mix.young.0.0", ]
+
+  # Ensure that category is a factor
+  age_mixing_df$category <- factor(age_mixing_df$category)
+
+  # Set the names for the target age mixing values
+  names(target_age_mixing) <- c("mix.young.1.0", "mix.young.0.1", "mix.young.1.1")
+
+  # Plot the violin plot
+  ggplot(age_mixing_df, aes(x = category, y = count)) +
+    geom_violin(trim = FALSE, fill = "#66C2A5") +
+    geom_hline(data = data.frame(category = names(target_age_mixing), 
+                                y = as.numeric(target_age_mixing)), aes(yintercept = y), 
+              linetype = "solid", color = "black", linewidth = 1.5) +
+    facet_wrap(~ category, scales = "free_y") +
+    theme_minimal() +
+    labs(y = "Age Mixing Count", x = NULL) +
+    theme(
+      axis.text.x = element_blank(),  # Hide x-axis text
+      axis.title.x = element_blank(),  # Hide x-axis title
+      axis.title.y = element_text(size = 14),
+      panel.grid.major = element_blank(), 
+      panel.grid.minor = element_blank(),
+      strip.text = element_text(size = 14, face = "bold")  # Make panel titles more prominent
+    )
+
+  # Save the plot
+  ggsave(here("simulate-from-ergms", "out", "agemix_violin_plot.png"), width = 8, height = 6)
 
 
 
