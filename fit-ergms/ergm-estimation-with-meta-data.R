@@ -297,22 +297,14 @@ fit.metadata.mixing <-
     ),
     eval.loglik = FALSE,
     control = control.ergm(
-      MCMLE.maxit = 500,  
-      main.method = c("Stochastic-Approximation"),
-      MCMC.interval = 1e6,
-      MCMC.samplesize = 1e6,
-      MCMLE.termination = "Hotelling",
-      MCMC.effectiveSize=NULL,
-    #MPLE.samplesize = 50000, #MATCH ERGM3
       SAN = control.san(
       SAN.maxit = 500, 
       SAN.nsteps = 1e8
-        #SAN.nsteps.times = 16
-                           )
+      )
     )
                            
     )
   
   
 
-save.image(file=here("fit-ergms", "out", "non-empty-net-all-plos1-mcmc-int1e6-samp1e6-hotelling.RData"))  
+save.image(file=here("fit-ergms", "out", "non-empty-net-only-san-control-params.RData"))  

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#SBATCH --job-name="non-empty-net-all-control-params-1e6"
+#SBATCH --job-name="non-empty-net-only-san-control-params"
 #SBATCH --time=30:00:00
 #SBATCH --mem=10000
 #SBATCH --nodes=1
