@@ -9,7 +9,7 @@ rm(list=ls())
 library(here)
 library(network)
 
-load(here("simulate-from-ergms", "out", "on-revamped-oscar-non-randomized-odeg-0-only.RData"))
+load(here("simulate-from-ergms", "out", "simulated-updated-with-oct12-2024-synthpop-ergmv4-6-all-plos1-mcmc-int1e6-samp1e6-hotelling.RData"))
 
 class(sim_results[[1]])
 list.vertex.attributes(sim_results[[1]])
