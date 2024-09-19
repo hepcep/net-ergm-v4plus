@@ -23,7 +23,10 @@ load(file=here("fit-ergms", "out", "updated-with-oct12-2024-synthpop-ergmv4-6-al
 
 # Investigate MCMC diagnositics ----------
 
+pdf(file=here("fit-ergms", "out", "oct12-2024-int1e6-samp1e6-hotelling_mcmc_diag_plot.pdf"))
 mcmc_diag <- mcmc.diagnostics(fit.metadata.mixing)
+dev.off()
+
 
 # pdf(file=here("fit-ergms", "out", "updated-with-oct12-2024-synthpop-ergmv4-6-all-plosone-terms-increase-mcmc-samplesize-1e10-mcmcint-1e06.pdf"))
 # plot((fit.metadata.mixing$sample))
