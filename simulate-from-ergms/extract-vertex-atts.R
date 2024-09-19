@@ -5,7 +5,7 @@
 rm(list=ls())
 
 # Initialize renv---
-renv::restore()
+#renv::restore()
 
 
 # Libraries ----------
@@ -15,8 +15,9 @@ library(network)
 
 # Load data ----------
 
-load(here("simulate-from-ergms", "out", "on-revamped-oscar-non-randomized-odeg-0-only.RData"))
-data <- read.csv(here("data", "synthpop-2023-01-04 21_10_46.csv")) #updated july 20 2023
+load(here("simulate-from-ergms", "out", "simulated-updated-with-oct12-2024-synthpop-ergmv4-6-all-plos1-mcmc-int1e6-samp1e6-hotelling.RData"))
+
+data <- read.csv(here("data", "synthpop-2023-10-12 12_01_32.csv")) #updated oct 12 2023
 
 
 # Check network list ---------
@@ -76,5 +77,5 @@ pwid_w_vertex_names <- cbind(vertex.names,
 
 # Save data
 
-saveRDS(vertex.att.all, file = here("simulate-from-ergms", "out","vertex_att_all_july202023.RDS"))
-saveRDS(pwid_w_vertex_names, file=here("simulate-from-ergms", "out", "pwid_w_vertex_names_july2023.RDS"))
+saveRDS(vertex.att.all, file = here("simulate-from-ergms", "out","vertex_att_all_oct122023.RDS"))
+saveRDS(pwid_w_vertex_names, file=here("simulate-from-ergms", "out", "pwid_w_vertex_names_oct122023.RDS"))
