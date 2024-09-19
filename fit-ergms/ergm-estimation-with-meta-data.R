@@ -277,24 +277,9 @@ fit.metadata.mixing <-
       c(outedges$n_nodes[c(deg.terms+1)]),
       c(dist.nedge.distribution[dist.terms])
     ),
-    eval.loglik = FALSE,
-    control = control.ergm(
-      MCMLE.maxit = 500,  
-      main.method = c("Stochastic-Approximation"),
-      MCMC.interval = 1e5,
-      MCMC.samplesize = 1e6,
-      MCMLE.termination = "Hummel",
-      MCMC.effectiveSize=NULL,
-    #MPLE.samplesize = 50000, #MATCH ERGM3
-      SAN = control.san(
-      SAN.maxit = 500, 
-      SAN.nsteps = 1e8
-        #SAN.nsteps.times = 16
-                           )
-    )
-                           
+    eval.loglik = FALSE    
     )
   
   
 
-save.image(file=here("fit-ergms", "out", "updated-with-oct12-2024-synthpop-ergmv4-6-all-plos1-mcmc-int1e5-samp1e6-hummel.RData"))  
+save.image(file=here("fit-ergms", "out", "updated-with-oct12-2024-synthpop-ergmv4-6-all-plos1-mcmc-int1e6-no-overriding-controls.RData"))  
