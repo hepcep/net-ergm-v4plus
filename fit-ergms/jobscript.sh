@@ -1,7 +1,7 @@
 #!/bin/sh
 
-#SBATCH --job-name="synthpop-2023-10-12-w-dist-all-plos-one-increase-mcmc-1e10"
-#SBATCH --time=5:00:00
+#SBATCH --job-name="non-empty-net-all-control-params-1e6"
+#SBATCH --time=30:00:00
 #SBATCH --mem=10000
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
@@ -14,4 +14,3 @@ module load r/4.4.0-yycctsj
 module load glpk/5.0-zifs7bb
 
 R CMD BATCH --no-restore fit-ergms/ergm-estimation-with-meta-data.R slurm_output/$SLURM_JOB_ID_$SLURM_JOB_NAME.Rout
-1
