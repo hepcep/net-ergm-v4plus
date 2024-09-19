@@ -1,7 +1,7 @@
 #!/bin/sh
 
-#SBATCH --job-name="synthpop-2023-10-12-w-dist-all-plos1-no-overriding-controls"
-#SBATCH --time=120:00:00
+#SBATCH --job-name="non-empty-starting-net-plos1-no-overriding-controls"
+#SBATCH --time=30:00:00
 #SBATCH --mem=10000
 #SBATCH --nodes=1
 #SBATCH --ntasks=1

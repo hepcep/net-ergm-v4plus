@@ -254,9 +254,27 @@ initial_coeffs <- c("edges" = -9.319,
                     "mix.race.num.2.4" = 0.13625, 
                     "mix.race.num.4.4" = 0.20408)
 
-fit.metadata.mixing <-
+fit_nonemmpty_network <- 
   ergm(
     n0 ~
+      edges + 
+      nodemix("sex", levels2=-1)+
+      nodemix("young", levels2=-1),
+    target.stats = 
+    c(
+      edges_target,
+      c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),
+      c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung)      
+    ),
+    eval.loglik = FALSE    
+    )
+  
+
+non_empty_net <- simulate(fit_nonemmpty_network, nsim=1)
+
+fit.metadata.mixing <-
+  ergm(
+    non_empty_net ~
       edges + 
       nodemix("sex", levels2=-1)+
       nodemix("young", levels2=-1)+
@@ -282,4 +300,4 @@ fit.metadata.mixing <-
   
   
 
-save.image(file=here("fit-ergms", "out", "updated-with-oct12-2024-synthpop-ergmv4-6-all-plos1-mcmc-int1e6-no-overriding-controls.RData"))  
+save.image(file=here("fit-ergms", "out", "no-overriding-controls-non-empty-net.RData"))  
