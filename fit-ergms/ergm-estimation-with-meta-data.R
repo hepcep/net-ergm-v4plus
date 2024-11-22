@@ -118,16 +118,19 @@ n0 %v% "race.num" <- race.num
 
 
 # Generate target statistics from meta-mixing data ----------
+  ## Update with values meta mixing values from 08/31/2021
+  ## See https://anl.box.com/s/jrf5usly4ujuv3gagmdxlwxaiuvnlq1o
+  ## All network mixing parameters with CIs: https://anl.box.com/s/jg6y221hcbql1sd9kvsxpq0cei03qlr0
 
 ## gender 
 ### mixing information from meta-analysis of sathcap AND socnet
-edges.male.end <- mean(c(0.58, 0.59))
-edges.female.end <- mean(c(0.40, 0.41))
+edges.male.end <- 0.58
+edges.female.end <- 0.40
 
-male.pctmale <- 0.53 
-male.pctfemale <- 0.47
-female.pctmale <- 0.75
-female.pctfemale <- 0.22
+male.pctmale <- 0.68 
+male.pctfemale <- 0.32
+female.pctmale <- 0.61
+female.pctfemale <- 0.39
 
 ### set gender targets 
 tgt.male.pctmale <- edges_target*edges.male.end*male.pctmale
@@ -140,8 +143,8 @@ tgt.female.pctfemale <- edges_target*edges.female.end*female.pctfemale
 edges.young.end <- 0.10
 edges.old.end <- 0.90
   
-young.pctyoung <- 0.60
-young.pctold <- 0.40
+young.pctyoung <- 0.61
+young.pctold <- 0.39
 old.pctyoung <- 0.14
 old.pctold <- 0.86
  
@@ -152,55 +155,31 @@ tgt.old.pctyoung <- edges_target * edges.old.end * old.pctyoung
 tgt.old.pctold <- edges_target * edges.old.end * old.pctold
 
 
-## chicago
-### mixing information from meta-analysis of sathcap AND socnet
-
-edges.chicago.end <- 0.87
-edges.nonchicago.end <- 0.13
-
-chicago.pctchicago <- 0.67
-chicago.pctnonchicago <- 0.30
-nonchicago.pctchicago <- 0.60
-nonchicago.pctnonchicago <- 0.40
-
-
-# ### mixing from simulation
-# chicago.mm <- mixingmatrix(sim, "chicago") #fem=1, chicago=2
-# from.nonchicago <- sum(chicago.mm$matrix[,1])
-# from.chicago <- sum(chicago.mm$matrix[,2])
-# 
-# ### set chicago targets from sathcap
-# tgt.chicago.pctchicago <- from.chicago*chicago.pctchicago
-# tgt.chicago.pctnonchicago <- from.chicago*chicago.pctnonchicago
-# tgt.nonchicago.pctchicago <- from.nonchicago*chicago.pctchicago
-# tgt.nonchicago.pctnonchicago <- from.nonchicago*chicago.pctnonchicago
-
 
 ## race (1=Black, 2=hispani,3=other, 4=white)
 
 table(n0 %v% "race.num", exclude=NULL) # will be sorted as per 1=W, 2=B, 3=H, 4=O
+pct_to_white	<- 0.30
+pct_to_black	<- 0.41
+pct_to_hispanic	<- 0.21
+pct_to_other	<- 0.04
 
-pct_to_white	<- mean(c(0.30, 0.31))
-pct_to_black	<- mean(c(0.41,	0.42))
-pct_to_hispanic	<- mean(c(0.21, 0.22))
-pct_to_other	<- mean(c(0.04,	0.05))
-
-race.w.w <- 0.73
-race.b.w <- 0.10
-race.h.w <- 0.12
-race.o.w <- 0.04
-race.w.b <- 0.10
-race.b.b <- 0.83
-race.h.b <- 0.06
-race.o.b <- 0.01
-race.w.h <- 0.21
-race.b.h <- 0.15
-race.h.h <- 0.62
-race.o.h <- 0.02
-race.w.o <- 0.43
-race.b.o <- 0.21
-race.h.o <- 0.22
-race.o.o <- 0.14
+race.w.w <- 0.74 # (marks sum to 1)
+race.b.w <- 0.31 #-
+race.h.w <- 0.37 ##
+race.o.w <- 0.54 #--
+race.w.b <- 0.11 #
+race.b.b <- 0.57 #-
+race.h.b <- 0.10 ##
+race.o.b <- 0.23 #--
+race.w.h <- 0.13 #
+race.b.h <- 0.07 #-
+race.h.h <- 0.51 ##
+race.o.h <- 0.16 #--
+race.w.o <- 0.02 #
+race.b.o <- 0.05 #-
+race.h.o <- 0.02 ##
+race.o.o <- 0.07 #--
 
 target.w.w <- edges_target * pct_to_white * race.w.w
 target.b.w <- edges_target * pct_to_white * race.b.w
@@ -254,6 +233,12 @@ initial_coeffs <- c("edges" = -9.319,
                     "mix.race.num.2.4" = 0.13625, 
                     "mix.race.num.4.4" = 0.20408)
 
+
+# Code before the stop point
+  ## print("Running code before the stop point")
+  ## stop("Stopping here")
+
+
 fit_nonemmpty_network <- 
   ergm(
     n0 ~
@@ -272,9 +257,11 @@ fit_nonemmpty_network <-
 
 non_empty_net <- simulate(fit_nonemmpty_network, nsim=1)
 
+
+
 fit.metadata.mixing <-
   ergm(
-    non_empty_net ~
+    n0 ~
       edges + 
       nodemix("sex", levels2=-1)+
       nodemix("young", levels2=-1)+
@@ -297,9 +284,15 @@ fit.metadata.mixing <-
     ),
     eval.loglik = FALSE,
     control = control.ergm(
+      MCMLE.maxit = 500,
+      main.method = c("Stochastic-Approximation"),
+      MCMC.interval = 1e6,
+      MCMC.samplesize = 1e6,
+      MCMLE.termination = "Hotelling",
+      MCMC.effectiveSize=NULL,
       SAN = control.san(
-      SAN.maxit = 500, 
-      SAN.nsteps = 1e8
+        SAN.maxit = 500, 
+        SAN.nsteps = 1e8
       )
     )
                            
@@ -307,4 +300,4 @@ fit.metadata.mixing <-
   
   
 
-save.image(file=here("fit-ergms", "out", "non-empty-net-only-san-control-params.RData"))  
+save.image(file=here("fit-ergms", "out", "new-mixing-data-with-hotelling-stochasticapprox.RData"))  
