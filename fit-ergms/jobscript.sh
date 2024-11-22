@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#SBATCH --job-name="non-empty-net-only-san-control-params"
+#SBATCH --job-name="updated-metamixing-params-stochastic-approx-hotelling"
 #SBATCH --time=30:00:00
 #SBATCH --mem=10000
 #SBATCH --nodes=1
