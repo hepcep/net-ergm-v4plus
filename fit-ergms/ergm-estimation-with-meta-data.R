@@ -156,9 +156,12 @@ tgt.old.pctold <- edges_target * edges.old.end * old.pctold
 
 
 
-## race (1=Black, 2=hispani,3=other, 4=white)
+## race (1=white, 2=black, 3=hispanic, 4=other)
 
+table(n0 %v% "race")
 table(n0 %v% "race.num", exclude=NULL) # will be sorted as per 1=W, 2=B, 3=H, 4=O
+
+
 pct_to_white	<- 0.30
 pct_to_black	<- 0.41
 pct_to_hispanic	<- 0.21
@@ -201,6 +204,15 @@ target.b.o <- edges_target * pct_to_other * race.b.o
 target.h.o <- edges_target * pct_to_other * race.h.o
 target.o.o <- edges_target * pct_to_other * race.o.o
 
+target_race_num  <- c(
+            target.b.w, target.h.w, target.o.w,
+  target.w.b, target.b.b, target.h.b, target.o.b,
+  target.w.h, target.b.h, target.h.h, target.o.h,
+  target.w.o, target.b.o, target.h.o, target.o.o
+)
+
+target_race_num
+
 ## degree distributions
 inedges <- inedges %>% 
   mutate(n_nodes = n*nbprob)
@@ -225,19 +237,11 @@ indeg.terms <- 0:1
 dist.terms <- 1:3 #fourth is left out
 #dist.terms <- 3 #only try the third term
 
-# Specify initial coefs ----------
-
-initial_coeffs <- c("edges" = -9.319, 
-                    "mix.race.num.4.1" = 0.16349, 
-                    "odegree0" = -0.1386842, 
-                    "mix.race.num.2.4" = 0.13625, 
-                    "mix.race.num.4.4" = 0.20408)
-
-
 # Code before the stop point
   ## print("Running code before the stop point")
   ## stop("Stopping here")
 
+# Fit non-empty network ---------
 
 fit_nonemmpty_network <- 
   ergm(
@@ -257,11 +261,85 @@ fit_nonemmpty_network <-
 
 non_empty_net <- simulate(fit_nonemmpty_network, nsim=1)
 
+# Test alignment of race_num ----------
 
+  # Define the known mapping
+  num_to_race <- c("Wh", "Bl", "Hi", "Ot")  # 1=Wh,2=Bl,3=Hi,4=Ot
+
+  # Retrieve the summaries
+  race_num_alignment <- summary(non_empty_net ~ nodemix("race.num", levels2 = -1))
+  race_term_alignment <- summary(non_empty_net ~ nodemix("race", levels2 = -1))
+
+  # Print them for reference
+  print(race_num_alignment)
+  print(race_term_alignment)
+
+  cat("\nChecking all numeric-to-category race mappings:\n\n")
+
+  # Loop over all combinations (i,j)
+  for (i in 1:4) {
+    for (j in 1:4) {
+      # Construct term names
+      num_term <- paste0("mix.race.num.", i, ".", j)
+      race_term <- paste0("mix.race.", num_to_race[i], ".", num_to_race[j])
+      
+      # Check if both terms exist
+      if (num_term %in% names(race_num_alignment) && race_term %in% names(race_term_alignment)) {
+        # Compare counts
+        num_count <- race_num_alignment[num_term]
+        race_count <- race_term_alignment[race_term]
+        
+        if (num_count == race_count) {
+          cat("Confirmed: (", i, ",", j, ") in race.num = (", num_to_race[i], ",", num_to_race[j],
+              ") in race. Count:", num_count, "\n")
+        } else {
+          cat("Mismatch: (", i, ",", j, ") in race.num = (", num_to_race[i], ",", num_to_race[j], 
+              "). Counts differ: ", num_count, " vs ", race_count, "\n")
+        }
+      } else {
+        # At least one of the terms wasn't found in the alignment vectors
+        cat("Term not found for (", i, ",", j, "): ", num_term, " or ", race_term, "\n")
+      }
+    }
+  }
+
+# Fit Non-empty net including race term ---------
+
+fit_nonemmpty_network_w_race_num <- 
+  ergm(
+    non_empty_net ~
+      edges + 
+      nodemix("sex", levels2=-1)+
+      nodemix("young", levels2=-1)+
+      nodemix("race.num", levels2=-1),
+    target.stats = 
+    c(
+      edges_target,
+      c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),
+      c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
+      target_race_num      
+    ),
+    eval.loglik = FALSE,
+    control = control.ergm(
+      MCMLE.maxit = 500,
+      main.method = c("Stochastic-Approximation"),
+      MCMC.interval = 1e6,
+      MCMC.samplesize = 1e6,
+      MCMLE.termination = "Hotelling",
+      MCMC.effectiveSize=NULL,
+      SAN = control.san(
+        SAN.maxit = 500, 
+        SAN.nsteps = 1e8
+      )
+    )
+    )
+
+non_empty_net_w_race_term <- simulate(fit_nonemmpty_network_w_race_num, nsim=1)
+non_empty_net_w_race_term
 
 fit.metadata.mixing <-
   ergm(
-    n0 ~
+    non_empty_net ~
       edges + 
       nodemix("sex", levels2=-1)+
       nodemix("young", levels2=-1)+
@@ -274,10 +352,7 @@ fit.metadata.mixing <-
       edges_target,
       c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
       c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
-      c(target.b.w, target.h.w, target.o.w,
-        target.w.b, target.b.b, target.h.b, target.o.b,
-        target.w.h, target.b.h, target.h.h, target.o.h,
-        target.w.o, target.b.o, target.h.o, target.o.o),
+      target_race_num,
       c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
       c(outedges$n_nodes[c(deg.terms+1)]),
       c(dist.nedge.distribution[dist.terms])
@@ -298,6 +373,6 @@ fit.metadata.mixing <-
                            
     )
   
-  
+net_metamixing_data <- simulate(fit.metadata.mixing, nsim=1)
 
-save.image(file=here("fit-ergms", "out", "new-mixing-data-with-hotelling-stochasticapprox.RData"))  
+save.image(file=here("fit-ergms", "out", "new-mixing-data-with-hotelling-stochasticapprox-non-empty-net.RData"))  
