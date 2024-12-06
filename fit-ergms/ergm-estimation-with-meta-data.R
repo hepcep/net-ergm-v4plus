@@ -337,15 +337,15 @@ fit_nonemmpty_network_w_race_num <-
 non_empty_net_w_race_term <- simulate(fit_nonemmpty_network_w_race_num, nsim=1)
 non_empty_net_w_race_term
 
-fit.metadata.mixing <-
+fit.stepwise.dist <-
   ergm(
     non_empty_net ~
       edges + 
       nodemix("sex", levels2=-1)+
       nodemix("young", levels2=-1)+
       nodemix("race.num", levels2=-1)+
-      idegree(indeg.terms)+
-      odegree(deg.terms)+
+      #idegree(indeg.terms)+
+      #odegree(deg.terms)+
       dist(dist.terms),
     target.stats = 
     c(
@@ -353,8 +353,8 @@ fit.metadata.mixing <-
       c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
       c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
       target_race_num,
-      c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
-      c(outedges$n_nodes[c(deg.terms+1)]),
+      #c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
+      #c(outedges$n_nodes[c(deg.terms+1)])
       c(dist.nedge.distribution[dist.terms])
     ),
     eval.loglik = FALSE,
@@ -373,6 +373,43 @@ fit.metadata.mixing <-
                            
     )
   
-net_metamixing_data <- simulate(fit.metadata.mixing, nsim=1)
+net_stepwise_dist <- simulate(fit.stepwise.dist, nsim=1)
+net_stepwise_dist
 
-save.image(file=here("fit-ergms", "out", "new-mixing-data-with-hotelling-stochasticapprox-non-empty-net.RData"))  
+fit.stepwise.dist.odeg <-
+  ergm(
+    net_stepwise_dist ~
+      edges + 
+      nodemix("sex", levels2=-1)+
+      nodemix("young", levels2=-1)+
+      nodemix("race.num", levels2=-1)+
+      #idegree(indeg.terms)+
+      odegree(deg.terms)+
+      dist(dist.terms),
+    target.stats = 
+    c(
+      edges_target,
+      c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
+      c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
+      target_race_num,
+      #c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
+      c(outedges$n_nodes[c(deg.terms+1)]),
+      c(dist.nedge.distribution[dist.terms])
+    ),
+    eval.loglik = FALSE,
+    control = control.ergm(
+      MCMLE.maxit = 500,
+      main.method = c("Stochastic-Approximation"),
+      MCMC.interval = 1e6,
+      MCMC.samplesize = 1e6,
+      MCMLE.termination = "Hotelling",
+      MCMC.effectiveSize=NULL,
+      SAN = control.san(
+        SAN.maxit = 500, 
+        SAN.nsteps = 1e8
+      )
+    )
+                           
+    )
+
+save.image(file=here("fit-ergms", "out", "new-mixing-data-with-hotelling-stochasticapprox-non-empty-net-stepwise-dist-odeg.RData"))  

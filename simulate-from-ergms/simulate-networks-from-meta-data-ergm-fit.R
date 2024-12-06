@@ -23,21 +23,22 @@ library(here)
 
 # Data ----------
 
-load(here("fit-ergms", "out", "updated-with-oct12-2024-synthpop-ergmv4-6-all-plos1-mcmc-int1e6-samp1e6-hotelling.RData"))
+load(here("fit-ergms", "out", "new-mixing-data-with-hotelling-stochasticapprox-non-empty-net-stepwise-dist-odeg.RData"))
 
 # Model summary
-summary(fit.metadata.mixing)
+summary(fit.stepwise.dist.odeg)
+#summary(fit.metadata.mixing)
 
 
 # Simulate 100 networks ----------
 
-nsim.vec <- 1:100
+nsim.vec <- 1:1
 
 sim_results <- as.list(nsim.vec)
 set.seed(Sys.time())
 
 for (iter in 1:length(nsim.vec)){
-  sim_results[[iter]] <- simulate(fit.metadata.mixing,
+  sim_results[[iter]] <- simulate(fit.stepwise.dist.odeg,
                                   nsim=1
                                   )
 }
