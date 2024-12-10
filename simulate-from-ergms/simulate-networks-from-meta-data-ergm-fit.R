@@ -23,11 +23,11 @@ library(here)
 
 # Data ----------
 
-load(here("fit-ergms", "out", "new-mixing-data-with-hotelling-stochasticapprox-non-empty-net-stepwise-dist-odeg.RData"))
+load(here("fit-ergms", "out", "new-mixing-data-with-hotelling-stochasticapprox-non-empty-net-stepwise-dist-odeg-ideg0-1.RData"))
+
 
 # Model summary
-summary(fit.stepwise.dist.odeg)
-#summary(fit.metadata.mixing)
+summary(fit.stepwise.dist.odeg.ideg)
 
 
 # Simulate 100 networks ----------
@@ -104,19 +104,21 @@ indeg0 <- unlist(lapply(sim_results,
 indeg1 <- unlist(lapply(sim_results, 
                          function (x) summary(x ~ idegree(1))
 ))
-indeg2 <- unlist(lapply(sim_results, 
-                         function (x) summary(x ~ idegree(2))
-))
-indeg3 <- unlist(lapply(sim_results, 
-                         function (x) summary(x ~ idegree(3))
-))
-indeg4 <- unlist(lapply(sim_results, 
-                         function (x) summary(x ~ idegree(4))
-))
+
+# indeg2 <- unlist(lapply(sim_results, 
+#                          function (x) summary(x ~ idegree(2))
+# ))
+# indeg3 <- unlist(lapply(sim_results, 
+#                          function (x) summary(x ~ idegree(3))
+# ))
+# indeg4 <- unlist(lapply(sim_results, 
+#                          function (x) summary(x ~ idegree(4))
+# ))
 
 
-c(mean(indeg0), mean(indeg1), mean(indeg2), mean(indeg3), mean(indeg4))
-inedges$n_nodes[1:5]
+c(mean(indeg0), mean(indeg1))
+inedges$n_nodes[1:2]
+sum(inedges$n_nodes[1:2])
 
 
 mean_indeg <- c(mean(indeg0), mean(indeg1))
@@ -125,7 +127,7 @@ range_indeg <- c(range(indeg0), range(indeg1))
 target_stats_indeg <- inedges$n_nodes[1:2] #target
 
 comparison_df_indeg <- data.frame(
-  Parameter = c("indeg0", "indeg1", "indeg2", "indeg3"),
+  Parameter = c("indeg0", "indeg1"),
   Mean = mean_indeg,
   Range_Min = range_indeg[seq(1, length(range_indeg), 2)],
   Range_Max = range_indeg[seq(2, length(range_indeg), 2)],
@@ -133,6 +135,7 @@ comparison_df_indeg <- data.frame(
 )
 
 comparison_df_indeg
+sum(comparison_df_indeg$Mean)
 
 ## nodemix(race.num)
 race.num <- unlist(lapply(sim_results, 
@@ -147,6 +150,8 @@ round(
     target.w.o, target.b.o, target.h.o, target.o.o),
   0
 )
+
+target_race_num
 
 
 ## nodemix(sex)
@@ -163,5 +168,14 @@ young <- unlist(lapply(sim_results,
 
 #summary(sim_results[[10]] ~ nodemix("young"))
 round(c(tgt.old.pctold, tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung))
+
+
+## dist
+round(dist.nedge.distribution[dist.terms])
+dist_sim <- 
+unlist(lapply(sim_results, 
+                          function (x) summary(x ~ dist(dist.terms))
+))
+
 
 save.image(here("simulate-from-ergms", "out", "sim-updated-with-oct12-2024-synthpop-ergmv4-6-all-plos1-mcmc-int1e6-samp1e6-hotelling.RData"))
