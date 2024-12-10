@@ -19,9 +19,8 @@ library(here)
 
 # Load Data ----------
 
-new_dataset <- "non-empty-net-all-plos1-mcmc-int1e6-samp1e6-hotelling"
+new_dataset <- "new-mixing-data-with-hotelling-stochasticapprox-non-empty-net"
 new_rdata_object <- paste0(new_dataset, ".RData")
-
 
 load(file=here("fit-ergms", "out", new_rdata_object))
 
