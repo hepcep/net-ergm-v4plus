@@ -1,8 +1,8 @@
 #!/bin/sh
 
-#SBATCH --job-name="updated-metamixing-params-stochastic-approx-hotelling"
+#SBATCH --job-name="new-mixing-data-stepwise-dist-odeg-ideg0-1"
 #SBATCH --time=30:00:00
-#SBATCH --mem=10000
+#SBATCH --mem=20000
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --mail-type=ALL
