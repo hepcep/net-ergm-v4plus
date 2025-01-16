@@ -49,36 +49,111 @@ indeg.terms <- 0:1
 dist.terms <- 1:3 #fourth is left out
 
 
-# Fit Non-empty net including race term ---------
+# Define file paths for saved fitted ERGMs ---------
 
-fit_edges_indegree <- 
-    ergm(
-        edges_only_net ~
-        edges + 
-        idegree(indeg.terms),
-        target.stats = 
-        c(
-        edges_target,
-      c(negbin_inedges$n_nodes[c(indeg.terms+1)])
-        ),
-        eval.loglik = FALSE,
-        control = control.ergm(
-        MCMLE.maxit = 500,
-        main.method = c("Stochastic-Approximation"),
-        MCMC.interval = 1e6,
-        MCMC.samplesize = 1e6,
-        MCMLE.termination = "Hotelling",
-        MCMC.effectiveSize=NULL,
-        SAN = control.san(
-            SAN.maxit = 500, 
-            SAN.nsteps = 1e8
-        )
-        )                         
-        )
+edges_indeg_model_path <- here("fit-ergms", "out", "fit_edges_indegree.rds")
+edges_indeg_outdeg_model_path <- here("fit-ergms", "out", "fit_edges_indegree_outdegree.rds")
+
+
+# Define filepaths for saved simulated networks ---------
+
+sim_edges_indeg_path <- here("fit-ergms", "out", "sim_edges_indeg.rds")
+sim_edges_indeg_outdeg_path <- here("fit-ergms", "out", "sim_edges_indeg_outdeg.rds")
 
 
 
-net_fit_edges_indeg <- simulate(fit_edges_indegree , nsim=1)
-net_fit_edges_indeg
+# Edges+Indeg ---------
 
-save.image(file=here("fit-ergms", "out", "edges_indeg_only.RData"))  
+if (file.exists(edges_indeg_model_path)) {
+  fit_edges_indegree <- readRDS(edges_indeg_model_path)
+  message("Loaded fit_edges_indegree from file.")
+} else {
+  fit_edges_indegree <- 
+      ergm(
+          edges_only_net ~
+          edges + 
+          idegree(indeg.terms),
+          target.stats = 
+          c(
+          edges_target,
+        c(negbin_inedges$n_nodes[c(indeg.terms+1)])
+          ),
+          eval.loglik = FALSE,
+          control = control.ergm(
+          MCMLE.maxit = 500,
+          main.method = c("Stochastic-Approximation"),
+          MCMC.interval = 1e6,
+          MCMC.samplesize = 1e6,
+          MCMLE.termination = "Hotelling",
+          MCMC.effectiveSize=NULL,
+          SAN = control.san(
+              SAN.maxit = 500, 
+              SAN.nsteps = 1e8
+          )
+          )                         
+          )
+  saveRDS(fit_edges_indegree, edges_indeg_model_path)
+  message("Saved fit_edges_indegree to file.")
+}
+
+
+if (file.exists(sim_edges_indeg_path)) {
+  net_fit_edges_indeg <- readRDS(sim_edges_indeg_path)
+  message("Loaded simulated network net_fit_edges_indeg from file.")
+} else {
+  net_fit_edges_indeg <- simulate(fit_edges_indegree, nsim = 1)
+  saveRDS(net_fit_edges_indeg, sim_edges_indeg_path)
+  message("Saved simulated network net_fit_edges_indeg to file.")
+}
+
+
+# Edges+Indeg+OutDeg ---------
+
+if (file.exists(edges_indeg_outdeg_model_path)) {
+    fit_edges_indegree_outdegree <- readRDS(edges_indeg_outdeg_model_path)
+    message("Loaded fit_edges_indegree_outdegree from file.")
+} else {
+  fit_edges_indegree_outdegree <- 
+      ergm(
+           net_fit_edges_indeg ~
+          edges + 
+          idegree(indeg.terms)+
+          odegree(deg.terms),
+          target.stats = 
+          c(
+          edges_target,
+        c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
+          c(outedges$n_nodes[c(deg.terms+1)])
+          ),
+          eval.loglik = FALSE,
+          control = control.ergm(
+          MCMLE.maxit = 500,
+          main.method = c("Stochastic-Approximation"),
+          MCMC.interval = 1e6,
+          MCMC.samplesize = 1e6,
+          MCMLE.termination = "Hotelling",
+          MCMC.effectiveSize=NULL,
+          SAN = control.san(
+              SAN.maxit = 500, 
+              SAN.nsteps = 1e8
+          )
+          )                         
+          )
+  saveRDS(fit_edges_indegree_outdegree, edges_indeg_outdeg_model_path)
+  message("Saved fit_edges_indegree_outdegree to file.")
+}
+
+if (file.exists(sim_edges_indeg_outdeg_path)) {
+  net_fit_edges_indeg_outdeg <- readRDS(sim_edges_indeg_outdeg_path)
+  message("Loaded simulated network net_fit_edges_indeg_outdeg from file.")
+} else {
+  net_fit_edges_indeg_outdeg <- simulate(fit_edges_indegree_outdegree, nsim = 1)
+  saveRDS(net_fit_edges_indeg_outdeg, sim_edges_indeg_outdeg_path)
+  message("Saved simulated network net_fit_edges_indeg_outdeg to file.")
+}
+
+
+
+# Save RData ----------
+
+save.image(file=here("fit-ergms", "out", "edges_indeg_first.RData"))  
