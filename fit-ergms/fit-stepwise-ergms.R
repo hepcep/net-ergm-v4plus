@@ -37,7 +37,7 @@ names(data_objects)
  negbin_inedges <- data_objects$negbin_inedges   
  target_race_num <- data_objects$target_race_num      
  outedges <- data_objects$outedges
- dist_nedge_distribution <- data_objects$dist_nedge_distribution
+ dist.nedge.distribution <- data_objects$dist_nedge_distribution
 
 
 
@@ -51,7 +51,7 @@ dist.terms <- 1:3 #fourth is left out
 
 # Fit Non-empty net including race term ---------
 
-fit_nonemmpty_network_w_race_num <- 
+fit_nonempty_network_w_race_num <- 
   ergm(
     edges_only_net ~
       edges + 
@@ -80,7 +80,7 @@ fit_nonemmpty_network_w_race_num <-
     )
     )
 
-non_empty_net_w_race_term <- simulate(fit_nonemmpty_network_w_race_num, nsim=1)
+non_empty_net_w_race_term <- simulate(fit_nonempty_network_w_race_num, nsim=1)
 non_empty_net_w_race_term
 
 fit.stepwise.dist <-
@@ -237,4 +237,4 @@ fit.stepwise.dist.odeg.ideg <-
 net_fit_stepwise_dist_odeg_ideg <-simulate(fit.stepwise.dist.odeg.ideg, nsim=1)
 net_fit_stepwise_dist_odeg_ideg
 
-save.image(file=here("fit-ergms", "out", "new-mixing-data-with-hotelling-stochasticapprox-non-empty-net-stepwise-dist-odeg-ideg0-1.RData"))  
+save.image(file=here("fit-ergms", "out", "stepwise-refactored-std-order.RData"))  
