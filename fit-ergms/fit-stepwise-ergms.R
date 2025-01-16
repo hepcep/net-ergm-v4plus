@@ -85,7 +85,7 @@ non_empty_net_w_race_term
 
 fit.stepwise.dist <-
   ergm(
-    non_empty_net ~
+    non_empty_net_w_race_term ~
       edges + 
       nodemix("sex", levels2=-1)+
       nodemix("young", levels2=-1)+
