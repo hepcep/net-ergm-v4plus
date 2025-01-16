@@ -13,8 +13,10 @@
 module load r/4.4.0-yycctsj  
 module load glpk/5.0-zifs7bb
 
+# COMMENT OUT ONE BATCH COMMAND BELOW AS NEEDED
+
 ## fit stepwise original
-R CMD BATCH --no-restore fit-ergms/fit-stepwise-ergms.R slurm_output/$SLURM_JOB_ID_$SLURM_JOB_NAME.Rout
+## R CMD BATCH --no-restore fit-ergms/fit-stepwise-ergms.R slurm_output/$SLURM_JOB_ID_$SLURM_JOB_NAME.Rout
 
 ## fit starting with indegrees
-### NEW BATCH COMMAND
+R CMD BATCH --no-restore fit-ergms/fit-stepwise-indegree-first.R slurm_output/$SLURM_JOB_ID_$SLURM_JOB_NAME.Rout
