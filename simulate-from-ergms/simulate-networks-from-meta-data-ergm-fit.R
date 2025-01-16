@@ -23,11 +23,16 @@ library(here)
 
 # Data ----------
 
-load(here("fit-ergms", "out", "new-mixing-data-with-hotelling-stochasticapprox-non-empty-net-stepwise-dist-odeg-ideg0-1.RData"))
+#load(here("fit-ergms", "out", "new-mixing-data-with-hotelling-stochasticapprox-non-empty-net-stepwise-dist-odeg-ideg0-1.RData"))
+load(here("fit-ergms", "out", "edges_indeg_only.RData"))
+
+data_objects <- readRDS(here("fit-ergms", "out", "processed_data.rds"))
+names(data_objects)
 
 
 # Model summary
-summary(fit.stepwise.dist.odeg.ideg)
+## summary(fit.stepwise.dist.odeg.ideg)
+summary(fit_edges_indegree)
 
 
 # Simulate 100 networks ----------
@@ -38,9 +43,11 @@ sim_results <- as.list(nsim.vec)
 set.seed(Sys.time())
 
 for (iter in 1:length(nsim.vec)){
-  sim_results[[iter]] <- simulate(fit.stepwise.dist.odeg,
-                                  nsim=1
-                                  )
+  sim_results[[iter]] <- simulate(
+    #fit.stepwise.dist.odeg.ideg,
+    fit_edges_indegree,
+    nsim=1
+  )
 }
 
 
@@ -124,7 +131,7 @@ sum(inedges$n_nodes[1:2])
 mean_indeg <- c(mean(indeg0), mean(indeg1))
 range_indeg <- c(range(indeg0), range(indeg1))
 
-target_stats_indeg <- inedges$n_nodes[1:2] #target
+target_stats_indeg <- negbin_inedges$n_nodes[1:2] #target
 
 comparison_df_indeg <- data.frame(
   Parameter = c("indeg0", "indeg1"),
