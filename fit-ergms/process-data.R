@@ -279,9 +279,9 @@ negbin_outedges <- negbin_outdeg %>%
 dist.prop.distribution <- c(15.7, 35.1, 24.1, 22)/100
 dist.nedge.distribution <- edges_target*dist.prop.distribution
 
-# Save RDS Objects
+# Save RDS Objects ----
 
-# Create a list of objects to save
+# create a list of objects to save
 data_objects <- list(
   data = data,
   n0 = n0,
@@ -298,6 +298,26 @@ data_objects <- list(
   outedges = outedges,
   dist_nedge_distribution = dist.nedge.distribution
 )
+
+# Print Objects for comparison --------
+edges_only_net
+data_objects$tgt.old.pctyoung
+data_objects$tgt.young.pctold
+data_objects$tgt.young.pctyoung
+data_objects$edges_target
+data_objects$tgt.female.pctmale
+data_objects$tgt.male.pctfemale
+data_objects$tgt.male.pctmale
+names(data_objects$target_race_num) <- 
+  c("target.b.w", "target.h.w", "target.o.w",
+    "target.w.b", "target.b.b", "target.h.b", "target.o.b",
+    "target.w.h", "target.b.h", "target.h.h", "target.o.h",
+    "target.w.o", "target.b.o", "target.h.o", "target.o.o")
+data_objects$target_race_num
+data_objects$negbin_inedges[1:2,]
+data_objects$outedges[1:4,]
+data_objects$dist_nedge_distribution
+
 
 # Save the list as an RDS file
 saveRDS(data_objects, file = here("fit-ergms", "out", "processed_data.rds"))
