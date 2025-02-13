@@ -1,7 +1,7 @@
 #!/bin/sh
 
-#SBATCH --job-name="new-mixing-data-stepwise-dist-odeg-ideg0-1"
-#SBATCH --time=30:00:00
+#SBATCH --job-name="revised-edges-in-out-degrees-2025-jan-23"
+#SBATCH --time=5:00:00
 #SBATCH --mem=20000
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
@@ -16,7 +16,8 @@ module load glpk/5.0-zifs7bb
 # COMMENT OUT ONE BATCH COMMAND BELOW AS NEEDED
 
 ## fit stepwise original
-## R CMD BATCH --no-restore fit-ergms/fit-stepwise-ergms.R slurm_output/$SLURM_JOB_ID_$SLURM_JOB_NAME.Rout
+R CMD BATCH --no-restore fit-ergms/fit-stepwise-ergms.R slurm_output/$SLURM_JOB_ID_$SLURM_JOB_NAME.Rout
 
 ## fit starting with indegrees
-R CMD BATCH --no-restore fit-ergms/fit-stepwise-indegree-first.R slurm_output/$SLURM_JOB_ID_$SLURM_JOB_NAME.Rout
+##R CMD BATCH --no-restore fit-ergms/fit-stepwise-indegree-first.R slurm_output/$SLURM_JOB_ID_$SLURM_JOB_NAME.Rout
+
