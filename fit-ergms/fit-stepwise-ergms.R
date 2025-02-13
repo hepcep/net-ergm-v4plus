@@ -121,8 +121,7 @@ fit.stepwise.dist <-
         SAN.maxit = 500, 
         SAN.nsteps = 1e8
       )
-    )
-                           
+    )                     
     )
   
 net_stepwise_dist <- simulate(fit.stepwise.dist, nsim=1)
@@ -183,7 +182,7 @@ fit.stepwise.dist.odeg.ideg0 <-
       c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
       target_race_num,
       c(indegree_data$mean_n[c(indeg.terms.0+1)]),
-      c(outdegree_data$mean_n[c(deg.terms+1)])),
+      c(outdegree_data$mean_n[c(deg.terms+1)]),
       c(dist.nedge.distribution[dist.terms])
     ),
     eval.loglik = FALSE,
@@ -221,10 +220,11 @@ fit.stepwise.dist.odeg.ideg <-
       c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
       c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
       target_race_num,
-      c(indegree_data$mean_n[c(indeg.terms.0+1)]),,
-      c(outdegree_data$mean_n[c(deg.terms+1)])),
+      c(indegree_data$mean_n[c(indeg.terms.0+1)]),
+      c(outdegree_data$mean_n[c(deg.terms+1)]),
       c(dist.nedge.distribution[dist.terms])
-    ),
+    )
+    ,
     eval.loglik = FALSE,
     control = control.ergm(
       MCMLE.maxit = 500,
@@ -237,8 +237,9 @@ fit.stepwise.dist.odeg.ideg <-
         SAN.maxit = 500, 
         SAN.nsteps = 1e8
       )
-    )                         
     )
+  )                         
+    
 
 net_fit_stepwise_dist_odeg_ideg <-simulate(fit.stepwise.dist.odeg.ideg, nsim=1)
 net_fit_stepwise_dist_odeg_ideg
