@@ -34,12 +34,16 @@ names(data_objects)
  tgt.old.pctyoung <- data_objects$tgt.old.pctyoung
  tgt.young.pctold <- data_objects$tgt.young.pctold
  tgt.young.pctyoung <- data_objects$tgt.young.pctyoung
- negbin_inedges <- data_objects$negbin_inedges   
+ indegree_data <- data_objects$indegree_data   
  target_race_num <- data_objects$target_race_num      
- outedges <- data_objects$outedges
+ outdegree_data <- data_objects$outdegree_data
  dist.nedge.distribution <- data_objects$dist_nedge_distribution
 
+inedges_target <- indegree_data$in_degree*indegree_data$mean_n
+sum(inedges_target)
 
+outedges_target <- outdegree_data$out_degree*outdegree_data$mean_n
+sum(outedges_target)
 
 # Degree and dist assignments ---------
 deg.terms <- 0:3
@@ -139,7 +143,7 @@ fit.stepwise.dist.odeg <-
       c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
       target_race_num,
       #c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
-      c(outedges$n_nodes[c(deg.terms+1)]),
+      c(outdegree_data$mean_n[c(deg.terms+1)]),
       c(dist.nedge.distribution[dist.terms])
     ),
     eval.loglik = FALSE,
@@ -176,8 +180,8 @@ fit.stepwise.dist.odeg.ideg0 <-
       c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
       c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
       target_race_num,
-      c(negbin_inedges$n_nodes[c(indeg.terms.0+1)]),
-      c(outedges$n_nodes[c(deg.terms+1)]),
+      c(indegree_data$mean_n[c(indeg.terms.0+1)]),
+      c(outdegree_data$mean_n[c(deg.terms+1)])),
       c(dist.nedge.distribution[dist.terms])
     ),
     eval.loglik = FALSE,
@@ -215,8 +219,8 @@ fit.stepwise.dist.odeg.ideg <-
       c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
       c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
       target_race_num,
-      c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
-      c(outedges$n_nodes[c(deg.terms+1)]),
+      c(indegree_data$mean_n[c(indeg.terms.0+1)]),,
+      c(outdegree_data$mean_n[c(deg.terms+1)])),
       c(dist.nedge.distribution[dist.terms])
     ),
     eval.loglik = FALSE,
@@ -237,4 +241,4 @@ fit.stepwise.dist.odeg.ideg <-
 net_fit_stepwise_dist_odeg_ideg <-simulate(fit.stepwise.dist.odeg.ideg, nsim=1)
 net_fit_stepwise_dist_odeg_ideg
 
-save.image(file=here("fit-ergms", "out", "stepwise-refactored-std-order.RData"))  
+save.image(file=here("fit-ergms", "out", "stepwise-refactored-std-order-2025-jan23-targets.RData"))  
