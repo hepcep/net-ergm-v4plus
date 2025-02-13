@@ -52,6 +52,8 @@ indeg.terms <- 0:1
 
 dist.terms <- 1:3 #fourth is left out
 
+class(target_race_num)
+target_race_num <- unname(target_race_num)
 
 # Fit Non-empty net including race term ---------
 
