@@ -6,7 +6,7 @@
 rm(list=ls())
 
 # Label and outputs for this run
-run_label <- "stepwise-refactored-checkpointing-data-dated-2025-jan23" 
+run_label <- "stepwise-refactored-checkpointing-data-dated-2025-jan23" #set manually to ensure intentional updates
 
 # Activate R environment ----------
 
@@ -158,6 +158,7 @@ load_or_run("fit.stepwise.dist", quote(
       )
     )                     
     )
+)
 )
   
 net_stepwise_dist <- load_or_run("net.stepwise.dist", 
