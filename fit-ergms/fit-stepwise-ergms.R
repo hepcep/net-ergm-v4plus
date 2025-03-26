@@ -5,6 +5,9 @@
 
 rm(list=ls())
 
+# Label and outputs for this run
+run_label <- "stepwise-refactored-std-order-2025-jan23-targets" 
+
 # Activate R environment ----------
 
 library(renv)
@@ -20,7 +23,13 @@ library(ergm.userterms)
 library(here)
 
 
+# Create output directory --------- 
+out_dir <- here("fit-ergms", "out", run_label)
+if (!dir.exists(out_dir)) dir.create(out_dir, recursive = FALSE)
+
+
 # Load data objects ----------
+
 data_objects <- readRDS(here("fit-ergms", "out", "processed_data.rds"))
 names(data_objects)
 
@@ -46,6 +55,7 @@ outedges_target <- outdegree_data$out_degree*outdegree_data$mean_n
 sum(outedges_target)
 
 # Degree and dist assignments ---------
+
 deg.terms <- 0:3
 indeg.terms.0 <- 0
 indeg.terms <- 0:1  
@@ -55,9 +65,28 @@ dist.terms <- 1:3 #fourth is left out
 class(target_race_num)
 target_race_num <- unname(target_race_num)
 
+
+# Helper function to only run fits that were not previously saved ----------
+
+load_or_run <- function(name, expr) {
+  path <- file.path(out_dir, paste0(name, ".rds"))
+  if (file.exists(path)) {
+    message("Loading saved ", name)
+    readRDS(path)
+  } else {
+    message("Running and saving ", name)
+    obj <- eval(expr)
+    saveRDS(obj, path)
+    obj
+  }
+}
+
+
+
 # Fit Non-empty net including race term ---------
 
 fit_nonempty_network_w_race_num <- 
+load_or_run("fit_nonempty_network_w_race_num", quote(
   ergm(
     edges_only_net ~
       edges + 
@@ -85,11 +114,17 @@ fit_nonempty_network_w_race_num <-
       )
     )
     )
+)
+)
 
-non_empty_net_w_race_term <- simulate(fit_nonempty_network_w_race_num, nsim=1)
+non_empty_net_w_race_term <- load_or_run("net_nonempty_w_race_term", quote(
+  simulate(fit_nonempty_network_w_race_num, nsim=1)
+  )
+)
 non_empty_net_w_race_term
 
 fit.stepwise.dist <-
+load_or_run("fit.stepwise.dist", quote(
   ergm(
     non_empty_net_w_race_term ~
       edges + 
@@ -123,125 +158,133 @@ fit.stepwise.dist <-
       )
     )                     
     )
+)
   
-net_stepwise_dist <- simulate(fit.stepwise.dist, nsim=1)
+net_stepwise_dist <- load_or_run("net.stepwise.dist", 
+  quote(simulate(fit.stepwise.dist, nsim=1)
+  )
+)
+
 net_stepwise_dist
 
-fit.stepwise.dist.odeg <-
-  ergm(
-    net_stepwise_dist ~
-      edges + 
-      nodemix("sex", levels2=-1)+
-      nodemix("young", levels2=-1)+
-      nodemix("race.num", levels2=-1)+
-      #idegree(indeg.terms)+
-      odegree(deg.terms)+
-      dist(dist.terms),
-    target.stats = 
-    c(
-      edges_target,
-      c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
-      c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
-      target_race_num,
-      #c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
-      c(outdegree_data$mean_n[c(deg.terms+1)]),
-      c(dist.nedge.distribution[dist.terms])
-    ),
-    eval.loglik = FALSE,
-    control = control.ergm(
-      MCMLE.maxit = 500,
-      main.method = c("Stochastic-Approximation"),
-      MCMC.interval = 1e6,
-      MCMC.samplesize = 1e6,
-      MCMLE.termination = "Hotelling",
-      MCMC.effectiveSize=NULL,
-      SAN = control.san(
-        SAN.maxit = 500, 
-        SAN.nsteps = 1e8
-      )
-    )                         
-    )
+# fit.stepwise.dist.odeg <-
+#   ergm(
+#     net_stepwise_dist ~
+#       edges + 
+#       nodemix("sex", levels2=-1)+
+#       nodemix("young", levels2=-1)+
+#       nodemix("race.num", levels2=-1)+
+#       #idegree(indeg.terms)+
+#       odegree(deg.terms)+
+#       dist(dist.terms),
+#     target.stats = 
+#     c(
+#       edges_target,
+#       c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
+#       c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
+#       target_race_num,
+#       #c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
+#       c(outdegree_data$mean_n[c(deg.terms+1)]),
+#       c(dist.nedge.distribution[dist.terms])
+#     ),
+#     eval.loglik = FALSE,
+#     control = control.ergm(
+#       MCMLE.maxit = 500,
+#       main.method = c("Stochastic-Approximation"),
+#       MCMC.interval = 1e6,
+#       MCMC.samplesize = 1e6,
+#       MCMLE.termination = "Hotelling",
+#       MCMC.effectiveSize=NULL,
+#       SAN = control.san(
+#         SAN.maxit = 500, 
+#         SAN.nsteps = 1e8
+#       )
+#     )                         
+#     )
 
-  net_fit_stepwise_dist_odeg <- simulate(fit.stepwise.dist.odeg, nsim=1)
-  net_fit_stepwise_dist_odeg
+#   net_fit_stepwise_dist_odeg <- simulate(fit.stepwise.dist.odeg, nsim=1)
+#   net_fit_stepwise_dist_odeg
 
-fit.stepwise.dist.odeg.ideg0 <-
-  ergm(
-    net_fit_stepwise_dist_odeg ~
-      edges + 
-      nodemix("sex", levels2=-1)+
-      nodemix("young", levels2=-1)+
-      nodemix("race.num", levels2=-1)+
-      idegree(indeg.terms.0)+
-      odegree(deg.terms)+
-      dist(dist.terms),
-    target.stats = 
-    c(
-      edges_target,
-      c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
-      c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
-      target_race_num,
-      c(indegree_data$mean_n[c(indeg.terms.0+1)]),
-      c(outdegree_data$mean_n[c(deg.terms+1)]),
-      c(dist.nedge.distribution[dist.terms])
-    ),
-    eval.loglik = FALSE,
-    control = control.ergm(
-      MCMLE.maxit = 500,
-      main.method = c("Stochastic-Approximation"),
-      MCMC.interval = 1e6,
-      MCMC.samplesize = 1e6,
-      MCMLE.termination = "Hotelling",
-      MCMC.effectiveSize=NULL,
-      SAN = control.san(
-        SAN.maxit = 500, 
-        SAN.nsteps = 1e8
-      )
-    )                         
-    )
+# fit.stepwise.dist.odeg.ideg0 <-
+#   ergm(
+#     net_fit_stepwise_dist_odeg ~
+#       edges + 
+#       nodemix("sex", levels2=-1)+
+#       nodemix("young", levels2=-1)+
+#       nodemix("race.num", levels2=-1)+
+#       idegree(indeg.terms.0)+
+#       odegree(deg.terms)+
+#       dist(dist.terms),
+#     target.stats = 
+#     c(
+#       edges_target,
+#       c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
+#       c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
+#       target_race_num,
+#       c(indegree_data$mean_n[c(indeg.terms.0+1)]),
+#       c(outdegree_data$mean_n[c(deg.terms+1)]),
+#       c(dist.nedge.distribution[dist.terms])
+#     ),
+#     eval.loglik = FALSE,
+#     control = control.ergm(
+#       MCMLE.maxit = 500,
+#       main.method = c("Stochastic-Approximation"),
+#       MCMC.interval = 1e6,
+#       MCMC.samplesize = 1e6,
+#       MCMLE.termination = "Hotelling",
+#       MCMC.effectiveSize=NULL,
+#       SAN = control.san(
+#         SAN.maxit = 500, 
+#         SAN.nsteps = 1e8
+#       )
+#     )                         
+#     )
 
-net_fit_stepwise_dist_odeg_ideg0 <- simulate(fit.stepwise.dist.odeg.ideg0, nsim=1)
-net_fit_stepwise_dist_odeg_ideg0
+# net_fit_stepwise_dist_odeg_ideg0 <- simulate(fit.stepwise.dist.odeg.ideg0, nsim=1)
+# net_fit_stepwise_dist_odeg_ideg0
 
 
-fit.stepwise.dist.odeg.ideg <-
-  ergm(
-    net_fit_stepwise_dist_odeg_ideg0 ~
-      edges + 
-      nodemix("sex", levels2=-1)+
-      nodemix("young", levels2=-1)+
-      nodemix("race.num", levels2=-1)+
-      idegree(indeg.terms)+
-      odegree(deg.terms)+
-      dist(dist.terms),
-    target.stats = 
-    c(
-      edges_target,
-      c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
-      c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
-      target_race_num,
-      c(indegree_data$mean_n[c(indeg.terms.0+1)]),
-      c(outdegree_data$mean_n[c(deg.terms+1)]),
-      c(dist.nedge.distribution[dist.terms])
-    )
-    ,
-    eval.loglik = FALSE,
-    control = control.ergm(
-      MCMLE.maxit = 500,
-      main.method = c("Stochastic-Approximation"),
-      MCMC.interval = 1e6,
-      MCMC.samplesize = 1e6,
-      MCMLE.termination = "Hotelling",
-      MCMC.effectiveSize=NULL,
-      SAN = control.san(
-        SAN.maxit = 500, 
-        SAN.nsteps = 1e8
-      )
-    )
-  )                         
+
+
+# fit.stepwise.dist.odeg.ideg <-
+#   ergm(
+#     net_fit_stepwise_dist_odeg_ideg0 ~
+#       edges + 
+#       nodemix("sex", levels2=-1)+
+#       nodemix("young", levels2=-1)+
+#       nodemix("race.num", levels2=-1)+
+#       idegree(indeg.terms)+
+#       odegree(deg.terms)+
+#       dist(dist.terms),
+#     target.stats = 
+#     c(
+#       edges_target,
+#       c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
+#       c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
+#       target_race_num,
+#       c(indegree_data$mean_n[c(indeg.terms.0+1)]),
+#       c(outdegree_data$mean_n[c(deg.terms+1)]),
+#       c(dist.nedge.distribution[dist.terms])
+#     )
+#     ,
+#     eval.loglik = FALSE,
+#     control = control.ergm(
+#       MCMLE.maxit = 500,
+#       main.method = c("Stochastic-Approximation"),
+#       MCMC.interval = 1e6,
+#       MCMC.samplesize = 1e6,
+#       MCMLE.termination = "Hotelling",
+#       MCMC.effectiveSize=NULL,
+#       SAN = control.san(
+#         SAN.maxit = 500, 
+#         SAN.nsteps = 1e8
+#       )
+#     )
+#   )                         
     
 
-net_fit_stepwise_dist_odeg_ideg <-simulate(fit.stepwise.dist.odeg.ideg, nsim=1)
-net_fit_stepwise_dist_odeg_ideg
+# net_fit_stepwise_dist_odeg_ideg <-simulate(fit.stepwise.dist.odeg.ideg, nsim=1)
+# net_fit_stepwise_dist_odeg_ideg
 
-save.image(file=here("fit-ergms", "out", "stepwise-refactored-std-order-2025-jan23-targets.RData"))  
+## save.image(file=here("fit-ergms", "out", "stepwise-refactored-std-order-2025-jan23-targets.RData"))  
+save.image(file = file.path(out_dir, paste0(run_label, ".RData")))
