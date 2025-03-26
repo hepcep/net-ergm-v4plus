@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#SBATCH --job-name="revised-edges-in-out-degrees-2025-jan-23"
+#SBATCH --job-name="revised-edges-dyad-ind-checkpointing-data-dated-2025-jan-23"
 #SBATCH --time=5:00:00
 #SBATCH --mem=20000
 #SBATCH --nodes=1
