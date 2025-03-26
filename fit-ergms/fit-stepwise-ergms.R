@@ -6,7 +6,7 @@
 rm(list=ls())
 
 # Label and outputs for this run
-run_label <- "stepwise-refactored-std-order-2025-jan23-targets" 
+run_label <- "stepwise-refactored-checkpointing-data-dated-2025-jan23" 
 
 # Activate R environment ----------
 
