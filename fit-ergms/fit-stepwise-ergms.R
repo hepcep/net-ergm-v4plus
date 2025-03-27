@@ -258,6 +258,49 @@ load_or_run("net_fit_stepwise_dist_odeg0_1", quote(
 ))
 net_fit_stepwise_dist_odeg0_1
 
+fit.stepwise.dist.odeg.0.2 <-
+  load_or_run("fit.stepwise.dist.odeg.0.2", quote(
+    ergm(
+      net_fit_stepwise_dist_odeg0_1 ~
+        edges +
+        nodemix("sex", levels2 = -1) +
+        nodemix("young", levels2 = -1) +
+        nodemix("race.num", levels2 = -1) +
+        # idegree(indeg.terms)+
+        odegree(deg.terms.0_2) +
+        dist(dist.terms),
+      target.stats =
+        c(
+          edges_target,
+          c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),
+          c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
+          target_race_num,
+          # c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
+          c(outdegree_data$mean_n[c(deg.terms.0_2 + 1)]),
+          c(dist.nedge.distribution[dist.terms])
+        ),
+      eval.loglik = FALSE,
+      control = control.ergm(
+        MCMLE.maxit = 500,
+        main.method = c("Stochastic-Approximation"),
+        MCMC.interval = 1e6,
+        MCMC.samplesize = 1e6,
+        MCMLE.termination = "Hotelling",
+        MCMC.effectiveSize = NULL,
+        SAN = control.san(
+          SAN.maxit = 500,
+          SAN.nsteps = 1e8
+        )
+      )
+    )
+  ))
+
+net_fit_stepwise_dist_odeg0_2 <- 
+load_or_run("net_fit_stepwise_dist_odeg0_2", quote(
+  simulate(fit.stepwise.dist.odeg.0.2, nsim = 1)
+))
+net_fit_stepwise_dist_odeg0_2 #this is degenerate
+
 # fit.stepwise.dist.odeg.ideg0 <-
 #   ergm(
 #     net_fit_stepwise_dist_odeg ~
