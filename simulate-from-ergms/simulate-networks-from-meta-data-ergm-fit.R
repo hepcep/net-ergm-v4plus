@@ -24,7 +24,7 @@ library(here)
 # Data ----------
 
 #load(here("fit-ergms", "out", "new-mixing-data-with-hotelling-stochasticapprox-non-empty-net-stepwise-dist-odeg-ideg0-1.RData"))
-load(here("fit-ergms", "out", "edges_indeg_only.RData"))
+load(here("fit-ergms", "out", "edges_indeg_first.RData"))
 
 data_objects <- readRDS(here("fit-ergms", "out", "processed_data.rds"))
 names(data_objects)
@@ -32,7 +32,7 @@ names(data_objects)
 
 # Model summary
 ## summary(fit.stepwise.dist.odeg.ideg)
-summary(fit_edges_indegree)
+summary(fit_edges_indegree_outdegree)
 
 
 # Simulate 100 networks ----------
@@ -45,7 +45,7 @@ set.seed(Sys.time())
 for (iter in 1:length(nsim.vec)){
   sim_results[[iter]] <- simulate(
     #fit.stepwise.dist.odeg.ideg,
-    fit_edges_indegree,
+     fit_edges_indegree_outdegree,
     nsim=1
   )
 }
