@@ -149,6 +149,7 @@ here() starts at /oscar/home/akhann16/code/net-ergm-v4plus
 24002.70 24588.67 
 > 
 >   ### target
+>   edges_target <- data_objects$edges_target
 >   edges_target
 [1] 22959.93
 > 
@@ -521,7 +522,8 @@ Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
 >   race_mixing_df$category <- factor(race_mixing_df$category)
 > 
 >   # Remove the first target value
->   target_race_mixing_filtered <- target_race_mixing[-1]
+>   #target_race_mixing_filtered <- target_race_mixing[-1]
+>   target_race_mixing_filtered <- target_race_mixing
 > 
 >   # plot the data
 >   ggplot(race_mixing_df, aes(x = category, y = count)) +
@@ -540,7 +542,138 @@ Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
 +       panel.grid.minor = element_blank(),
 +       strip.text = element_text(size = 14, face = "bold")  # Make panel titles more prominent
 +     )
-Error in data.frame(category = unique(race_mixing_df$category), y = target_race_mixing_filtered) : 
-  arguments imply differing number of rows: 15, 14
-Calls: geom_hline -> layer -> fortify -> data.frame
-Execution halted
+> 
+>   ggsave(here("simulate-from-ergms", "out", "racemix_violin_plot.png"), width = 8, height = 6)
+> 
+> 
+> 
+> ## sex
+>   sex_mixing_df <- do.call(rbind, lapply(seq_along(sim.sex), function(i) {
++   data.frame(
++     run = i,
++     category = names(sim.sex[[i]]),
++     count = as.numeric(sim.sex[[i]])
++   )
++ }))
+> 
+> 
+>   sex_mixing_df$category <- factor(sex_mixing_df$category)
+>   head(sex_mixing_df)
+  run    category count
+1   1 mix.sex.M.F  6157
+2   1 mix.sex.F.M  4221
+3   1 mix.sex.M.M  9354
+4   2 mix.sex.M.F  6154
+5   2 mix.sex.F.M  4389
+6   2 mix.sex.M.M  9476
+> 
+>   target_sex_mixing
+[1] 5602.222 4261.362 9055.394
+>   names(target_sex_mixing) <- c("mix.sex.M.F",   "mix.sex.F.M",  "mix.sex.M.M")
+> 
+>   ggplot(sex_mixing_df, aes(x = category, y = count)) +
++     geom_violin(trim = FALSE, fill = "#66C2A5") +
++     geom_hline(data = data.frame(category = names(target_sex_mixing), 
++                                 y = as.numeric(target_sex_mixing)), aes(yintercept = y), 
++               linetype = "solid", color = "black", linewidth = 1.5) +
++     facet_wrap(~ category, scales = "free_y") +
++     theme_minimal() +
++     labs(y = "Sex Mixing Count", x = NULL) +
++     theme(
++       axis.text.x = element_blank(),  # Hide x-axis text
++       axis.title.x = element_blank(),  # Hide x-axis title
++       axis.title.y = element_text(size = 14),
++       panel.grid.major = element_blank(), 
++       panel.grid.minor = element_blank(),
++       strip.text = element_text(size = 14, face = "bold")  # Make panel titles more prominent
++     )
+> 
+>       ggsave(here("simulate-from-ergms", "out", "sexmix_violin_plot.png"), width = 8, height = 6)
+> 
+> 
+> ## age
+>   # Combine the list elements into a data frame, excluding the base category
+>   age_mixing_df <- do.call(rbind, lapply(seq_along(sim.young), function(i) {
++     data.frame(
++       run = i,
++       category = names(sim.young[[i]]),
++       count = as.numeric(sim.young[[i]])
++     )
++   }))
+> 
+>   # Filter out the base category
+>   age_mixing_df <- age_mixing_df[!age_mixing_df$category %in% "mix.young.0.0", ]
+> 
+>   # Ensure that category is a factor
+>   age_mixing_df$category <- factor(age_mixing_df$category)
+> 
+>   # Set the names for the target age mixing values
+>   #target_age_mixing <- c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung)
+>   names(target_age_mixing) <- c("mix.young.old.pctyoung", "mix.young.pctold", "mix.young.pctyoung")
+> 
+>   # Plot the violin plot
+>   ggplot(age_mixing_df, aes(x = category, y = count)) +
++     geom_violin(trim = FALSE, fill = "#66C2A5") +
++     geom_hline(data = data.frame(category = names(target_age_mixing), 
++                                 y = as.numeric(target_age_mixing)), aes(yintercept = y), 
++               linetype = "solid", color = "black", linewidth = 1.5) +
++     facet_wrap(~ category, scales = "free_y") +
++     theme_minimal() +
++     labs(y = "Age Mixing Count", x = NULL) +
++     theme(
++       axis.text.x = element_blank(),  # Hide x-axis text
++       axis.title.x = element_blank(),  # Hide x-axis title
++       axis.title.y = element_text(size = 14),
++       panel.grid.major = element_blank(), 
++       panel.grid.minor = element_blank(),
++       strip.text = element_text(size = 14, face = "bold")  # Make panel titles more prominent
++     )
+> 
+>   # Save the plot
+>   ggsave(here("simulate-from-ergms", "out", "agemix_violin_plot.png"), width = 8, height = 6)
+> 
+> 
+> 
+>   ## distance
+>     distance_mixing_df <- do.call(rbind, lapply(seq_along(sim.dist), function(i) {
++       data.frame(
++         run = i,
++         category = names(sim.dist[[i]]),
++         count = as.numeric(sim.dist[[i]])
++       )
++     }))
+> 
+>     distance_mixing_df$category <- factor(distance_mixing_df$category)
+> 
+>     distance_mixing_df_filtered <- distance_mixing_df[distance_mixing_df$category != "dist4", ]
+> 
+>     names(target_distance) <- c("dist1", "dist2", "dist3")
+> 
+>     # Plot the violin plot excluding dist4
+>     ggplot(distance_mixing_df_filtered, aes(x = category, y = count)) +
++       geom_violin(trim = FALSE, fill = "#66C2A5") +
++       geom_hline(data = data.frame(category = names(target_distance), 
++                                   y = as.numeric(target_distance)), aes(yintercept = y), 
++                 linetype = "solid", color = "black", linewidth = 1.5) +
++       facet_wrap(~ category, scales = "free_y") +
++       theme_minimal() +
++       labs(y = "Distance Metric Count", x = NULL) +
++       theme(
++         axis.text.x = element_blank(),  # Hide x-axis text
++         axis.title.x = element_blank(),  # Hide x-axis title
++         axis.title.y = element_text(size = 14),
++         panel.grid.major = element_blank(), 
++         panel.grid.minor = element_blank(),
++         strip.text = element_text(size = 14, face = "bold")  # Make panel titles more prominent
++       )
+> 
+>     # Save the plot
+>     ggsave(here("simulate-from-ergms", "out", "distance_violin_plot.png"), width = 8, height = 6)
+> 
+> 
+> 
+> 
+> 
+> proc.time()
+   user  system elapsed 
+414.744  22.117 444.360 
