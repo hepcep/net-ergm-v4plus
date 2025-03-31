@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#SBATCH --job-name="sim-fromsynthpop-2023-10-12-w-dist-all-plos-one"
+#SBATCH --job-name="simulate-networks-from-meta-data-ergm-fit.R"
 #SBATCH --time=5:00:00
 #SBATCH --mem=10000
 #SBATCH --nodes=1
