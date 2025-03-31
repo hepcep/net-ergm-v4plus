@@ -53,6 +53,7 @@ n_edges <- target_stats_edges
   quantile(edgecount.sim.data, probs = c(2.5 / 100, 97.5 / 100))
 
   ### target
+  edges_target <- data_objects$edges_target
   edges_target
 
 
@@ -141,7 +142,7 @@ target_race_mixing <- target_race_num
   quantile(unlist(lapply(sim.sex, function(x) x["mix.sex.M.M"])), probs = c(2.5 / 100, 97.5 / 100))
 
   ### 
-  target_sex_mixing <- target_sex_mixing
+  target_sex_mixing <- c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale)
 
 ## age
   ### simulated
@@ -296,7 +297,8 @@ target_race_mixing <- target_race_num
   race_mixing_df$category <- factor(race_mixing_df$category)
 
   # Remove the first target value
-  target_race_mixing_filtered <- target_race_mixing[-1]
+  #target_race_mixing_filtered <- target_race_mixing[-1]
+  target_race_mixing_filtered <- target_race_mixing
 
   # plot the data
   ggplot(race_mixing_df, aes(x = category, y = count)) +
@@ -373,7 +375,8 @@ target_race_mixing <- target_race_num
   age_mixing_df$category <- factor(age_mixing_df$category)
 
   # Set the names for the target age mixing values
-  names(target_age_mixing) <- c("mix.young.1.0", "mix.young.0.1", "mix.young.1.1")
+  #target_age_mixing <- c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung)
+  names(target_age_mixing) <- c("mix.young.old.pctyoung", "mix.young.pctold", "mix.young.pctyoung")
 
   # Plot the violin plot
   ggplot(age_mixing_df, aes(x = category, y = count)) +
@@ -433,5 +436,7 @@ target_race_mixing <- target_race_num
 
     # Save the plot
     ggsave(here("simulate-from-ergms", "out", "distance_violin_plot.png"), width = 8, height = 6)
+
+
 
 
