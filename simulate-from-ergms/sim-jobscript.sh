@@ -1,8 +1,8 @@
 #!/bin/sh
 
-#SBATCH --job-name="simulate-networks-from-meta-data-ergm-fit.R"
+#SBATCH --job-name="simulate-networks-from-meta-data-ergm-fit"
 #SBATCH --time=5:00:00
-#SBATCH --mem=10000
+#SBATCH --mem=64000
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --mail-type=ALL
