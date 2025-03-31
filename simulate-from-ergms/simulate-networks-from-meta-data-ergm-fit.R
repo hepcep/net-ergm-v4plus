@@ -23,43 +23,48 @@ library(here)
 
 # Data ----------
 
-#load(here("fit-ergms", "out", "new-mixing-data-with-hotelling-stochasticapprox-non-empty-net-stepwise-dist-odeg-ideg0-1.RData"))
-load(here("fit-ergms", "out", "edges_indeg_first.RData"))
+## fit output
+  load(here("fit-ergms", "out", 
+      "stepwise-refactored-checkpointing-data-dated-2025-jan23",
+      "stepwise-refactored-checkpointing-data-dated-2025-jan23.RData"
+      )
+  )
 
-data_objects <- readRDS(here("fit-ergms", "out", "processed_data.rds"))
-names(data_objects)
+## input params
+  data_objects <- readRDS(here("fit-ergms", "out", "processed_data.rds"))
+  names(data_objects)
 
+## confirm which run
+  run_label
 
 # Model summary
-## summary(fit.stepwise.dist.odeg.ideg)
-summary(fit_edges_indegree_outdegree)
+  summary(fit.stepwise.dist.odeg.01.indeg0)
 
 
 # Simulate 100 networks ----------
 
-nsim.vec <- 1:1
+  nsim.vec <- 1:100
 
-sim_results <- as.list(nsim.vec)
-set.seed(Sys.time())
+  sim_results <- as.list(nsim.vec)
+  set.seed(Sys.time())
 
-for (iter in 1:length(nsim.vec)){
-  sim_results[[iter]] <- simulate(
-    #fit.stepwise.dist.odeg.ideg,
-     fit_edges_indegree_outdegree,
-    nsim=1
-  )
-}
+  for (iter in 1:length(nsim.vec)){
+    sim_results[[iter]] <- simulate(
+      fit.stepwise.dist.odeg.01.indeg0,
+      nsim=1
+    )
+  }
 
 
 #  Investigate netstats on 100 networks ----------
 
 ## edgecount
-ecount <- unlist(lapply(sim_results, network.edgecount))
-summary(ecount)
+  ecount <- unlist(lapply(sim_results, network.edgecount))
+  summary(ecount)
 
-mean_edges <- mean(ecount)
-range_edges <- range(ecount)
-target_stats_edges <- edges_target
+  mean_edges <- mean(ecount)
+  range_edges <- range(ecount)
+  target_stats_edges <- edges_target
 
 comparison_df_edges <- data.frame(
   Parameter = c("edges"),
@@ -72,30 +77,30 @@ comparison_df_edges <- data.frame(
 comparison_df_edges
 
 ## outdegree
-outdeg0 <- unlist(lapply(sim_results, 
-                        function (x) summary(x ~ odegree(0))
-                        ))
-outdeg1 <- unlist(lapply(sim_results, 
-                         function (x) summary(x ~ odegree(1))
-))
-outdeg2 <- unlist(lapply(sim_results, 
-                         function (x) summary(x ~ odegree(2))
-))
-outdeg3 <- unlist(lapply(sim_results, 
-                         function (x) summary(x ~ odegree(3))
-))
-outdeg4 <- unlist(lapply(sim_results, 
-                         function (x) summary(x ~ odegree(4))
-))
+  outdeg0 <- unlist(lapply(sim_results, 
+                          function (x) summary(x ~ odegree(0))
+                          ))
+  outdeg1 <- unlist(lapply(sim_results, 
+                          function (x) summary(x ~ odegree(1))
+  ))
+  # outdeg2 <- unlist(lapply(sim_results, 
+  #                         function (x) summary(x ~ odegree(2))
+  # ))
+  # outdeg3 <- unlist(lapply(sim_results, 
+  #                         function (x) summary(x ~ odegree(3))
+  # ))
+  # outdeg4 <- unlist(lapply(sim_results, 
+  #                         function (x) summary(x ~ odegree(4))
+  # ))
 
 
-mean_outdeg <- c(mean(outdeg0), mean(outdeg1), mean(outdeg2), mean(outdeg3))
-range_outdeg <- c(range(outdeg0), range(outdeg1), range(outdeg2), range(outdeg3))
+mean_outdeg <- c(mean(outdeg0), mean(outdeg1))
+range_outdeg <- c(range(outdeg0), range(outdeg1))
 
-target_stats_outdeg <- outedges$n_nodes[1:4] #target
+target_stats_outdeg <- outdegree_data$mean_n[1:2] #target
 
 comparison_df_outdeg <- data.frame(
-  Parameter = c("outdeg0", "outdeg1", "outdeg2", "outdeg3"),
+  Parameter = c("outdeg0", "outdeg1"),
   Mean = mean_outdeg,
   Range_Min = range_outdeg[seq(1, length(range_outdeg), 2)],
   Range_Max = range_outdeg[seq(2, length(range_outdeg), 2)],
@@ -124,14 +129,13 @@ indeg1 <- unlist(lapply(sim_results,
 
 
 c(mean(indeg0), mean(indeg1))
-inedges$n_nodes[1:2]
-sum(inedges$n_nodes[1:2])
-
+indegree_data$mean_n[1:2]
+sum(indegree_data$mean_n[1:2])
 
 mean_indeg <- c(mean(indeg0), mean(indeg1))
 range_indeg <- c(range(indeg0), range(indeg1))
 
-target_stats_indeg <- negbin_inedges$n_nodes[1:2] #target
+target_stats_indeg <- indegree_data$mean_n[1:2] #target
 
 comparison_df_indeg <- data.frame(
   Parameter = c("indeg0", "indeg1"),
@@ -150,39 +154,40 @@ race.num <- unlist(lapply(sim_results,
 ))
 
 summary(sim_results[[1]] ~ nodemix("race.num"))
-round(
-  c(target.w.w, target.b.w, target.h.w, target.o.w,
-    target.w.b, target.b.b, target.h.b, target.o.b,
-    target.w.h, target.b.h, target.h.h, target.o.h,
-    target.w.o, target.b.o, target.h.o, target.o.o),
-  0
-)
 
-target_race_num
 
+
+round(target_race_num, 2) # no w.w.
+sum(target_race_num)
 
 ## nodemix(sex)
 gender <- unlist(lapply(sim_results, 
                           function (x) summary(x ~ nodemix("sex"))
 ))
+gender
 
-round(c(tgt.female.pctfemale, tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale), 0)
+round(c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale), 0)
 
 ## nodemix(young)
 young <- unlist(lapply(sim_results, 
                         function (x) summary(x ~ nodemix("young"))
 )) 
+young
 
 #summary(sim_results[[10]] ~ nodemix("young"))
-round(c(tgt.old.pctold, tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung))
+round(c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung))
 
 
 ## dist
-round(dist.nedge.distribution[dist.terms])
+
 dist_sim <- 
-unlist(lapply(sim_results, 
-                          function (x) summary(x ~ dist(dist.terms))
-))
+  unlist(lapply(sim_results, 
+                            function (x) summary(x ~ dist(dist.terms))
+  ))
+dist_sim
 
+round(dist.nedge.distribution[dist.terms])
 
-save.image(here("simulate-from-ergms", "out", "sim-updated-with-oct12-2024-synthpop-ergmv4-6-all-plos1-mcmc-int1e6-samp1e6-hotelling.RData"))
+save.image(here(
+  "simulate-from-ergms", "out", 
+  paste0(run_label, ".RData")))
