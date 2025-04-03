@@ -19,16 +19,16 @@ library(dplyr)
 library(ergm.userterms)
 library(here)
 library(ggplot2)
+library(qs)
 
 
 # Data ----------
 
-## fit output
-    load(here("simulate-from-ergms", "out", 
-      #"stepwise-refactored-checkpointing-data-dated-2025-jan23.RData"
-      "stepwise-refactored-checkpointing-data-dated-2025-jan2310_for_development.RData"
-      )
-  )
+run_label <- "stepwise-refactored-checkpointing-data-dated-2025-jan23" # set manually to ensure intentional updates
+## should match the object from the ERGM fitting code 
+
+  ## load data
+  sim_results <- qread(here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_10.qs")))
 
 ## input params
   data_objects <- readRDS(here("fit-ergms", "out", "processed_data.rds"))
@@ -37,10 +37,16 @@ library(ggplot2)
 ## confirm which run
   run_label
 
+## Unpack objects in data_objects
+intersect(names(data_objects), ls())
+list2env(data_objects, envir = globalenv())
+ls()
+
+
 # Compute summaries and IQRs ----------
 
 n <- network.size(sim_results[[1]])
-n_edges <- target_stats_edges
+n_edges <- edges_target
 
 
 ## edges
@@ -54,12 +60,21 @@ n_edges <- target_stats_edges
   quantile(edgecount.sim.data, probs = c(2.5 / 100, 97.5 / 100))
 
   ### target
-  edges_target <- data_objects$edges_target
-  edges_target
+   edges_target
 
 
 ## outdegree
-  ### simulated
+  ## target
+  target_stats_outdeg <- outdegree_data$mean_n[1:2] #target
+  target_stats_outdeg
+
+  ## simulated
+  outdeg0 <- unlist(lapply(sim_results, 
+                          function (x) summary(x ~ odegree(0))
+                          ))
+  outdeg1 <- unlist(lapply(sim_results, 
+                          function (x) summary(x ~ odegree(1))))
+  #
   summary(outdeg0)
   quantile(outdeg0, probs = c(2.5 / 100, 97.5 / 100))
   summary(outdeg1)
@@ -69,14 +84,20 @@ n_edges <- target_stats_edges
   summary(outdeg.gr.0.1)
   quantile(outdeg.gr.0.1, probs = c(2.5 / 100, 97.5 / 100))
 
-
-  ### target
-  target_stats_outdeg
-
-
-
 ## indegree
-  ### simulated
+  ## target
+  target_stats_indeg <- indegree_data$mean_n[1:2]
+
+
+  ## simulated
+  indeg0 <- unlist(lapply(sim_results, 
+                         function (x) summary(x ~ idegree(0))
+  ))
+
+  indeg1 <- unlist(lapply(sim_results, 
+                          function (x) summary(x ~ idegree(1))
+    ))
+
   summary(indeg0)
   quantile(indeg0, probs = c(2.5 / 100, 97.5 / 100))
   summary(indeg1)
@@ -91,7 +112,8 @@ n_edges <- target_stats_edges
 
 ## race
   ### simulated
-  sim.race.num <- lapply(nsim.vec, function(x) summary(sim_results[[x]] ~ nodemix("race.num")))
+  sim.race.num <- lapply(1:length(sim_results), 
+    function(x) summary(sim_results[[x]] ~ nodemix("race.num")))
   #summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.1.1"])))
   summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.2.1"])))
   summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.3.1"])))
@@ -131,7 +153,8 @@ target_race_mixing <- target_race_num
 
 ## sex
   ### simulated
-  sim.sex <- lapply(nsim.vec, function(x) summary(sim_results[[x]] ~ nodemix("sex")))
+  sim.sex <- lapply(1:length(sim_results), 
+    function(x) summary(sim_results[[x]] ~ nodemix("sex")))
   #summary(unlist(lapply(sim.sex, function(x) x["mix.sex.F.F"])))
   summary(unlist(lapply(sim.sex, function(x) x["mix.sex.M.F"])))
   summary(unlist(lapply(sim.sex, function(x) x["mix.sex.F.M"])))
@@ -147,7 +170,8 @@ target_race_mixing <- target_race_num
 
 ## age
   ### simulated
-  sim.young <- lapply(nsim.vec, function(x) summary(sim_results[[x]] ~ nodemix("young")))
+  sim.young <- lapply(1:length(sim_results), 
+      function(x) summary(sim_results[[x]] ~ nodemix("young")))
   #summary(unlist(lapply(sim.young, function(x) x["mix.young.0.0"])))
   summary(unlist(lapply(sim.young, function(x) x["mix.young.1.0"])))
   summary(unlist(lapply(sim.young, function(x) x["mix.young.0.1"])))
@@ -164,7 +188,8 @@ target_race_mixing <- target_race_num
 
 ## distance
   ### simulated
-  sim.dist <- lapply(nsim.vec, function(x) summary(sim_results[[x]] ~ dist(1:4)))
+  sim.dist <- lapply(1:length(sim_results), 
+      function(x) summary(sim_results[[x]] ~ dist(1:4)))
   summary(unlist(lapply(sim.dist, function(x) x["dist1"])))
   summary(unlist(lapply(sim.dist, function(x) x["dist2"])))
   summary(unlist(lapply(sim.dist, function(x) x["dist3"])))
@@ -176,7 +201,8 @@ target_race_mixing <- target_race_num
   #quantile(unlist(lapply(sim.dist, function(x) x["dist4"])), probs = c(2.5 / 100, 97.5 / 100))
 
   ### target
-  target_distance <- c(dist.nedge.distribution[dist.terms])
+  target_distance <- dist_nedge_distribution
+  target_distance <- target_distance[1:3] #hard coded that 4th term is left out
 
 
 # Violin Plots ----------
