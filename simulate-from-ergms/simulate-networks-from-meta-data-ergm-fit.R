@@ -19,6 +19,7 @@ library(ergm)
 library(dplyr)
 library(ergm.userterms)
 library(here)
+library(qs)
 
 
 # Data ----------
@@ -43,7 +44,7 @@ library(here)
 
 # Simulate 100 networks ----------
 
-  nsim.vec <- 1:100
+  nsim.vec <- 1:10
 
   sim_results <- as.list(nsim.vec)
   set.seed(Sys.time())
@@ -188,6 +189,15 @@ dist_sim
 
 round(dist.nedge.distribution[dist.terms])
 
-save.image(here(
-  "simulate-from-ergms", "out", 
-  paste0(run_label, ".RData")))
+# save.image(here(
+#   "simulate-from-ergms", "out", 
+#   paste0(run_label, "_10_for_development", ".RData")))
+
+
+qsave(sim_results, 
+here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_10.qs")))
+
+# save.image(here(
+#   "simulate-from-ergms", "out", 
+#   paste0(run_label, "_10_for_development", ".RData")))
+
