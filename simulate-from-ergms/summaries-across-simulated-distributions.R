@@ -25,7 +25,8 @@ library(ggplot2)
 
 ## fit output
     load(here("simulate-from-ergms", "out", 
-      "stepwise-refactored-checkpointing-data-dated-2025-jan23.RData"
+      #"stepwise-refactored-checkpointing-data-dated-2025-jan23.RData"
+      "stepwise-refactored-checkpointing-data-dated-2025-jan2310_for_development.RData"
       )
   )
 
@@ -213,10 +214,11 @@ target_race_mixing <- target_race_num
 
 ## outdegree
   outdeg_df <- data.frame(
-    outdegree = c(outdeg0, outdeg1),
-    category = rep(c("outdeg0", "outdeg1")),
-      times = c(length(outdeg0), length(outdeg1))
-    )
+    outdegree = 
+    c(outdeg0, outdeg1),
+    category = rep(c("outdeg0", "outdeg1"), each = c(length(outdeg0), length(outdeg1))
+      )    
+      )
 
 
   target_values <- target_stats_outdeg
@@ -227,10 +229,11 @@ target_race_mixing <- target_race_num
       data = data.frame(
         category = c("outdeg0", "outdeg1"),
         y = target_values
-      ), aes(yintercept = y),
+      ),
+      mapping = aes(yintercept = y, category = category),
       linetype = "solid", color = "black", size = 1.5
-    ) +
-    #facet_wrap(~category, scales = "free_y") +
+    )+
+    facet_wrap(~category, scales = "free_y") +
     theme_minimal() +
     labs(y = "outdegree", x = "") +
     theme(
