@@ -6,7 +6,7 @@
 rm(list = ls())
 
 # Label and outputs for this run
-run_label <- "stepwise-refactored-checkpointing-data-dated-2025-jan23" # set manually to ensure intentional updates
+run_label <- "stepwise-refactored-checkpointing-data-dated-2025-jan23-redone" # set manually to ensure intentional updates
 
 # Activate R environment ----------
 
@@ -34,20 +34,9 @@ if (!dir.exists(out_dir)) dir.create(out_dir, recursive = FALSE)
 data_objects <- readRDS(here("fit-ergms", "out", "processed_data.rds"))
 names(data_objects)
 
-data <- data_objects$data
-n0 <- data_objects$n0
-edges_only_net <- data_objects$edges_only_net
-edges_target <- data_objects$edges_target
-tgt.female.pctmale <- data_objects$tgt.female.pctmale
-tgt.male.pctfemale <- data_objects$tgt.male.pctfemale
-tgt.male.pctmale <- data_objects$tgt.male.pctmale
-tgt.old.pctyoung <- data_objects$tgt.old.pctyoung
-tgt.young.pctold <- data_objects$tgt.young.pctold
-tgt.young.pctyoung <- data_objects$tgt.young.pctyoung
-indegree_data <- data_objects$indegree_data
-target_race_num <- data_objects$target_race_num
-outdegree_data <- data_objects$outdegree_data
-dist.nedge.distribution <- data_objects$dist_nedge_distribution
+intersect(names(data_objects), ls())
+list2env(data_objects, envir = globalenv())
+ls()
 
 inedges_target <- indegree_data$in_degree * indegree_data$mean_n
 sum(inedges_target)
@@ -149,7 +138,7 @@ fit.stepwise.dist <-
           target_race_num,
           # c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
           # c(outedges$n_nodes[c(deg.terms+1)])
-          c(dist.nedge.distribution[dist.terms])
+          c(dist_nedge_distribution[dist.terms])
         ),
       eval.loglik = FALSE,
       control = control.ergm(
@@ -193,7 +182,7 @@ fit.stepwise.dist.odeg.0 <-
           target_race_num,
           # c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
           c(outdegree_data$mean_n[c(deg.terms.0 + 1)]),
-          c(dist.nedge.distribution[dist.terms])
+          c(dist_nedge_distribution[dist.terms])
         ),
       eval.loglik = FALSE,
       control = control.ergm(
@@ -235,7 +224,7 @@ fit.stepwise.dist.odeg.0.1 <-
           target_race_num,
           # c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
           c(outdegree_data$mean_n[c(deg.terms.0_1 + 1)]),
-          c(dist.nedge.distribution[dist.terms])
+          c(dist_nedge_distribution[dist.terms])
         ),
       eval.loglik = FALSE,
       control = control.ergm(
@@ -278,7 +267,7 @@ fit.stepwise.dist.odeg.0.2 <-
           target_race_num,
           # c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
           c(outdegree_data$mean_n[c(deg.terms.0_2 + 1)]),
-          c(dist.nedge.distribution[dist.terms])
+          c(dist_nedge_distribution[dist.terms])
         ),
       eval.loglik = FALSE,
       control = control.ergm(
@@ -321,7 +310,7 @@ fit.stepwise.dist.odeg.013 <-
           target_race_num,
           # c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
           c(outdegree_data$mean_n[c(deg.terms.013 + 1)]),
-          c(dist.nedge.distribution[dist.terms])
+          c(dist_nedge_distribution[dist.terms])
         ),
       eval.loglik = FALSE,
       control = control.ergm(
@@ -365,7 +354,7 @@ fit.stepwise.dist.odeg.01.indeg0 <-
           target_race_num,
           c(indegree_data$mean_n[c(indeg.terms.0 + 1)]),
           c(outdegree_data$mean_n[c(deg.terms.0_1 + 1)]),
-          c(dist.nedge.distribution[dist.terms])
+          c(dist_nedge_distribution[dist.terms])
         ),
       eval.loglik = FALSE,
       control = control.ergm(
@@ -410,7 +399,7 @@ fit.stepwise.dist.odeg.01.indeg <-
           target_race_num,
           c(indegree_data$mean_n[c(indeg.terms + 1)]),
           c(outdegree_data$mean_n[c(deg.terms.0_1 + 1)]),
-          c(dist.nedge.distribution[dist.terms])
+          c(dist_nedge_distribution[dist.terms])
         ),
       eval.loglik = FALSE,
       control = control.ergm(
