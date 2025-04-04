@@ -2,7 +2,7 @@
 # Wrapper to launch R in VS Code with correct shared libraries
 
 # Load the R module
- r/4.4.0-yycctsj
+ module load r/4.4.0-yycctsj
 
 # Optional: activate renv if needed here instead of .Rprofile
 # source ./renv/activate.R
