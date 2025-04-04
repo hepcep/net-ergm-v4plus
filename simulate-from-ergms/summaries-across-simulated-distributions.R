@@ -153,8 +153,8 @@ target_race_mixing <- target_race_num
 
 ## sex
   ### simulated
-  sim.sex <- lapply(1:length(sim_results), 
-    function(x) summary(sim_results[[x]] ~ nodemix("sex")))
+sim.sex <- lapply(sim_results, function(x) {
+    s <- summary(x ~ nodemix("sex"))})
   #summary(unlist(lapply(sim.sex, function(x) x["mix.sex.F.F"])))
   summary(unlist(lapply(sim.sex, function(x) x["mix.sex.M.F"])))
   summary(unlist(lapply(sim.sex, function(x) x["mix.sex.F.M"])))
@@ -170,8 +170,9 @@ target_race_mixing <- target_race_num
 
 ## age
   ### simulated
-  sim.young <- lapply(1:length(sim_results), 
-      function(x) summary(sim_results[[x]] ~ nodemix("young")))
+  sim.young <- lapply(sim_results, function(x) {
+    s <- summary(x ~ nodemix("young"))})
+
   #summary(unlist(lapply(sim.young, function(x) x["mix.young.0.0"])))
   summary(unlist(lapply(sim.young, function(x) x["mix.young.1.0"])))
   summary(unlist(lapply(sim.young, function(x) x["mix.young.0.1"])))
@@ -183,8 +184,12 @@ target_race_mixing <- target_race_num
   quantile(unlist(lapply(sim.young, function(x) x["mix.young.1.1"])), probs = c(2.5 / 100, 97.5 / 100))
 
   ### target
-  target_age_mixing <- c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung)
-
+  target_age_mixing <- c(
+  tgt.young.pctold,   # young → old
+  tgt.old.pctyoung,   # old → young
+  tgt.young.pctyoung  # young → young
+)
+names(target_age_mixing) <- c("mix.young.1.0", "mix.young.0.1", "mix.young.1.1")
 
 ## distance
   ### simulated
@@ -386,47 +391,61 @@ target_race_mixing <- target_race_num
 
       ggsave(here("simulate-from-ergms", "out", "sexmix_violin_plot.png"), width = 8, height = 6)
 
+  ##stop("\n", "!!!RUN UP TO HERE!!!", "\n")
 
-## age
-  # Combine the list elements into a data frame, excluding the base category
-  age_mixing_df <- do.call(rbind, lapply(seq_along(sim.young), function(i) {
-    data.frame(
-      run = i,
-      category = names(sim.young[[i]]),
-      count = as.numeric(sim.young[[i]])
-    )
-  }))
+  ## age
+    # Combine the list elements into a data frame, excluding the base category
+    age_mixing_df <- do.call(rbind, lapply(seq_along(sim.young), function(i) {
+      data.frame(
+        run = i,
+        category = names(sim.young[[i]]),
+        count = as.numeric(sim.young[[i]])
+      )
+    }))
 
-  # Filter out the base category
-  age_mixing_df <- age_mixing_df[!age_mixing_df$category %in% "mix.young.0.0", ]
+    # Filter out the base category
+    age_mixing_df <- age_mixing_df[!age_mixing_df$category %in% "mix.young.0.0", ]
+    levels(age_mixing_df$category)
 
-  # Ensure that category is a factor
-  age_mixing_df$category <- factor(age_mixing_df$category)
+    # Define desired panel order explicitly
+    desired_levels <- c("mix.young.0.1", "mix.young.1.0", "mix.young.1.1")
 
-  # Set the names for the target age mixing values
-  #target_age_mixing <- c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung)
-  names(target_age_mixing) <- c("mix.young.old.pctyoung", "mix.young.pctold", "mix.young.pctyoung")
+    # Set factor levels to desired order before plotting or joining
+    age_mixing_df$category <- factor(age_mixing_df$category, levels = desired_levels)
 
-  # Plot the violin plot
-  ggplot(age_mixing_df, aes(x = category, y = count)) +
-    geom_violin(trim = FALSE, fill = "#66C2A5") +
-    geom_hline(data = data.frame(category = names(target_age_mixing), 
-                                y = as.numeric(target_age_mixing)), aes(yintercept = y), 
-              linetype = "solid", color = "black", linewidth = 1.5) +
-    facet_wrap(~ category, scales = "free_y") +
-    theme_minimal() +
-    labs(y = "Age Mixing Count", x = NULL) +
-    theme(
-      axis.text.x = element_blank(),  # Hide x-axis text
-      axis.title.x = element_blank(),  # Hide x-axis title
-      axis.title.y = element_text(size = 14),
-      panel.grid.major = element_blank(), 
-      panel.grid.minor = element_blank(),
-      strip.text = element_text(size = 14, face = "bold")  # Make panel titles more prominent
+    # Create target values (from unpacked objects earlier)
+    names(target_age_mixing) <- desired_levels
+
+    # Create a target values dataframe
+    target_age_df <- data.frame(
+      category = names(target_age_mixing),
+      target = as.numeric(target_age_mixing)
     )
 
-  # Save the plot
-  ggsave(here("simulate-from-ergms", "out", "agemix_violin_plot.png"), width = 8, height = 6)
+    # Apply same factor levels to target dataframe
+    target_age_df$category <- factor(target_age_df$category, levels = desired_levels)
+
+    # Merge target into main dataframe
+    age_mixing_df <- dplyr::left_join(age_mixing_df, target_age_df, by = "category")
+
+    # Plot
+    ggplot(age_mixing_df, aes(x = category, y = count)) +
+      geom_violin(trim = FALSE, fill = "#66C2A5") +
+      geom_hline(aes(yintercept = target), linetype = "solid", color = "black", linewidth = 1.5) +
+      facet_wrap(~ category, scales = "free_y") +
+      theme_minimal() +
+      labs(y = "Age Mixing Count", x = NULL) +
+      theme(
+        axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 14),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.text = element_text(size = 14, face = "bold")
+      )
+
+    # Save the plot
+    ggsave(here("simulate-from-ergms", "out", "agemix_violin_plot.png"), width = 8, height = 6)
 
 
 
