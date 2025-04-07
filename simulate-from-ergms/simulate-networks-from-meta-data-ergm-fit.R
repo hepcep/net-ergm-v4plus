@@ -171,7 +171,7 @@ dist_sim <-
   ))
 dist_sim
 
-round(dist.nedge.distribution[dist.terms])
+round(dist_nedge_distribution[dist.terms])
 
 
 
