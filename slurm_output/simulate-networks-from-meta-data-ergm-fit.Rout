@@ -18,7 +18,6 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 - Project '/oscar/home/akhann16/code/net-ergm-v4plus' loaded. [renv 1.0.7]
-- The project is out-of-sync -- use `renv::status()` for details.
 > # Simulate network (n=32K) from ERGM fit 
 > # parameterized with meta data  
 > 
@@ -114,7 +113,7 @@ here() starts at /oscar/home/akhann16/code/net-ergm-v4plus
 +       "stepwise-refactored-checkpointing-data-dated-2025-jan23",
 +       "stepwise-refactored-checkpointing-data-dated-2025-jan23.RData"
 +       )
-+       )
++   )
 > 
 > ## input params
 >   data_objects <- readRDS(here("fit-ergms", "out", "processed_data.rds"))
@@ -186,7 +185,7 @@ Log-likelihood was not estimated for this fit. To get deviances, AIC, and/or BIC
 > 
 > # Simulate 100 networks ----------
 > 
->   nsim.vec <- 1:100
+>   nsim.vec <- 1:10
 > 
 >   sim_results <- as.list(nsim.vec)
 >   set.seed(Sys.time())
@@ -205,7 +204,7 @@ Log-likelihood was not estimated for this fit. To get deviances, AIC, and/or BIC
 >   ecount <- unlist(lapply(sim_results, network.edgecount))
 >   summary(ecount)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-  23893   24219   24328   24318   24424   24764 
+  24020   24090   24257   24234   24338   24512 
 > 
 >   mean_edges <- mean(ecount)
 >   range_edges <- range(ecount)
@@ -220,8 +219,8 @@ Log-likelihood was not estimated for this fit. To get deviances, AIC, and/or BIC
 + )
 > 
 > comparison_df_edges
-  Parameter     Mean Range_Min Range_Max   Target
-1     edges 24317.78     23893     24764 22959.93
+  Parameter    Mean Range_Min Range_Max   Target
+1     edges 24234.1     24020     24512 22959.93
 > 
 > ## outdegree
 >   outdeg0 <- unlist(lapply(sim_results, 
@@ -255,9 +254,9 @@ Log-likelihood was not estimated for this fit. To get deviances, AIC, and/or BIC
 + )
 > 
 > comparison_df_outdeg
-  Parameter     Mean Range_Min Range_Max  Target
-1   outdeg0 18759.84     18586     18972 19387.2
-2   outdeg1  6737.31      6526      6900  6469.3
+  Parameter    Mean Range_Min Range_Max  Target
+1   outdeg0 18773.8     18652     18903 19387.2
+2   outdeg1  6743.9      6630      6844  6469.3
 > 
 > ## indegree
 > indeg0 <- unlist(lapply(sim_results, 
@@ -279,7 +278,7 @@ Log-likelihood was not estimated for this fit. To get deviances, AIC, and/or BIC
 > 
 > 
 > c(mean(indeg0), mean(indeg1))
-[1] 20372.85  4813.57
+[1] 20425.2  4791.9
 > indegree_data$mean_n[1:2]
 [1] 20666.67  6499.50
 > sum(indegree_data$mean_n[1:2])
@@ -299,11 +298,11 @@ Log-likelihood was not estimated for this fit. To get deviances, AIC, and/or BIC
 + )
 > 
 > comparison_df_indeg
-  Parameter     Mean Range_Min Range_Max   Target
-1    indeg0 20372.85     20199     20562 20666.67
-2    indeg1  4813.57      4656      5004  6499.50
+  Parameter    Mean Range_Min Range_Max   Target
+1    indeg0 20425.2     20350     20553 20666.67
+2    indeg1  4791.9      4725      4875  6499.50
 > sum(comparison_df_indeg$Mean)
-[1] 25186.42
+[1] 25217.1
 > 
 > ## nodemix(race.num)
 > race.num <- unlist(lapply(sim_results, 
@@ -312,13 +311,13 @@ Log-likelihood was not estimated for this fit. To get deviances, AIC, and/or BIC
 > 
 > summary(sim_results[[1]] ~ nodemix("race.num"))
 mix.race.num.2.1 mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 
-            2295             2696             3854             1123 
+            2290             2742             3809             1152 
 mix.race.num.2.2 mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 
-            5855              843             1994              671 
+            5656              899             2030              688 
 mix.race.num.2.3 mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 
-             415             2548              918                9 
+             405             2577              930               14 
 mix.race.num.2.4 mix.race.num.3.4 mix.race.num.4.4 
-              27                7               84 
+              21                6              107 
 > 
 > 
 > 
@@ -334,105 +333,15 @@ mix.race.num.2.4 mix.race.num.3.4 mix.race.num.4.4
 + ))
 > gender
 mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6157        4221        9354        6154        4389        9476 
+       6125        4141        9408        6104        4302        9388 
 mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6159        4372        9497        6242        4504        9428 
+       6161        4368        9238        5948        4319        9486 
 mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6189        4465        9244        6018        4319        9356 
+       6092        4340        9562        5995        4246        9340 
 mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6250        4302        9449        6126        4413        9602 
+       6190        4348        9514        6114        4508        9246 
 mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6122        4219        9174        6368        4369        9447 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6082        4398        9534        6173        4420        9551 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6033        4400        9549        6046        4351        9539 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6224        4448        9517        6123        4335        9499 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6134        4422        9332        6104        4398        9295 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6075        4234        9514        6093        4328        9453 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6078        4414        9408        5937        4341        9414 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6240        4405        9207        6217        4361        9458 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       5999        4446        9498        6214        4369        9578 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       5992        4432        9359        6015        4274        9437 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6146        4461        9336        6116        4445        9461 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6007        4405        9499        6015        4322        9320 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6140        4355        9416        6201        4370        9492 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6199        4476        9428        6152        4310        9360 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6185        4419        9409        6068        4448        9430 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6218        4394        9504        6331        4397        9346 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6015        4340        9387        6273        4322        9366 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6081        4348        9562        6194        4360        9586 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6067        4419        9391        6069        4391        9532 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6127        4300        9647        6118        4387        9593 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6032        4512        9429        6145        4401        9509 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6265        4373        9407        6107        4490        9444 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6042        4357        9488        6148        4370        9543 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6212        4339        9579        6170        4445        9473 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6070        4396        9609        6011        4349        9385 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6036        4400        9506        6103        4365        9389 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6112        4426        9633        6062        4341        9565 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6261        4483        9673        6156        4513        9453 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       5979        4383        9548        6078        4322        9539 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6228        4394        9323        6156        4323        9367 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6037        4384        9457        6239        4531        9373 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6068        4370        9577        6163        4433        9463 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6187        4392        9515        6201        4300        9438 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6076        4349        9355        6080        4386        9474 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       5946        4384        9435        6082        4317        9673 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6206        4349        9515        6004        4276        9384 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6171        4271        9526        6124        4329        9526 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6074        4510        9468        6119        4521        9229 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6095        4384        9458        6186        4416        9352 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6045        4332        9451        6078        4411        9371 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6061        4295        9649        6122        4352        9633 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6098        4328        9261        6120        4374        9482 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6203        4357        9571        6172        4440        9532 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6107        4231        9479        6007        4465        9476 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6082        4312        9573        6135        4407        9545 
-mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
-       6068        4402        9715        6030        4418        9393 
+       6132        4434        9387        6001        4375        9425 
 > 
 > round(c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale), 0)
 [1] 5602 4261 9055
@@ -443,125 +352,17 @@ mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M
 + )) 
 > young
 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 
-         2951           915          1387          3023           900 
+         2967           888          1385          3003           931 
 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 
-         1510          3061           939          1432          3024 
+         1423          2945           926          1469          3003 
 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 
-          928          1439          3001           949          1477 
+          930          1429          2958           969          1415 
 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 
-         3039           940          1431          2972           947 
+         2905           942          1471          3017           963 
 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 
-         1454          3126           874          1383          2922 
+         1477          3057           934          1470          3094 
 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 
-          927          1382          3006           944          1451 
-mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 
-         3047           902          1452          2960           923 
-mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 
-         1473          2995           898          1376          2875 
-mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 
-          946          1485          3082           917          1416 
-mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 
-         2908           907          1437          2950           891 
-mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 
-         1435          3058           969          1447          2925 
-mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 
-          920          1469          3079           953          1434 
-mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 
-         3060           902          1408          3043           899 
-mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 
-         1453          3030           970          1385          3037 
-mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 
-          934          1465          3049           910          1474 
-mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 
-         3027           970          1480          3020           850 
-mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 
-         1383          3049           906          1394          3030 
-mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 
-          925          1370          2966           906          1431 
-mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 
-         3053           915          1403          2932           879 
-mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 
-         1435          2945           981          1436          3057 
-mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 
-          897          1470          2989           970          1476 
-mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 
-         3029           964          1483          3057           920 
-mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 
-         1470          3008           957          1463          3050 
-mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 
-          920          1434          3047           916          1430 
-mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 
-         2988           874          1419          3032           942 
-mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 
-         1429          3033           889          1410          2991 
-mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 
-          941          1448          2905           895          1460 
-mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 
-         3017           942          1432          3033           910 
-mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 
-         1471          2973           940          1443          3002 
-mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 
-          971          1437          3021           937          1448 
-mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 
-         2997           960          1403          2935           951 
-mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 
-         1468          3078           928          1387          3018 
-mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 
-          933          1476          3128           963          1361 
-mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 
-         3034           916          1446          2960           938 
-mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 
-         1508          3020           880          1405          3022 
-mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 
-          936          1399          2990           872          1429 
-mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 
-         3028           962          1460          2953           944 
-mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 
-         1438          3117           890          1515          2987 
-mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 
-          978          1466          2918           921          1452 
-mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 
-         3011           929          1394          3065           996 
-mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 
-         1443          3020           911          1436          3066 
-mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 
-          981          1395          3110           898          1414 
-mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 
-         2916           921          1512          3032           896 
-mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 
-         1401          3082           948          1455          3016 
-mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 
-          927          1429          2927           946          1447 
-mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 
-         3013           902          1430          3032           919 
-mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 
-         1435          3007           901          1441          3008 
-mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 
-          944          1475          2827           921          1428 
-mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 
-         2963           908          1352          3049           870 
-mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 
-         1394          3015           968          1489          2961 
-mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 
-          926          1425          3057           969          1417 
-mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 
-         3134           898          1445          2947           915 
-mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 
-         1476          3086           901          1385          3064 
-mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 
-          900          1404          3076           955          1487 
-mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 
-         2940           849          1417          3040           856 
-mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 
-         1473          3008           934          1405          3062 
-mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 
-          956          1453          2921           865          1461 
-mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 
-         2966           939          1466          3026           969 
-mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 
-         1453          3010           907          1400          3130 
-mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 
-          956          1419          3032           885          1443 
+          964          1440          3040           936          1475 
 > 
 > #summary(sim_results[[10]] ~ nodemix("young"))
 > round(c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung))
@@ -576,61 +377,19 @@ mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1
 +   ))
 > dist_sim
 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 
- 4175  8236  5684  4152  8533  5578  4151  8623  5506  4198  8602  5490  4155 
+ 4181  8481  5469  4138  8397  5606  4172  8353  5459  4179  8376  5442  4148 
 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 
- 8461  5551  4178  8275  5488  4211  8488  5632  4219  8515  5553  4158  8155 
-dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 
- 5547  4202  8479  5688  4221  8421  5599  4202  8505  5608  4181  8490  5534 
-dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 
- 4180  8534  5493  4273  8460  5664  4183  8306  5613  4136  8394  5610  4232 
-dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 
- 8287  5545  4149  8313  5553  4177  8498  5560  4187  8340  5425  4167  8445 
-dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 
- 5505  4158  8307  5571  4175  8423  5589  4189  8547  5495  4158  8533  5638 
-dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 
- 4192  8368  5568  4221  8463  5391  4133  8478  5656  4243  8434  5675  4182 
-dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 
- 8552  5604  4138  8409  5449  4216  8492  5482  4187  8594  5529  4209  8513 
-dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 
- 5562  4182  8384  5626  4125  8546  5618  4177  8479  5587  4168  8574  5518 
-dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 
- 4171  8566  5523  4139  8366  5443  4186  8379  5613  4167  8385  5585  4216 
-dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 
- 8473  5743  4206  8392  5647  4242  8358  5547  4182  8508  5595  4208  8385 
-dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 
- 5600  4190  8401  5520  4151  8506  5597  4135  8516  5634  4186  8504  5635 
-dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 
- 4137  8364  5547  4157  8576  5476  4192  8374  5656  4194  8522  5725  4226 
-dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 
- 8541  5575  4181  8332  5545  4192  8375  5641  4161  8432  5580  4199  8615 
-dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 
- 5469  4175  8560  5502  4209  8426  5716  4205  8474  5696  4200  8367  5505 
-dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 
- 4188  8307  5561  4232  8320  5583  4191  8406  5524  4223  8380  5581  4185 
-dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 
- 8502  5522  4159  8573  5562  4195  8562  5674  4184  8570  5674  4158  8464 
-dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 
- 5538  4204  8400  5487  4220  8373  5615  4114  8440  5420  4154  8463  5658 
-dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 
- 4203  8418  5538  4165  8401  5624  4149  8352  5633  4169  8487  5615  4122 
-dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 
- 8444  5656  4144  8520  5470  4108  8524  5528  4226  8495  5573  4078  8349 
-dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 
- 5560  4207  8589  5493  4162  8448  5572  4159  8701  5562  4090  8539  5545 
-dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 
- 4205  8522  5580  4113  8734  5589  4124  8552  5522  4186  8312  5625  4181 
-dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 dist3 dist1 dist2 
- 8374  5588  4177  8491  5454  4218  8584  5681  4233  8383  5614  4166  8527 
-dist3 
- 5480 
+ 8507  5532  4211  8378  5425  4167  8726  5529  4155  8459  5516  4173  8595 
+dist3 dist1 dist2 dist3 
+ 5505  4203  8427  5508 
 > 
 > round(dist.nedge.distribution[dist.terms])
 [1] 3605 8059 5533
 > 
 > save.image(here(
 +   "simulate-from-ergms", "out", 
-+   paste0(run_label, ".RData")))
++   paste0(run_label, "10_for_development", ".RData")))
 > 
 > proc.time()
-    user   system  elapsed 
-1595.599   64.058 1673.843 
+   user  system elapsed 
+338.107  15.863 358.210 
