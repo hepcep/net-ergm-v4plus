@@ -20,11 +20,13 @@ library(ergm.userterms)
 library(here)
 library(ggplot2)
 library(qs)
+library(knitr)
+library(rmarkdown)
 
 
 # Data ----------
 
-run_label <- "stepwise-refactored-checkpointing-data-dated-2025-jan23" # set manually to ensure intentional updates
+run_label <- "stepwise-refactored-checkpointing-data-dated-2025-jan23-redone" # set manually to ensure intentional updates
 ## should match the object from the ERGM fitting code 
 
   ## load data
@@ -391,7 +393,8 @@ names(target_age_mixing) <- c("mix.young.1.0", "mix.young.0.1", "mix.young.1.1")
 
       ggsave(here("simulate-from-ergms", "out", "sexmix_violin_plot.png"), width = 8, height = 6)
 
-  ##stop("\n", "!!!RUN UP TO HERE!!!", "\n")
+  
+  #stop("\n", "!!!RUN UP TO HERE!!!", "\n")
 
   ## age
     # Combine the list elements into a data frame, excluding the base category
