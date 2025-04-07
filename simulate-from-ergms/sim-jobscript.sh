@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#SBATCH --job-name="simulate-networks-from-meta-data-ergm-fit"
+#SBATCH --job-name="simulate-networks-stepwise-refactored-checkpointing-data-dated-2025-jan23-redone"
 #SBATCH --time=5:00:00
 #SBATCH --mem=64000
 #SBATCH --nodes=1
