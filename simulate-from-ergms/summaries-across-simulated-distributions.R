@@ -20,8 +20,6 @@ library(ergm.userterms)
 library(here)
 library(ggplot2)
 library(qs)
-library(knitr)
-library(rmarkdown)
 
 
 # Data ----------
