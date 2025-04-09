@@ -28,7 +28,9 @@ run_label <- "stepwise-refactored-checkpointing-data-dated-2025-jan23-redone" # 
 ## should match the object from the ERGM fitting code 
 
   ## load data
-  sim_results <- qread(here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_10.qs")))
+  ## sim_results <- qread(here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_10.qs")))
+  sim_results <- qread(here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_100.qs")))
+
 
 ## input params
   data_objects <- readRDS(here("fit-ergms", "out", "processed_data.rds"))
