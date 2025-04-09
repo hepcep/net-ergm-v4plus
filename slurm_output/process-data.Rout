@@ -1,0 +1,614 @@
+
+R version 4.4.0 (2024-04-24) -- "Puppy Cup"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+- Project '/oscar/home/akhann16/code/net-ergm-v4plus' loaded. [renv 1.0.7]
+> # Process the synthetic dataset with 32K nodes to enable ERGM fitting
+> 
+> rm(list=ls())
+> 
+> # Activate R environment ------------------------------
+> 
+> library(renv)
+
+Attaching package: ‘renv’
+
+The following objects are masked from ‘package:stats’:
+
+    embed, update
+
+The following objects are masked from ‘package:utils’:
+
+    history, upgrade
+
+The following objects are masked from ‘package:base’:
+
+    autoload, load, remove, use
+
+> renv::activate()
+> 
+> 
+> # Libraries ------------------------------ 
+> 
+> library(network)
+
+‘network’ 1.18.2 (2023-12-04), part of the Statnet Project
+* ‘news(package="network")’ for changes since last version
+* ‘citation("network")’ for citation information
+* ‘https://statnet.org’ for help, support, and other information
+
+> library(ergm)
+
+‘ergm’ 4.6.0 (2023-12-17), part of the Statnet Project
+* ‘news(package="ergm")’ for changes since last version
+* ‘citation("ergm")’ for citation information
+* ‘https://statnet.org’ for help, support, and other information
+
+‘ergm’ 4 is a major update that introduces some backwards-incompatible
+changes. Please type ‘news(package="ergm")’ for a list of major
+changes.
+
+> library(dplyr)
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+> library(ergm.userterms)
+Loading required package: statnet.common
+
+Attaching package: ‘statnet.common’
+
+The following objects are masked from ‘package:base’:
+
+    attr, order
+
+
+‘ergm.userterms’ 3.1.1 (2020-02-01), part of the Statnet Project
+* ‘news(package="ergm.userterms")’ for changes since last version
+* ‘citation("ergm.userterms")’ for citation information
+* ‘https://statnet.org’ for help, support, and other information
+
+NOTE: If you use custom ERGM terms based on ‘ergm.userterms’ version
+prior to 3.1, you will need to perform a one-time update of the package
+boilerplate files (the files that you did not write or modify) from
+‘ergm.userterms’ 3.1 or later. See help('eut-upgrade') for
+instructions.
+
+> library(here)
+here() starts at /oscar/home/akhann16/code/net-ergm-v4plus
+> 
+> # Read Synthpop Data ------------------------------ 
+> 
+> data_path <- here("data", "synthpop-2023-10-12 12_01_32.csv")
+> data <- read.csv(data_path, header=TRUE)
+> glimpse(data)
+Rows: 32,002
+Columns: 15
+$ sex                       <chr> "M", "M", "M", "M", "M", "M", "M", "M", "M",…
+$ race                      <chr> "Wh", "Wh", "Wh", "Wh", "Wh", "Wh", "Wh", "W…
+$ agecat                    <chr> "18-24", "18-24", "18-24", "18-24", "18-24",…
+$ age_started               <int> 18, 19, 16, 19, 5, 19, 15, 17, 25, 18, 21, 1…
+$ fraction_recept_sharing   <dbl> 1.00, 0.10, 0.10, 0.00, 0.00, 0.00, 0.25, 0.…
+$ syringe_source            <int> 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,…
+$ daily_injection_intensity <chr> "once or twice a day", "once or twice a day"…
+$ age_lb                    <int> 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, …
+$ age_ub                    <int> 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, …
+$ age                       <int> 23, 21, 19, 20, 21, 21, 21, 21, 25, 18, 24, …
+$ zipcode                   <int> 60644, 60644, 60644, 60644, 60644, 60644, 60…
+$ Zip                       <int> 60644, 60644, 60644, 60644, 60644, 60644, 60…
+$ lon                       <dbl> -87.76885, -87.77289, -87.76898, -87.76998, …
+$ lat                       <dbl> 41.88311, 41.88240, 41.86867, 41.89144, 41.8…
+$ hcv_status                <chr> "sucseptible", "sucseptible", "sucseptible",…
+> 
+> # Input  In/Outdegree Data ------------------------------
+> # (from networks simulated form the fit, as an alternate source of targets)
+> 
+> inedges <- read.csv(here("data", "pplrss.csv")) #in- and out-edges
+> outedges <- read.csv(here("data", "ppldss.csv"))
+> negbin_indeg <- read.csv(here("data", "negbin-indeg.csv"))
+> negbin_outdeg <- read.csv(here("data", "negbin-outdeg.csv"))
+> inedges.data <- read.csv(file = here("data", "inedges_data.csv"), header = TRUE)
+> outedges.data <- read.csv(file = here("data", "outedges_data.csv"), header = TRUE)
+> 
+> # Input  Degree Distribution Data ------------------------------
+> 
+> #degree_distribution_target_stats <- 
+>  # readRDS(here("simulate-from-ergms/out/degree_distribution_target_stats.RDS"))
+> #names(degree_distribution_target_stats)
+> 
+>  
+> 
+> # Initialize network ----------
+> 
+> n <- nrow(data)
+> n0 <- network.initialize(n = n, directed = TRUE)
+> 
+> 
+> # Compute target number of edges ----------
+> 
+> inedges_target <- sum(inedges.data$k * inedges.data$nbprob * n)
+> outedges_target <- sum(outedges.data$k * outedges.data$nbprob * n)
+> edges_target <- mean(c(inedges_target, outedges_target))
+> 
+> 
+> 
+> 
+> # Assign vertex attributes to the network ----------
+> 
+> synthpop_cols <- colnames(data)
+> set.vertex.attribute(n0, colnames(data), data)
+> 
+> 
+> # Test assignment between `n0` vertex attributes and `synthpop_cols` ----------
+> 
+> ## For sex variable
+> identical(n0%v%"sex", data$sex)
+[1] TRUE
+> table(n0%v%"sex", exclude=NULL)
+
+    F     M 
+12573 19429 
+> 
+> ## For all variables:
+> ### get vertex attribute names from the n0 graph object
+> vertex_attr_names <- list.vertex.attributes(n0)
+> 
+> # define a function to check if a vertex attribute is identical to the corresponding column in data
+> check_identical <- function(attr_name) {
++   graph_attr <- n0 %v% attr_name
++   data_attr <- data[[attr_name]]
++   
++   return(identical(graph_attr, data_attr))
++ }
+> 
+> ### use sapply() to apply the check_identical() function to all vertex attribute names
+> identical_results <- sapply(vertex_attr_names, check_identical)
+> 
+> ### print the results
+> print(identical_results)
+                      age                    age_lb               age_started 
+                     TRUE                      TRUE                      TRUE 
+                   age_ub                    agecat daily_injection_intensity 
+                     TRUE                      TRUE                      TRUE 
+  fraction_recept_sharing                hcv_status                       lat 
+                     TRUE                      TRUE                      TRUE 
+                      lon                        na                      race 
+                     TRUE                     FALSE                      TRUE 
+                      sex            syringe_source              vertex.names 
+                     TRUE                      TRUE                     FALSE 
+                      Zip                   zipcode 
+                     TRUE                      TRUE 
+> 
+> ### check if any values other than 'vertex.names' are FALSE
+> if (any(identical_results[!(names(identical_results) %in% c("vertex.names", "na"))] == FALSE)) {
++   stop("Error: Some vertex attributes do not match the corresponding columns in data.")
++ } else {
++   cat("Test passed: All relevant vertex attributes match the corresponding columns in data.\n")
++ }
+Test passed: All relevant vertex attributes match the corresponding columns in data.
+> 
+> 
+> # Recode to add new variables to dataset ------------------------------
+> 
+> # young (< 26, to be set = 1) vs old (>= 26, to be set = 0) 
+> age.cat <- n0 %v% "age"
+> age.cat.df <- as.data.frame(age.cat)
+> age.cat.df <-  
++   mutate(age.cat, young = ifelse(age.cat <26, 1, 0), .data = age.cat.df)
+> xtabs(~age.cat+young, data = age.cat.df)
+       young
+age.cat    0    1
+     18    0  471
+     19    0  695
+     20    0  854
+     21    0 1053
+     22    0 1142
+     23    0 1286
+     24    0 1561
+     25    0  739
+     26  787    0
+     27  910    0
+     28  946    0
+     29 1018    0
+     30 1024    0
+     31 1027    0
+     32 1119    0
+     33 1110    0
+     34 1117    0
+     35  576    0
+     36  585    0
+     37  584    0
+     38  617    0
+     39  611    0
+     40  676    0
+     41  670    0
+     42  732    0
+     43  727    0
+     44  719    0
+     45  240    0
+     46  232    0
+     47  261    0
+     48  253    0
+     49  238    0
+     50  225    0
+     51  228    0
+     52  233    0
+     53  250    0
+     54  235    0
+     55  224    0
+     56  231    0
+     57  225    0
+     58  269    0
+     59  230    0
+     60  258    0
+     61  238    0
+     62  245    0
+     63  251    0
+     64  252    0
+     65  253    0
+     66  212    0
+     67  258    0
+     68  231    0
+     69  238    0
+     70  229    0
+     71  235    0
+     72  219    0
+     73  243    0
+     74  263    0
+     75  271    0
+     76  243    0
+     77  213    0
+     78  256    0
+     79  240    0
+     80  224    0
+> 
+> # recode race variable to set ordering of categories
+> race <- n0 %v% "race"
+> race.num <- recode(race, 
++                    Wh = 1, Bl = 2,
++                    Hi = 3, Ot = 4)
+> 
+> # Initialize network and add attributes ----------
+> 
+> n0 %v% "young" <- age.cat.df$young
+> n0 %v% "race.num" <- race.num
+> 
+> 
+> # Generate target statistics from meta-mixing data ----------
+>   ## Update with values meta mixing values from 08/31/2021
+>   ## See https://anl.box.com/s/jrf5usly4ujuv3gagmdxlwxaiuvnlq1o
+>   ## All network mixing parameters with CIs: https://anl.box.com/s/jg6y221hcbql1sd9kvsxpq0cei03qlr0
+> 
+> ## gender 
+> ### mixing information from meta-analysis of sathcap AND socnet
+> edges.male.end <- 0.58
+> edges.female.end <- 0.40
+> 
+> male.pctmale <- 0.68 
+> male.pctfemale <- 0.32
+> female.pctmale <- 0.61
+> female.pctfemale <- 0.39
+> 
+> ### set gender targets 
+> tgt.male.pctmale <- edges_target*edges.male.end*male.pctmale
+> tgt.male.pctfemale <- edges_target*edges.male.end*male.pctfemale
+> tgt.female.pctmale <- edges_target*edges.female.end*female.pctmale  
+> tgt.female.pctfemale <- edges_target*edges.female.end*female.pctfemale
+> 
+> ## young (1=young; 0=old)
+> ### mixing information from meta-analysis of sathcap AND socnet
+> edges.young.end <- 0.10
+> edges.old.end <- 0.90
+>   
+> young.pctyoung <- 0.61
+> young.pctold <- 0.39
+> old.pctyoung <- 0.14
+> old.pctold <- 0.86
+>  
+> ## set young targets from meta data
+> tgt.young.pctyoung <- edges_target * edges.young.end * young.pctyoung
+> tgt.young.pctold <- edges_target * edges.young.end * young.pctold
+> tgt.old.pctyoung <- edges_target * edges.old.end * old.pctyoung
+> tgt.old.pctold <- edges_target * edges.old.end * old.pctold
+> 
+> 
+> 
+> ## race (1=white, 2=black, 3=hispanic, 4=other)
+> 
+> table(n0 %v% "race")
+
+   Bl    Hi    Ot    Wh 
+ 8317  6853  1429 15403 
+> table(n0 %v% "race.num", exclude=NULL) # will be sorted as per 1=W, 2=B, 3=H, 4=O
+
+    1     2     3     4 
+15403  8317  6853  1429 
+> 
+> 
+> pct_to_white	<- 0.30
+> pct_to_black	<- 0.41
+> pct_to_hispanic	<- 0.21
+> pct_to_other	<- 0.04
+> 
+> race.w.w <- 0.74 # (marks sum to 1)
+> race.b.w <- 0.31 #-
+> race.h.w <- 0.37 ##
+> race.o.w <- 0.54 #--
+> race.w.b <- 0.11 #
+> race.b.b <- 0.57 #-
+> race.h.b <- 0.10 ##
+> race.o.b <- 0.23 #--
+> race.w.h <- 0.13 #
+> race.b.h <- 0.07 #-
+> race.h.h <- 0.51 ##
+> race.o.h <- 0.16 #--
+> race.w.o <- 0.02 #
+> race.b.o <- 0.05 #-
+> race.h.o <- 0.02 ##
+> race.o.o <- 0.07 #--
+> 
+> target.w.w <- edges_target * pct_to_white * race.w.w
+> target.b.w <- edges_target * pct_to_white * race.b.w
+> target.h.w <- edges_target * pct_to_white * race.h.w
+> target.o.w <- edges_target * pct_to_white * race.o.w
+> 
+> target.w.b <- edges_target * pct_to_black * race.w.b
+> target.b.b <- edges_target * pct_to_black * race.b.b
+> target.h.b <- edges_target * pct_to_black * race.h.b
+> target.o.b <- edges_target * pct_to_black * race.o.b
+> 
+> target.w.h <- edges_target * pct_to_hispanic * race.w.h
+> target.b.h <- edges_target * pct_to_hispanic * race.b.h
+> target.h.h <- edges_target * pct_to_hispanic * race.h.h
+> target.o.h <- edges_target * pct_to_hispanic * race.o.h
+> 
+> target.w.o <- edges_target * pct_to_other * race.w.o
+> target.b.o <- edges_target * pct_to_other * race.b.o
+> target.h.o <- edges_target * pct_to_other * race.h.o
+> target.o.o <- edges_target * pct_to_other * race.o.o
+> 
+> target_race_num  <- c(
++             target.b.w, target.h.w, target.o.w,
++   target.w.b, target.b.b, target.h.b, target.o.b,
++   target.w.h, target.b.h, target.h.h, target.o.h,
++   target.w.o, target.b.o, target.h.o, target.o.o
++ )
+> 
+> target_race_num
+ [1] 2292.63576 2736.37172 3993.62359 1111.80509 5761.17180 1010.73190
+ [7] 2324.68336  672.99953  362.38436 2640.22893  828.30711   19.72160
+[13]   49.30399   19.72160   69.02559
+> 
+> # Fit network only with edges ----------
+> fit_edges_only_net <- 
++   ergm(
++     n0 ~
++       edges,
++     target.stats = edges_target,
++     eval.loglik = FALSE    
++     )
+Unable to match target stats. Using MCMLE estimation.
+Starting maximum pseudolikelihood estimation (MPLE):
+Obtaining the responsible dyads.
+Evaluating the predictor and response matrix.
+Maximizing the pseudolikelihood.
+Finished MPLE.
+Starting Monte Carlo maximum likelihood estimation (MCMLE):
+Iteration 1 of at most 60:
+Optimizing with step length 1.0000.
+The log-likelihood improved by 0.0045.
+Convergence test p-value: 0.0039. Converged with 99% confidence.
+Finished MCMLE.
+This model was fit using MCMC.  To examine model diagnostics and check
+for degeneracy, use the mcmc.diagnostics() function.
+> 
+> edges_only_net <- simulate(fit_edges_only_net, nsim=1)
+> 
+> # Test alignment of race_num ----------
+> 
+>   # Define the known mapping
+>   num_to_race <- c("Wh", "Bl", "Hi", "Ot")  # 1=Wh,2=Bl,3=Hi,4=Ot
+> 
+>   # Retrieve the summaries
+>   race_num_alignment <- summary(edges_only_net ~ nodemix("race.num", levels2 = -1))
+>   race_term_alignment <- summary(edges_only_net ~ nodemix("race", levels2 = -1))
+> 
+>   # Print them for reference
+>   print(race_num_alignment)
+mix.race.num.2.1 mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 
+            2993             2560              505             3117 
+mix.race.num.2.2 mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 
+            1645             1438              272             2542 
+mix.race.num.2.3 mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 
+            1418             1119              236              520 
+mix.race.num.2.4 mix.race.num.3.4 mix.race.num.4.4 
+             270              258               56 
+>   print(race_term_alignment)
+mix.race.Hi.Bl mix.race.Ot.Bl mix.race.Wh.Bl mix.race.Bl.Hi mix.race.Hi.Hi 
+          1438            272           3117           1418           1119 
+mix.race.Ot.Hi mix.race.Wh.Hi mix.race.Bl.Ot mix.race.Hi.Ot mix.race.Ot.Ot 
+           236           2542            270            258             56 
+mix.race.Wh.Ot mix.race.Bl.Wh mix.race.Hi.Wh mix.race.Ot.Wh mix.race.Wh.Wh 
+           520           2993           2560            505           5647 
+> 
+>   cat("\nChecking all numeric-to-category race mappings:\n\n")
+
+Checking all numeric-to-category race mappings:
+
+> 
+>   # Loop over all combinations (i,j)
+>   for (i in 1:4) {
++     for (j in 1:4) {
++       # Construct term names
++       num_term <- paste0("mix.race.num.", i, ".", j)
++       race_term <- paste0("mix.race.", num_to_race[i], ".", num_to_race[j])
++       
++       # Check if both terms exist
++       if (num_term %in% names(race_num_alignment) && race_term %in% names(race_term_alignment)) {
++         # Compare counts
++         num_count <- race_num_alignment[num_term]
++         race_count <- race_term_alignment[race_term]
++         
++         if (num_count == race_count) {
++           cat("Confirmed: (", i, ",", j, ") in race.num = (", num_to_race[i], ",", num_to_race[j],
++               ") in race. Count:", num_count, "\n")
++         } else {
++           cat("Mismatch: (", i, ",", j, ") in race.num = (", num_to_race[i], ",", num_to_race[j], 
++               "). Counts differ: ", num_count, " vs ", race_count, "\n")
++         }
++       } else {
++         # At least one of the terms wasn't found in the alignment vectors
++         cat("Term not found for (", i, ",", j, "): ", num_term, " or ", race_term, "\n")
++       }
++     }
++   }
+Term not found for ( 1 , 1 ):  mix.race.num.1.1  or  mix.race.Wh.Wh 
+Confirmed: ( 1 , 2 ) in race.num = ( Wh , Bl ) in race. Count: 3117 
+Confirmed: ( 1 , 3 ) in race.num = ( Wh , Hi ) in race. Count: 2542 
+Confirmed: ( 1 , 4 ) in race.num = ( Wh , Ot ) in race. Count: 520 
+Confirmed: ( 2 , 1 ) in race.num = ( Bl , Wh ) in race. Count: 2993 
+Term not found for ( 2 , 2 ):  mix.race.num.2.2  or  mix.race.Bl.Bl 
+Confirmed: ( 2 , 3 ) in race.num = ( Bl , Hi ) in race. Count: 1418 
+Confirmed: ( 2 , 4 ) in race.num = ( Bl , Ot ) in race. Count: 270 
+Confirmed: ( 3 , 1 ) in race.num = ( Hi , Wh ) in race. Count: 2560 
+Confirmed: ( 3 , 2 ) in race.num = ( Hi , Bl ) in race. Count: 1438 
+Confirmed: ( 3 , 3 ) in race.num = ( Hi , Hi ) in race. Count: 1119 
+Confirmed: ( 3 , 4 ) in race.num = ( Hi , Ot ) in race. Count: 258 
+Confirmed: ( 4 , 1 ) in race.num = ( Ot , Wh ) in race. Count: 505 
+Confirmed: ( 4 , 2 ) in race.num = ( Ot , Bl ) in race. Count: 272 
+Confirmed: ( 4 , 3 ) in race.num = ( Ot , Hi ) in race. Count: 236 
+Confirmed: ( 4 , 4 ) in race.num = ( Ot , Ot ) in race. Count: 56 
+> 
+> ## degree distributions
+> inedges <- inedges %>% 
++   mutate(n_nodes = n*nbprob)
+> outedges <- outedges %>% 
++   mutate(n_nodes = n*nbprob)
+> 
+> negbin_inedges <- negbin_indeg %>% 
++   mutate(n_nodes = n*nbprob)
+> negbin_outedges <- negbin_outdeg %>% 
++   mutate(n_nodes = n*nbprob)
+> 
+> ## distance term
+> 
+> dist.prop.distribution <- c(15.7, 35.1, 24.1, 22)/100
+> dist.nedge.distribution <- edges_target*dist.prop.distribution
+> 
+> # Save RDS Objects ----
+> 
+> # create a list of objects to save
+> data_objects <- list(
++   data = data,
++   n0 = n0,
++   edges_only_net = edges_only_net,
++   tgt.old.pctyoung=tgt.old.pctyoung, 
++   tgt.young.pctold=tgt.young.pctold, 
++   tgt.young.pctyoung=tgt.young.pctyoung,
++   edges_target = edges_target,
++   tgt.female.pctmale = tgt.female.pctmale, 
++   tgt.male.pctfemale=tgt.male.pctfemale, 
++   tgt.male.pctmale=tgt.male.pctmale,
++   target_race_num = target_race_num,
++   negbin_inedges = negbin_inedges,
++   outedges = outedges,
++   dist_nedge_distribution = dist.nedge.distribution
++ )
+> 
+> # Print Objects for comparison --------
+> edges_only_net
+ Network attributes:
+  vertices = 32002 
+  directed = TRUE 
+  hyper = FALSE 
+  loops = FALSE 
+  multiple = FALSE 
+  bipartite = FALSE 
+  total edges= 24596 
+    missing edges= 0 
+    non-missing edges= 24596 
+
+ Vertex attribute names: 
+    age age_lb age_started age_ub agecat daily_injection_intensity fraction_recept_sharing hcv_status lat lon race race.num sex syringe_source vertex.names young Zip zipcode 
+
+ Edge attribute names not shown 
+> data_objects$tgt.old.pctyoung
+[1] 3106.152
+> data_objects$tgt.young.pctold
+[1] 961.4279
+> data_objects$tgt.young.pctyoung
+[1] 1503.772
+> data_objects$edges_target
+[1] 24652
+> data_objects$tgt.female.pctmale
+[1] 6015.087
+> data_objects$tgt.male.pctfemale
+[1] 4575.411
+> data_objects$tgt.male.pctmale
+[1] 9722.748
+> names(data_objects$target_race_num) <- 
++   c("target.b.w", "target.h.w", "target.o.w",
++     "target.w.b", "target.b.b", "target.h.b", "target.o.b",
++     "target.w.h", "target.b.h", "target.h.h", "target.o.h",
++     "target.w.o", "target.b.o", "target.h.o", "target.o.o")
+> data_objects$target_race_num
+target.b.w target.h.w target.o.w target.w.b target.b.b target.h.b target.o.b 
+2292.63576 2736.37172 3993.62359 1111.80509 5761.17180 1010.73190 2324.68336 
+target.w.h target.b.h target.h.h target.o.h target.w.o target.b.o target.h.o 
+ 672.99953  362.38436 2640.22893  828.30711   19.72160   49.30399   19.72160 
+target.o.o 
+  69.02559 
+> data_objects$negbin_inedges[1:2,]
+  k    nbprob  n_nodes
+1 0 0.7238265 23163.90
+2 1 0.1299956  4160.12
+> data_objects$outedges[1:4,]
+  k     nbprob  X   n_nodes
+1 0 0.63676240 NA 20377.670
+2 1 0.16774029 NA  5368.025
+3 2 0.08056306 NA  2578.179
+4 3 0.04451676 NA  1424.625
+> data_objects$dist_nedge_distribution
+[1] 3870.364 8652.851 5941.131 5423.439
+> 
+> 
+> # Save the list as an RDS file
+> saveRDS(data_objects, file = here("fit-ergms", "out", "processed_data.rds"))
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> proc.time()
+   user  system elapsed 
+ 13.874   1.004  19.081 
