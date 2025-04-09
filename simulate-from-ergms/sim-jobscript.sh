@@ -1,8 +1,8 @@
 #!/bin/sh
 
-#SBATCH --job-name="sim-fromsynthpop-2023-10-12-w-dist-all-plos-one"
+#SBATCH --job-name="simulate-networks-stepwise-refactored-checkpointing-data-dated-2025-jan23-redone"
 #SBATCH --time=5:00:00
-#SBATCH --mem=10000
+#SBATCH --mem=64000
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --mail-type=ALL

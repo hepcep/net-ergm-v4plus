@@ -1,7 +1,7 @@
 #!/bin/sh
 
-#SBATCH --job-name="summaries-from-updated-synthpop-2023-10-12-w-dist-all-plos-one-1e6-hotelling"
-#SBATCH --time=1:00:00
+#SBATCH --job-name="details-summaries-plots-from-stepwise-refactored-checkpointing-data-dated-2025-jan23"
+#SBATCH --time=3:00:00
 #SBATCH --mem=64000
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
