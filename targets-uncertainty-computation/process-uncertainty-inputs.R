@@ -19,11 +19,10 @@
 #    from upper and lower bounds obtained via meta-analysis:
 #    https://anl.box.com/s/jg6y221hcbql1sd9kvsxpq0cei03qlr0
 
-
 #
 # 3. Monte Carlo simulation is used to propagate this uncertainty:
 #    - Parameters with known bounds are sampled repeatedly (e.g., 10,000 times)
-#    - Resulting resampled distributions are summarized with means and 95% confidence intervals
+#    - Resulting resampled distributions are generated (summary stats can be computed from these samples)
 #
 # 4. These confidence intervals are overlaid on the ERGM violin plots,
 #    which already display the distribution of simulated values for each parameter.
@@ -98,8 +97,6 @@ simulate_edge_uncertainty <- function(indegree_df, outdegree_df, nsim = 10000, s
   return(edges_sim)
 }
 
-
-
 # -- computation  --
 edge_samples <- simulate_edge_uncertainty(indegree_data, outdegree_data, seed = 42)
 head(edge_samples)
@@ -108,3 +105,42 @@ mean(edge_samples)
 quantile(edge_samples, c(0.025, 0.975))
 
 ## ---- Load Ranges for Parameters Other than Degree Distributions ----
+
+# -- gender --
+  ## parameters
+  edges.male.end <- c(0.54, 0.58, 0.61) #specified in lb, mean, ub
+  male.pctmale <- c(0.67, 0.68, 0.69)
+  edges.female.end <- c(0.36, 0.40, 0.44)
+  female.pct.male <- c(0.57, 0.61, 0.64)
+  female.pct.female <- c(0.36, 0.39. 0.43)
+
+  ## compute samples of target parameters
+
+
+# -- race --
+ ## parameters
+    pct_to_white <- c(0.27, 0.30, 0.33)
+    race.w.w <- c(0.62, 0.74, 0.85)
+    race.b.w <- c(0.11, 0.31,	0.5)
+    race.h.w <- c(0.18, 0.37, 0.57)
+    race.o.w <- c(0.35, 0.54,	0.73)
+
+    pct_to_black <- c(0.38, 0.41,	0.45)
+    race.w.b <- c(0.05, 0.11, 0.16)
+    race.b.b <- c(0.57, 0.3, 0.84)
+    race.h.b <- c(0.05,	0.1, 0.14)
+    race.o.b <- c(0.08, 0.23, 0.38)
+
+    pct_to_hispanic <- c(0.18, 0.21,	0.24)
+    race.w.h <- c(0.06, 0.13, 0.19)
+    race.b.h <- c(0.05, 0.07,	0.09)
+    race.h.h <- c(0.33, 0.51,	0.69)
+    race.o.h <- c(0.10, 0.16,	0.22)
+
+    pct_to_other <- c(0.03, 0.04,	0.06)
+    race.w.o <- c(0.004, 0.02,	0.04)
+    race.b.o <-  c(0.03, 0.05,	0.07)
+    race.h.o <- c(0.0002, 0.0173, 0.0344)
+    race.o.o <- c(0.02, 0.07, 0.11)
+
+## generate sample
