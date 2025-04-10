@@ -114,7 +114,7 @@ quantile(edge_samples, c(0.025, 0.975))
   female.pct.male <- c(0.57, 0.61, 0.64)
   female.pct.female <- c(0.36, 0.39. 0.43)
 
-  ## compute samples of target parameters
+  ## generate samples of target parameters
 
 
 # -- race --
@@ -143,4 +143,16 @@ quantile(edge_samples, c(0.025, 0.975))
     race.h.o <- c(0.0002, 0.0173, 0.0344)
     race.o.o <- c(0.02, 0.07, 0.11)
 
-## generate sample
+  ## generate samples
+
+## -- age --
+  ## parameters
+     edges.young.end	<- c(0.08, 0.1,	0.12)
+     young.pctyoung <- c(0.41, 0.61, 0.79)
+     young.pctold	<- c(0.21, 0.39, 0.58)
+     
+     edges.old.end <- c(0.88, 0.9, 0.92)
+     old.pctyoung	<- c(0.13, 0.14,	0.15)
+     old.pctold	<- c(0.85, 0.86,	0.86)
+
+  ## generate samples of target parameters
