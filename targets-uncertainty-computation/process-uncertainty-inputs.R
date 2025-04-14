@@ -82,6 +82,8 @@ simulate_edge_uncertainty <- function(indegree_df, outdegree_df, nsim = 10000, s
   indegree_df <- indegree_df %>% filter(!is.na(lower_n), !is.na(upper_n), lower_n <= upper_n)
   outdegree_df <- outdegree_df %>% filter(!is.na(lower_n), !is.na(upper_n), lower_n <= upper_n)
 
+  in_n_sim <- vector("list", nsim)
+  out_n_sim <- vector("list", nsim)
   edges_sim <- numeric(nsim)
 
   for (i in seq_len(nsim)) {
@@ -91,14 +93,22 @@ simulate_edge_uncertainty <- function(indegree_df, outdegree_df, nsim = 10000, s
     in_edges <- sum(indegree_df$in_degree * in_n)
     out_edges <- sum(outdegree_df$out_degree * out_n)
 
+    in_n_sim[[i]] <- in_n
+    out_n_sim[[i]] <- out_n
     edges_sim[i] <- mean(c(in_edges, out_edges))
+
   }
 
-  return(edges_sim)
+  return(list(
+    in_n_sim = in_n_sim,
+    out_n_sim = out_n_sim,
+    edges_sim = edges_sim
+  ))
 }
 
 # -- computation  --
-edge_samples <- simulate_edge_uncertainty(indegree_data, outdegree_data, seed = 42)
+result <- simulate_edge_uncertainty(indegree_data, outdegree_data, seed = 42)
+edge_samples <- result$edges_sim
 head(edge_samples)
 length(edge_samples)
 mean(edge_samples)
@@ -107,18 +117,15 @@ quantile(edge_samples, c(0.025, 0.975))
 ## ---- Load Ranges for Parameters Other than Degree Distributions ----
 
 # -- gender --
-  ## parameters
-  edges.male.end <- c(0.54, 0.58, 0.61) #specified in lb, mean, ub
-  male.pctmale <- c(0.67, 0.68, 0.69)
-  edges.female.end <- c(0.36, 0.40, 0.44)
-  female.pct.male <- c(0.57, 0.61, 0.64)
-  female.pct.female <- c(0.36, 0.39. 0.43)
+    edges.male.end <- c(0.54, 0.58, 0.61) #specified in lb, mean, ub
+    male.pctmale <- c(0.67, 0.68, 0.69)
 
-  ## generate samples of target parameters
 
+    edges.female.end <- c(0.36, 0.40, 0.44)
+    female.pct.male <- c(0.57, 0.61, 0.64)
+    female.pct.female <- c(0.36, 0.39, 0.43)
 
 # -- race --
- ## parameters
     pct_to_white <- c(0.27, 0.30, 0.33)
     race.w.w <- c(0.62, 0.74, 0.85)
     race.b.w <- c(0.11, 0.31,	0.5)
@@ -143,10 +150,7 @@ quantile(edge_samples, c(0.025, 0.975))
     race.h.o <- c(0.0002, 0.0173, 0.0344)
     race.o.o <- c(0.02, 0.07, 0.11)
 
-  ## generate samples
-
 ## -- age --
-  ## parameters
      edges.young.end	<- c(0.08, 0.1,	0.12)
      young.pctyoung <- c(0.41, 0.61, 0.79)
      young.pctold	<- c(0.21, 0.39, 0.58)
@@ -155,4 +159,25 @@ quantile(edge_samples, c(0.025, 0.975))
      old.pctyoung	<- c(0.13, 0.14,	0.15)
      old.pctold	<- c(0.85, 0.86,	0.86)
 
-  ## generate samples of target parameters
+## ---- Compute uncertainty in in- and out-degree distributions 
+
+## ---- Compute uncertainty in `dist` parameters 
+target_dist_prop <- dist_nedge_distribution/edges_target * 100
+dist_nedge_samples <- edge_samples %*% t(target_dist_prop)
+colnames(dist_nedge_samples) <- paste0("dist", 1:4)
+
+head(dist_nedge_samples)
+
+apply(dist_nedge_samples, 2, quantile, probs = c(0.025, 0.975))
+
+
+## ---- Resample mixing parameters ----
+
+  ## -- gender --
+
+  ## -- race --
+
+  ## -- age --
+
+
+ 
