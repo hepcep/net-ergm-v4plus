@@ -12,7 +12,7 @@
 # in the ERGM target statistics and visualize them alongside simulation results.
 #
 # 1. The uncertainty in the number of edges is derived from the in-degree and
-#    out-degree distributions specified here:
+#    out-degree ributions specified here:
 #    https://github.com/hepcep/net-ergm-v4plus/blob/compute-plot-variance/fit-ergms/process-data.R
 #
 # 2. The uncertainty in mixing parameters (e.g., gender, age, race) is derived
@@ -22,10 +22,10 @@
 #
 # 3. Monte Carlo simulation is used to propagate this uncertainty:
 #    - Parameters with known bounds are sampled repeatedly (e.g., 10,000 times)
-#    - Resulting resampled distributions are generated (summary stats can be computed from these samples)
+#    - Resulting resampled ributions are generated (summary stats can be computed from these samples)
 #
 # 4. These confidence intervals are overlaid on the ERGM violin plots,
-#    which already display the distribution of simulated values for each parameter.
+#    which already display the ribution of simulated values for each parameter.
 #    This allows a direct visual comparison of how well the ERGM simulation
 #    aligns with the uncertainty in the expected target values.
 #
@@ -50,7 +50,7 @@ library(styler)
 ## ---- Load Pre-Processed Data ----
 
 # This section loads previously processed input data for ERGM fitting, including
-# mean and uncertainty ranges for in- and out-degree distributions
+# mean and uncertainty ranges for in- and out-degree ributions
 # mean values for all other ERGM parameters
 
 # -- input params --
@@ -63,7 +63,7 @@ intersect(names(data_objects), ls())
 list2env(data_objects, envir = globalenv())
 ls()
 
-## ---- Computed distribution of edges ----
+## ---- Computed ribution of edges ----
 
 # -- function --
 
@@ -114,7 +114,7 @@ length(edge_samples)
 mean(edge_samples)
 quantile(edge_samples, c(0.025, 0.975))
 
-## ---- Load Ranges for Parameters Other than Degree Distributions ----
+## ---- Load Ranges for Parameters Other than Degree ributions ----
 
 # -- gender --
     edges.male.end <- c(0.54, 0.58, 0.61) #specified in lb, mean, ub
@@ -159,10 +159,35 @@ quantile(edge_samples, c(0.025, 0.975))
      old.pctyoung	<- c(0.13, 0.14,	0.15)
      old.pctold	<- c(0.85, 0.86,	0.86)
 
-## ---- Compute uncertainty in in- and out-degree distributions 
+## ---- Compute uncertainty in in- and out-degree ributions 
 
-## ---- Compute uncertainty in `dist` parameters 
-target_dist_prop <- dist_nedge_distribution/edges_target * 100
+## --indegrees --
+inedges <- result$in_n_sim
+
+in_mat <- do.call(rbind, inedges)
+head(in_mat)
+dim(in_mat)
+colnames(in_mat) <- paste0("in_deg_", 0:(ncol(in_mat)-1))  # assuming the first column is degree 0
+head(in_mat)
+
+in_deg_summary <- in_mat[, 1:2]  # columns for in-degree 0 and 1
+apply(in_deg_summary, 2, quantile, probs = c(0.025, 0.975))
+
+## -- outdegrees --
+outedges <- result$out_n_sim
+head(outedges)
+
+out_mat <- do.call(rbind, outedges)
+head(out_mat)
+dim(out_mat)
+colnames(out_mat) <- paste0("out_deg_", 0:(ncol(out_mat)-1))  # assumoutg the first column is degree 0
+head(out_mat)
+
+out_deg_summary <- out_mat[, 1:2]  # columns for out-degree 0 and 1
+apply(out_deg_summary, 2, quantile, probs = c(0.025, 0.975))
+
+## ---- Compute uncertainty in `` parameters 
+target_dist_prop <- dist_nedge_distribution/edges_target 
 dist_nedge_samples <- edge_samples %*% t(target_dist_prop)
 colnames(dist_nedge_samples) <- paste0("dist", 1:4)
 
