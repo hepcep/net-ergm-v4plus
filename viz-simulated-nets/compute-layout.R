@@ -57,6 +57,11 @@ edges_df <- data.frame(
   stringsAsFactors = FALSE
 )
 
+
+
+
+
+
 # Create full sigma.js JSON object
 sigma_json <- list(nodes = nodes_df, edges = edges_df)
 
@@ -64,3 +69,34 @@ sigma_json <- list(nodes = nodes_df, edges = edges_df)
 write_json(sigma_json, path = here("viz-simulated-nets", "out", "network_sigma-HEPCEP-force-directed.json"), pretty = TRUE)
 
 
+# Component distribution
+
+components <- components(g_igraph)
+table(components$csize)
+
+# Identify giant component
+giant_component_id <- which.max(components$csize)
+is_in_gc <- components$membership == giant_component_id
+
+# Subset node data
+nodes_gc <- nodes_df[is_in_gc, ]
+
+# Create lookup set for edge filtering
+node_ids_gc <- nodes_gc$id
+edges_gc <- edges_df %>%
+  filter(source %in% node_ids_gc & target %in% node_ids_gc)
+
+# Assemble new JSON
+sigma_json_gc <- list(nodes = nodes_gc, edges = edges_gc)
+
+# Assortativity coefficient
+assortativity_nominal(g_igraph, types = as.factor(sex_vals), directed = TRUE)
+
+
+
+# Write giant component file
+write_json(
+  sigma_json_gc,
+  path = here("viz-simulated-nets", "out", "network_sigma-HEPCEP-force-directed-giant.json"),
+  pretty = TRUE
+)
