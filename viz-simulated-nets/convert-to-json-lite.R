@@ -21,6 +21,7 @@ library(here)
 library(ggplot2)
 library(qs)
 library(jsonlite)
+library(qs)
 
 # Data ----------
 
@@ -97,3 +98,11 @@ sigma_json <- list(nodes = nodes_df, edges = edges_df)
 # Step 4: Write JSON to file
 write_json(sigma_json, path = here("viz-simulated-nets", "out", "network_sigma-HEPCEP.json"), pretty = TRUE)
 
+
+# Save objects --------
+
+
+qs::qsave(list(
+  net1 = net1,
+  node_ids = as.character(seq_len(network.size(net1)))
+), file = here("viz-simulated-nets", "out", "network_data_for_layout.qs"))
