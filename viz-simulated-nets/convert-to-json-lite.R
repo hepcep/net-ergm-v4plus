@@ -101,8 +101,9 @@ write_json(sigma_json, path = here("viz-simulated-nets", "out", "network_sigma-H
 
 # Save objects --------
 
-
 qs::qsave(list(
   net1 = net1,
-  node_ids = as.character(seq_len(network.size(net1)))
+  node_ids = as.character(seq_len(network.size(net1))),
+  sex_vals = net1 %v% "sex",
+  edge_list = as.edgelist(net1)
 ), file = here("viz-simulated-nets", "out", "network_data_for_layout.qs"))
