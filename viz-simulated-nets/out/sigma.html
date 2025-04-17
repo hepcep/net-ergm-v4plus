@@ -41,7 +41,14 @@
         });
 
         const container = document.getElementById("container");
-        new Sigma(graph, container);
+        
+        new Sigma(graph, container, {
+            labelRenderedSizeThreshold: 0,    // show all labels, regardless of zoom
+            defaultNodeColor: "#888888",     // fallback color if missing
+            renderEdgeLabels: false,         // (optional) can toggle true later
+            zIndex: true,                    // (optional) for layering
+            });
+
       })
       .catch(err => {
         console.error("❌ Rendering error:", err);
