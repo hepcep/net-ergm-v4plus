@@ -26,8 +26,8 @@ library(qs)
 
 ## fit output
   load(here("fit-ergms", "out", 
-      "stepwise-refactored-checkpointing-data-dated-2025-jan23-redone",
-      "stepwise-refactored-checkpointing-data-dated-2025-jan23-redone.RData"
+      "mixing-aligned-pop-dated-2025-jan-23",
+      "mixing-aligned-pop-dated-2025-jan-23.RData"
       )
   )
 
