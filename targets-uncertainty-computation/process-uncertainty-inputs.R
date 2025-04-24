@@ -119,6 +119,7 @@ quantile(edge_samples, c(0.025, 0.975))
 # -- gender --
     edges.male.end <- c(0.54, 0.58, 0.61) #specified in lb, mean, ub
     male.pctmale <- c(0.67, 0.68, 0.69)
+    male.pctfemale <- c(0.29, 0.32, 0.34)
 
 
     edges.female.end <- c(0.36, 0.40, 0.44)
@@ -217,6 +218,7 @@ compute_mixing_counts <- function(edges, start_prop, end_prop) {
   ## from males
   edges_male_end   <- runif(nsim, edges.male.end[1], edges.male.end[3])
   male_pctmale     <- runif(nsim, male.pctmale[1], male.pctmale[3])
+  male_pctfemale   <- runif(nsim, male.pctfemale[1], male.pctfemale[3])
 
   ## from females
   edges_female_end   <- runif(nsim, edges.female.end[1], edges.female.end[3])
@@ -227,6 +229,7 @@ compute_mixing_counts <- function(edges, start_prop, end_prop) {
 
   ## from males
   n_male_male <- compute_mixing_counts(edges_sim, edges_male_end, male_pctmale)
+  n_male_female <- compute_mixing_counts(edges_sim, edges_male_end, male_pctfemale)
 
   ## from females
   n_female_male   <- compute_mixing_counts(edges_sim, edges_female_end, female_pctmale)
@@ -234,12 +237,14 @@ compute_mixing_counts <- function(edges, start_prop, end_prop) {
 
   # Summarize
   quantile(n_male_male, c(0.025, 0.975))
+  quantile(n_male_female, c(0.025, 0.975))
   quantile(n_female_male, c(0.025, 0.975))
   quantile(n_female_female, c(0.025, 0.975))
 
   # Organize output
   gender_mixing_df <- data.frame(
   male_male = n_male_male,
+  male_female = n_male_female,
   female_male = n_female_male,
   female_female = n_female_female
   )
