@@ -210,6 +210,43 @@ compute_mixing_counts <- function(edges, start_prop, end_prop) {
 }
 
   ## -- gender --
+  # Sample proportions
+  edges_sim <- result$edges_sim
+  nsim <- length(edges_sim)
+
+  ## from males
+  edges_male_end   <- runif(nsim, edges.male.end[1], edges.male.end[3])
+  male_pctmale     <- runif(nsim, male.pctmale[1], male.pctmale[3])
+
+  ## from females
+  edges_female_end   <- runif(nsim, edges.female.end[1], edges.female.end[3])
+  female_pctmale     <- runif(nsim, female.pct.male[1], female.pct.male[3])
+  female_pctfemale   <- runif(nsim, female.pct.female[1], female.pct.female[3])
+
+  # Compute mixing counts
+
+  ## from males
+  n_male_male <- compute_mixing_counts(edges_sim, edges_male_end, male_pctmale)
+
+  ## from females
+  n_female_male   <- compute_mixing_counts(edges_sim, edges_female_end, female_pctmale)
+  n_female_female <- compute_mixing_counts(edges_sim, edges_female_end, female_pctfemale)
+
+  # Summarize
+  quantile(n_male_male, c(0.025, 0.975))
+  quantile(n_female_male, c(0.025, 0.975))
+  quantile(n_female_female, c(0.025, 0.975))
+
+  # Organize output
+  gender_mixing_df <- data.frame(
+  male_male = n_male_male,
+  female_male = n_female_male,
+  female_female = n_female_female
+  )
+
+  gender_mixing_quantiles <- apply(gender_mixing_df, 2, quantile, probs = c(0.025, 0.975))
+  print(gender_mixing_quantiles)
+
 
   ## -- race --
 
@@ -248,6 +285,16 @@ compute_mixing_counts <- function(edges, start_prop, end_prop) {
   quantile(n_young_young, c(0.025, 0.975))
   quantile(n_young_old, c(0.025, 0.975))
 
+ # Organize Output
+ age_mixing_df <- data.frame(
+  old_old = n_old_old,
+  old_young = n_old_young,
+  young_young = n_young_young,
+  young_old = n_young_old
+)
+
+age_mixing_quantiles <- apply(age_mixing_df, 2, quantile, probs = c(0.025, 0.975))
+print(age_mixing_quantiles)
 
 
  
