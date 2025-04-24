@@ -249,6 +249,74 @@ compute_mixing_counts <- function(edges, start_prop, end_prop) {
 
 
   ## -- race --
+  # Load total edge samples
+  edges_sim <- result$edges_sim
+  nsim <- length(edges_sim)
+
+  # Sample pct_to_* values (edges ending in race X)
+  pct_to_white   <- runif(nsim, pct_to_white[1], pct_to_white[3])
+  pct_to_black   <- runif(nsim, pct_to_black[1], pct_to_black[3])
+  pct_to_hisp    <- runif(nsim, pct_to_hispanic[1], pct_to_hispanic[3])
+  pct_to_other   <- runif(nsim, pct_to_other[1], pct_to_other[3])
+
+  # Sample conditional race.Y.X proportions (edges from Y to X)
+  race_w_w <- runif(nsim, race.w.w[1], race.w.w[3])
+  race_b_w <- runif(nsim, race.b.w[1], race.b.w[3])
+  race_h_w <- runif(nsim, race.h.w[1], race.h.w[3])
+  race_o_w <- runif(nsim, race.o.w[1], race.o.w[3])
+
+  race_w_b <- runif(nsim, race.w.b[1], race.w.b[3])
+  race_b_b <- runif(nsim, race.b.b[1], race.b.b[3])
+  race_h_b <- runif(nsim, race.h.b[1], race.h.b[3])
+  race_o_b <- runif(nsim, race.o.b[1], race.o.b[3])
+
+  race_w_h <- runif(nsim, race.w.h[1], race.w.h[3])
+  race_b_h <- runif(nsim, race.b.h[1], race.b.h[3])
+  race_h_h <- runif(nsim, race.h.h[1], race.h.h[3])
+  race_o_h <- runif(nsim, race.o.h[1], race.o.h[3])
+
+  race_w_o <- runif(nsim, race.w.o[1], race.w.o[3])
+  race_b_o <- runif(nsim, race.b.o[1], race.b.o[3])
+  race_h_o <- runif(nsim, race.h.o[1], race.h.o[3])
+  race_o_o <- runif(nsim, race.o.o[1], race.o.o[3])
+
+  # To white
+  n_w_w <- compute_mixing_counts(edges_sim, pct_to_white, race_w_w)
+  n_b_w <- compute_mixing_counts(edges_sim, pct_to_white, race_b_w)
+  n_h_w <- compute_mixing_counts(edges_sim, pct_to_white, race_h_w)
+  n_o_w <- compute_mixing_counts(edges_sim, pct_to_white, race_o_w)
+
+  # To black
+  n_w_b <- compute_mixing_counts(edges_sim, pct_to_black, race_w_b)
+  n_b_b <- compute_mixing_counts(edges_sim, pct_to_black, race_b_b)
+  n_h_b <- compute_mixing_counts(edges_sim, pct_to_black, race_h_b)
+  n_o_b <- compute_mixing_counts(edges_sim, pct_to_black, race_o_b)
+
+  # To hispanic
+  n_w_h <- compute_mixing_counts(edges_sim, pct_to_hisp, race_w_h)
+  n_b_h <- compute_mixing_counts(edges_sim, pct_to_hisp, race_b_h)
+  n_h_h <- compute_mixing_counts(edges_sim, pct_to_hisp, race_h_h)
+  n_o_h <- compute_mixing_counts(edges_sim, pct_to_hisp, race_o_h)
+
+  # To other
+  n_w_o <- compute_mixing_counts(edges_sim, pct_to_other, race_w_o)
+  n_b_o <- compute_mixing_counts(edges_sim, pct_to_other, race_b_o)
+  n_h_o <- compute_mixing_counts(edges_sim, pct_to_other, race_h_o)
+  n_o_o <- compute_mixing_counts(edges_sim, pct_to_other, race_o_o)
+
+  # Organize
+  race_mixing_df <- data.frame(
+  w_w = n_w_w, b_w = n_b_w, h_w = n_h_w, o_w = n_o_w,
+  w_b = n_w_b, b_b = n_b_b, h_b = n_h_b, o_b = n_o_b,
+  w_h = n_w_h, b_h = n_b_h, h_h = n_h_h, o_h = n_o_h,
+  w_o = n_w_o, b_o = n_b_o, h_o = n_h_o, o_o = n_o_o
+  )
+
+  race_mixing_quantiles <- apply(race_mixing_df, 2, quantile, probs = c(0.025, 0.975))
+  print(race_mixing_quantiles)
+
+
+
 
   ## -- age --
   # Sample proportions
