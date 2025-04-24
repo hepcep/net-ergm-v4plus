@@ -82,6 +82,17 @@ load_or_run <- function(name, expr) {
 
 
 # Fit Non-empty net including race term ---------
+sex_mixing_terms <- summary(n0 ~ nodemix("sex", levels2 = -1))
+print(names(sex_mixing_terms))
+sex_mixing_align_oder <- c(tgt.male.pctfemale, tgt.female.pctmale, tgt.male.pctmale)
+
+age_mixing_terms <- summary(n0 ~ nodemix("young", levels2 = -1))
+print(names(age_mixing_terms))
+age_mixing_align_order <- c(
+  tgt.young.pctold,   # 1 → 0
+  tgt.old.pctyoung,   # 0 → 1
+  tgt.young.pctyoung  # 1 → 1
+)
 
 fit_nonempty_network_w_race_num <-
   load_or_run("fit_nonempty_network_w_race_num", quote(
@@ -94,8 +105,8 @@ fit_nonempty_network_w_race_num <-
       target.stats =
         c(
           edges_target,
-          c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),
-          c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
+          sex_mixing_align_oder,
+          age_mixing_align_oder,
           target_race_num
         ),
       eval.loglik = FALSE,
@@ -133,8 +144,8 @@ fit.stepwise.dist <-
       target.stats =
         c(
           edges_target,
-          c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),
-          c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
+          sex_mixing_align_oder,
+          age_mixing_align_oder,
           target_race_num,
           # c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
           # c(outedges$n_nodes[c(deg.terms+1)])
@@ -177,8 +188,8 @@ fit.stepwise.dist.odeg.0 <-
       target.stats =
         c(
           edges_target,
-          c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),
-          c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
+          sex_mixing_align_oder,
+          age_mixing_align_oder,
           target_race_num,
           # c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
           c(outdegree_data$mean_n[c(deg.terms.0 + 1)]),
@@ -219,8 +230,8 @@ fit.stepwise.dist.odeg.0.1 <-
       target.stats =
         c(
           edges_target,
-          c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),
-          c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
+          sex_mixing_align_oder,
+          age_mixing_align_oder,
           target_race_num,
           # c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
           c(outdegree_data$mean_n[c(deg.terms.0_1 + 1)]),
@@ -262,8 +273,8 @@ fit.stepwise.dist.odeg.0.2 <-
       target.stats =
         c(
           edges_target,
-          c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),
-          c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
+          sex_mixing_align_oder,
+          age_mixing_align_oder,
           target_race_num,
           # c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
           c(outdegree_data$mean_n[c(deg.terms.0_2 + 1)]),
@@ -305,8 +316,8 @@ fit.stepwise.dist.odeg.013 <-
       target.stats =
         c(
           edges_target,
-          c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),
-          c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
+          sex_mixing_align_oder,
+          age_mixing_align_oder,
           target_race_num,
           # c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
           c(outdegree_data$mean_n[c(deg.terms.013 + 1)]),
@@ -349,8 +360,8 @@ fit.stepwise.dist.odeg.01.indeg0 <-
       target.stats =
         c(
           edges_target,
-          c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),
-          c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
+          sex_mixing_align_oder,
+          age_mixing_align_oder,
           target_race_num,
           c(indegree_data$mean_n[c(indeg.terms.0 + 1)]),
           c(outdegree_data$mean_n[c(deg.terms.0_1 + 1)]),
@@ -394,8 +405,8 @@ fit.stepwise.dist.odeg.01.indeg <-
       target.stats =
         c(
           edges_target,
-          c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),
-          c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
+          sex_mixing_align_oder,
+          age_mixing_align_oder,
           target_race_num,
           c(indegree_data$mean_n[c(indeg.terms + 1)]),
           c(outdegree_data$mean_n[c(deg.terms.0_1 + 1)]),
