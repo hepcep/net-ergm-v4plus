@@ -197,12 +197,57 @@ apply(dist_nedge_samples, 2, quantile, probs = c(0.025, 0.975))
 
 
 ## ---- Resample mixing parameters ----
+#' Compute edge counts from mixing proportions
+#'
+#' @param edges Vector of total edge counts (length nsim)
+#' @param start_prop Vector of proportions of edges with a specific "start" attribute (length nsim)
+#' @param end_prop Vector of conditional proportions for a specific "end" attribute (length nsim)
+#'
+#' @return Vector of simulated counts for that cell (length nsim)
+compute_mixing_counts <- function(edges, start_prop, end_prop) {
+  stopifnot(length(edges) == length(start_prop), length(start_prop) == length(end_prop))
+  edges * start_prop * end_prop
+}
 
   ## -- gender --
 
   ## -- race --
 
   ## -- age --
+  # Sample proportions
+  edges_sim       <- result$edges_sim
+  nsim <- length(edges_sim)
+  
+  ## from old
+  edges_old_end   <- runif(nsim, edges.old.end[1], edges.old.end[3])
+  old_pctold      <- runif(nsim, old.pctold[1], old.pctold[3])
+  old_pctyoung    <- runif(nsim, old.pctyoung[1], old.pctyoung[3])
+
+  ## from young
+  edges_young_end <- runif(nsim, edges.young.end[1], edges.young.end[3])
+  young_pctyoung  <- runif(nsim, young.pctyoung[1], young.pctyoung[3])
+  young_pctold    <- runif(nsim, young.pctold[1], young.pctold[3])
+
+
+  # Compute mixing counts
+
+  ## from old
+  n_old_old   <- compute_mixing_counts(edges_sim, edges_old_end, old_pctold)
+  n_old_young <- compute_mixing_counts(edges_sim, edges_old_end, old_pctyoung)
+
+  ## from young
+  n_young_young <- compute_mixing_counts(edges_sim, edges_young_end, young_pctyoung)
+  n_young_old   <- compute_mixing_counts(edges_sim, edges_young_end, young_pctold)
+
+  # Summarize
+  ## from old
+  quantile(n_old_old, c(0.025, 0.975))
+  quantile(n_old_young, c(0.025, 0.975))
+
+  ## from young
+  quantile(n_young_young, c(0.025, 0.975))
+  quantile(n_young_old, c(0.025, 0.975))
+
 
 
  
