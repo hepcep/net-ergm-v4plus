@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#SBATCH --job-name="simulate-networks-stepwise-refactored-checkpointing-data-dated-2025-jan23-redone"
+#SBATCH --job-name="simulate-networks-mixing-aligned-pop-dated-2025-jan-23"
 #SBATCH --time=5:00:00
 #SBATCH --mem=64000
 #SBATCH --nodes=1
