@@ -93,7 +93,7 @@ and save 2 `qs` objects, one comprising 10 networks, and the other 100 networks.
 
 Submission script at `simulate-from-ergms/sim-jobscript.sh`.
 
-#### Statistical Summary of Simulated Networks relative to Mean Target Parameters
+#### Statistical/Visual Summary of Simulated Networks relative to Mean Target Parameters
 
 Then check the summaries across the simulated networks via:
 ```
@@ -120,5 +120,27 @@ simulate-from-ergms/unpack-edgelist.R
 simulate-from-ergms/unpack-vertex-atts.R
 ```
 
-#### Uncertainty Analysis
+#### Uncertainty in Target Parameters 
+Compute uncertainty in input parameters:
+
+```
+targets-uncertainty-computation/process-uncertainty-inputs.R
+```
+
+I didn't plot the uncertainty in the inputs because almost 
+all targets were included in the simulation 'violins'.
+
+
+## Network Visualization
+Protoptying:
+
+```
+viz-simulated-nets/compute-layout.R
+viz-simulated-nets/convert-to-json-lite.R
+```
+
+Built off of the packages used in 
+
+> Clipman SJ, Mehta SH, Mohapatra S, et al. Deep learning and social network analysis elucidate drivers of HIV transmission in a high-incidence cohort of people who inject drugs. Sci Adv. 2022;8(42):eabf0158.
+
 
