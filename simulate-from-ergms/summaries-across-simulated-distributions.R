@@ -24,7 +24,7 @@ library(qs)
 
 # Data ----------
 
-run_label <- "stepwise-refactored-checkpointing-data-dated-2025-jan23-redone" # set manually to ensure intentional updates
+run_label <- "mixing-aligned-pop-dated-2025-jan-23" # set manually to ensure intentional updates
 ## should match the object from the ERGM fitting code 
 
   ## load data
@@ -168,7 +168,9 @@ sim.sex <- lapply(sim_results, function(x) {
   quantile(unlist(lapply(sim.sex, function(x) x["mix.sex.M.M"])), probs = c(2.5 / 100, 97.5 / 100))
 
   ### 
-  target_sex_mixing <- c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale)
+  target_sex_mixing <- c(tgt.male.pctfemale, tgt.female.pctmale, tgt.male.pctmale)
+  names(target_sex_mixing) <- c("mix.sex.M.F", "mix.sex.F.M", "mix.sex.M.M")
+
 
 ## age
   ### simulated
@@ -187,11 +189,12 @@ sim.sex <- lapply(sim_results, function(x) {
 
   ### target
   target_age_mixing <- c(
-  tgt.young.pctold,   # young → old
-  tgt.old.pctyoung,   # old → young
-  tgt.young.pctyoung  # young → young
-)
-names(target_age_mixing) <- c("mix.young.1.0", "mix.young.0.1", "mix.young.1.1")
+    tgt.young.pctold,
+    tgt.old.pctyoung,
+    tgt.young.pctyoung
+  )
+  names(target_age_mixing) <- c("mix.young.1.0", "mix.young.0.1", "mix.young.1.1")
+
 
 ## distance
   ### simulated
@@ -372,7 +375,6 @@ names(target_age_mixing) <- c("mix.young.1.0", "mix.young.0.1", "mix.young.1.1")
   head(sex_mixing_df)
 
   target_sex_mixing
-  names(target_sex_mixing) <- c("mix.sex.M.F",   "mix.sex.F.M",  "mix.sex.M.M")
 
   ggplot(sex_mixing_df, aes(x = category, y = count)) +
     geom_violin(trim = FALSE, fill = "#66C2A5") +
@@ -410,15 +412,6 @@ names(target_age_mixing) <- c("mix.young.1.0", "mix.young.0.1", "mix.young.1.1")
     age_mixing_df <- age_mixing_df[!age_mixing_df$category %in% "mix.young.0.0", ]
     levels(age_mixing_df$category)
 
-    # Define desired panel order explicitly
-    desired_levels <- c("mix.young.0.1", "mix.young.1.0", "mix.young.1.1")
-
-    # Set factor levels to desired order before plotting or joining
-    age_mixing_df$category <- factor(age_mixing_df$category, levels = desired_levels)
-
-    # Create target values (from unpacked objects earlier)
-    names(target_age_mixing) <- desired_levels
-
     # Create a target values dataframe
     target_age_df <- data.frame(
       category = names(target_age_mixing),
@@ -426,7 +419,7 @@ names(target_age_mixing) <- c("mix.young.1.0", "mix.young.0.1", "mix.young.1.1")
     )
 
     # Apply same factor levels to target dataframe
-    target_age_df$category <- factor(target_age_df$category, levels = desired_levels)
+    target_age_df$category <- factor(target_age_df$category)
 
     # Merge target into main dataframe
     age_mixing_df <- dplyr::left_join(age_mixing_df, target_age_df, by = "category")

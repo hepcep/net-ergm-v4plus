@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Simple Sigma Network</title>
+  <style>
+    html, body, #container {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+
+  <!-- Use ES Modules via Skypack (CORS-safe) -->
+  <script type="module">
+    import Graph from "https://cdn.skypack.dev/graphology";
+    import Sigma from "https://cdn.skypack.dev/sigma";
+
+ 
+    fetch("network_sigma-HEPCEP-force-directed-giant.json")
+    
+      .then(res => res.json())
+      .then(data => {
+        const graph = new Graph();
+
+        data.nodes.forEach(n => {
+          graph.addNode(n.id, {
+            label: n.label,
+            x: parseFloat(n.x),
+            y: parseFloat(n.y),
+            size: parseFloat(n.size) || 1,
+            color: n.color || "#888888"
+          });
+        });
+
+        data.edges.forEach(e => {
+          graph.addEdge(e.source, e.target, { id: e.id });
+        });
+
+        const container = document.getElementById("container");
+        
+        new Sigma(graph, container, {
+            labelRenderedSizeThreshold: 10,    // show all labels, regardless of zoom
+            defaultNodeColor: "#888888",     // fallback color if missing
+            renderEdgeLabels: false,         // (optional) can toggle true later
+            zIndex: true,                    // (optional) for layering
+            });
+
+      })
+      .catch(err => {
+        console.error("❌ Rendering error:", err);
+      });
+  </script>
+</body>
+</html>
