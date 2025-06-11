@@ -1,6 +1,6 @@
 # net-ergm-v4plus
 
-### 🛠 Launching R in VS Code (Remotely on Oscar, @khanna7)
+## 🛠 Launching R in VS Code (Remotely on Oscar, @khanna7)
 
 To work with this project in a **VS Code Remote SSH session**:
 
@@ -35,3 +35,51 @@ chmod +x launch_R.sh
 
 
 
+
+## 🧩 Modeling Steps 
+
+#### Data Processing
+
+Update the degree distributions, mixing parameters, distance metrics in:
+
+```
+fit-ergms/process-data.R
+```
+
+This produces a data output file in:
+
+```
+fit-ergms/out/processed_data.rds
+```
+
+Submission script to run the data processing code on a compute node is at
+`fit-ergms/process-data-jobscript.sh`.
+
+#### ERGM Fitting
+
+Then run the stepwise ERGM fitting code from:
+
+```
+fit-ergms/fit-stepwise-ergms.R
+```
+
+- Remember to update the `run_label` [near the top](https://github.com/hepcep/net-ergm-v4plus/blob/60bb27461392556ac56834b7dedf82961e236edc/fit-ergms/fit-stepwise-ergms.R#L9).
+
+- Code follows a checkpointing structure to enable increasingly complex ERGMs.
+
+- The fitted output is stored via:
+
+```
+save.image(file = file.path(out_dir, paste0(run_label, ".RData")))
+```
+
+Submission script to run the ERGM fitting code on a compute node is at
+`fit-ergms/jobscript.sh`.
+
+#### Simulation
+
+
+
+#### Uncertainty Analysis
+
+#### Plotting
