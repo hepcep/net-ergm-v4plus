@@ -78,8 +78,47 @@ Submission script to run the ERGM fitting code on a compute node is at
 
 #### Simulation
 
+Network simulation file at:
 
+```
+simulate-from-ergms/simulate-networks-from-meta-data-ergm-fit.R
+```
+
+Check the [`run_label`](https://github.com/hepcep/net-ergm-v4plus/blob/60bb27461392556ac56834b7dedf82961e236edc/simulate-from-ergms/simulate-networks-from-meta-data-ergm-fit.R#L38C1-L40) 
+to ensure it matches the correct output from the fitting process. 
+
+By default, the simulation code 
+is written to simulate 100 networks, 
+and save 2 `qs` objects, one comprising 10 networks, and the other 100 networks. 
+
+Submission script at `simulate-from-ergms/sim-jobscript.sh`.
+
+#### Statistical Summary of Simulated Networks relative to Mean Target Parameters
+
+Then check the summaries across the simulated networks via:
+```
+simulate-from-ergms/summaries-across-simulated-distributions.R
+```
+
+Again, confirm that the [`run_label`](https://github.com/hepcep/net-ergm-v4plus/blob/60bb27461392556ac56834b7dedf82961e236edc/simulate-from-ergms/summaries-across-simulated-distributions.R#L39-L41) is consistent.
+
+This file produces numerical summaries and violin plots for the 
+mean target parameter values relative to the distribution of the simulated outcomes.
+
+Violin plots saved via: 
+```
+    ggsave(here("simulate-from-ergms", "out", "*.png"), width = 8, height = 6)
+```
+
+#### Extract Networks for HepCep4Py
+
+Output extraction to HepCep4Py at:
+
+```
+simulate-from-ergms/extract-vertex-atts.R
+simulate-from-ergms/unpack-edgelist.R
+simulate-from-ergms/unpack-vertex-atts.R
+```
 
 #### Uncertainty Analysis
 
-#### Plotting
