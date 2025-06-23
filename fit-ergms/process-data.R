@@ -169,13 +169,13 @@ n0 %v% "race.num" <- race.num
 
 ## gender 
 ### mixing information from meta-analysis of sathcap AND socnet
-edges.male.end <- 0.58
-edges.female.end <- 0.40
+edges.male.end <- 0.60
+edges.female.end <- 0.38
 
-male.pctmale <- 0.68 
-male.pctfemale <- 0.32
-female.pctmale <- 0.61
-female.pctfemale <- 0.39
+male.pctmale <- 0.55
+male.pctfemale <- 0.44
+female.pctmale <- 0.72
+female.pctfemale <- 0.28
 
 ### set gender targets 
 tgt.male.pctmale <- edges_target*edges.male.end*male.pctmale
