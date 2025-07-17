@@ -22,6 +22,7 @@ Type 'q()' to quit R.
 > 
 > rm(list=ls())
 > 
+> 
 > # Activate R environment ------------------------------
 > 
 > library(renv)
@@ -122,23 +123,112 @@ $ lon                       <dbl> -87.76885, -87.77289, -87.76898, -87.76998, â€
 $ lat                       <dbl> 41.88311, 41.88240, 41.86867, 41.89144, 41.8â€¦
 $ hcv_status                <chr> "sucseptible", "sucseptible", "sucseptible",â€¦
 > 
-> # Input  In/Outdegree Data ------------------------------
-> # (from networks simulated form the fit, as an alternate source of targets)
+> # Input  In/Outdegree Data (Specified per January 23, 2025) ------------------------------
+> ## https://anl.box.com/s/01zwyn331jquyps4os0cirtopczes39m
 > 
-> inedges <- read.csv(here("data", "pplrss.csv")) #in- and out-edges
-> outedges <- read.csv(here("data", "ppldss.csv"))
-> negbin_indeg <- read.csv(here("data", "negbin-indeg.csv"))
-> negbin_outdeg <- read.csv(here("data", "negbin-outdeg.csv"))
-> inedges.data <- read.csv(file = here("data", "inedges_data.csv"), header = TRUE)
-> outedges.data <- read.csv(file = here("data", "outedges_data.csv"), header = TRUE)
+> indegree_data <- read.table(text = "
++   in_degree lower_nbprob lower_n mean_nbprob mean_n upper_nbprob upper_n
++   0 0.5821942 18630.21 0.64583354 20666.67 0.70507399 22562.37 
++   1 0.17457059 5586.26 0.2031094 6499.50 0.23448797 7503.62
++   2 0.0669945 2143.82 0.083 2657.25 0.10152704 3248.87
++   3 0.02875131 920.04 0.0366 1169.96 0.04498079 1439.39
++   4 0.01299143 415.73 0.0167 533.52 0.02015486 644.96
++   5 0.00604716 193.51 0.00776 248.32 0.00909181 290.94
++   6 0.00286968 91.83 0.00366 117.14 0.00411961 131.83
++   7 0.00138042 44.17 0.00174 55.79 0.00187257 59.92
++   8 0.00067075 21.46 0.000836 26.76 0.0008532 27.30
++   9 0.00032845 10.51 0.000403 12.90 0.00038946 12.46
++   10 0.00016183 5.18 0.000195 6.25 0.00017804 5.70
++   11 0.00008014 2.56 0.0000949 3.04 0.00008149 2.61
++   12 0.00003985 1.28 0.0000463 1.48 0.00003733 1.19
++   13 0.00001988 0.64 0.0000226 0.72 0.00001712 0.55
++   14 0.00000995 0.32 0.0000111 0.35 0.00000785 0.25
++   15 0.00000499 0.16 0.00000543 0.17 0.00000361 0.12
++   16 0.00000251 0.08 0.00000267 0.09 0.00000166 0.05
++   17 0.00000127 0.04 0.00000131 0.04 0.00000076 0.02
++   18 0.00000064 0.02 0.00000065 0.02 0.00000035 0.01
++   19 0.00000032 0.01 0.00000032 0.01 0.00000016 0.01
++   20 0.00000016 0.01 0.00000016 0.01 0.00000007 0.00
++   ", 
++   header = TRUE)
 > 
-> # Input  Degree Distribution Data ------------------------------
+>   # Print the data frame to check
+>   print(indegree_data)
+   in_degree lower_nbprob  lower_n mean_nbprob   mean_n upper_nbprob  upper_n
+1          0   0.58219420 18630.21  0.64583354 20666.67   0.70507399 22562.37
+2          1   0.17457059  5586.26  0.20310940  6499.50   0.23448797  7503.62
+3          2   0.06699450  2143.82  0.08300000  2657.25   0.10152704  3248.87
+4          3   0.02875131   920.04  0.03660000  1169.96   0.04498079  1439.39
+5          4   0.01299143   415.73  0.01670000   533.52   0.02015486   644.96
+6          5   0.00604716   193.51  0.00776000   248.32   0.00909181   290.94
+7          6   0.00286968    91.83  0.00366000   117.14   0.00411961   131.83
+8          7   0.00138042    44.17  0.00174000    55.79   0.00187257    59.92
+9          8   0.00067075    21.46  0.00083600    26.76   0.00085320    27.30
+10         9   0.00032845    10.51  0.00040300    12.90   0.00038946    12.46
+11        10   0.00016183     5.18  0.00019500     6.25   0.00017804     5.70
+12        11   0.00008014     2.56  0.00009490     3.04   0.00008149     2.61
+13        12   0.00003985     1.28  0.00004630     1.48   0.00003733     1.19
+14        13   0.00001988     0.64  0.00002260     0.72   0.00001712     0.55
+15        14   0.00000995     0.32  0.00001110     0.35   0.00000785     0.25
+16        15   0.00000499     0.16  0.00000543     0.17   0.00000361     0.12
+17        16   0.00000251     0.08  0.00000267     0.09   0.00000166     0.05
+18        17   0.00000127     0.04  0.00000131     0.04   0.00000076     0.02
+19        18   0.00000064     0.02  0.00000065     0.02   0.00000035     0.01
+20        19   0.00000032     0.01  0.00000032     0.01   0.00000016     0.01
+21        20   0.00000016     0.01  0.00000016     0.01   0.00000007     0.00
 > 
-> #degree_distribution_target_stats <- 
->  # readRDS(here("simulate-from-ergms/out/degree_distribution_target_stats.RDS"))
-> #names(degree_distribution_target_stats)
+> outdegree_data <- read.table(text = "
++   out_degree lower_nbprob lower_n mean_nbprob mean_n upper_nbprob upper_n
++   0 0.54372877 17399.32 0.60585013 19387.20 0.65685532 21019.37
++   1 0.18338748 5868.40 0.20216566 6469.30 0.22882848 7322.51
++   2 0.07935995 2539.52 0.0928 2968.26 0.11074794 3543.93
++   3 0.03840462 1228.95 0.0464 1485.72 0.05592998 1789.76
++   4 0.01956799 626.18 0.0242 774.64 0.02883424 922.70
++   5 0.0102708 328.67 0.0129 413.58 0.01504728 481.51
++   6 0.00549605 175.87 0.00701 224.26 0.00791582 253.31
++   7 0.0029812 95.40 0.00384 122.94 0.00418801 134.02
++   8 0.00163343 52.27 0.00212 67.95 0.00222519 71.21
++   9 0.00090194 28.86 0.00118 37.79 0.0011862 37.96
++   10 0.00050111 16.04 0.00066 21.12 0.000634 20.29
++   11 0.00027981 8.95 0.00037 11.85 0.00033959 10.87
++   12 0.00015689 5.02 0.000209 6.67 0.00018222 5.83
++   13 0.00008828 2.82 0.000118 3.77 0.00009792 3.13
++   14 0.00004982 1.59 0.0000667 2.13 0.00005269 1.69
++   15 0.00002819 0.90 0.0000378 1.21 0.00002838 0.91
++   16 0.00001599 0.51 0.0000215 0.69 0.00001531 0.49
++   17 0.00000908 0.29 0.0000122 0.39 0.00000826 0.26
++   18 0.00000517 0.17 0.00000698 0.22 0.00000446 0.14
++   19 0.00000295 0.09 0.00000398 0.13 0.00000241 0.08
++   20 0.00000168 0.05 0.00000228 0.07 0.0000013 0.04
++   ", 
++ header = TRUE)
 > 
->  
+>   # Print the data frame to check
+>   print(outdegree_data)
+   out_degree lower_nbprob  lower_n mean_nbprob   mean_n upper_nbprob  upper_n
+1           0   0.54372877 17399.32  0.60585013 19387.20   0.65685532 21019.37
+2           1   0.18338748  5868.40  0.20216566  6469.30   0.22882848  7322.51
+3           2   0.07935995  2539.52  0.09280000  2968.26   0.11074794  3543.93
+4           3   0.03840462  1228.95  0.04640000  1485.72   0.05592998  1789.76
+5           4   0.01956799   626.18  0.02420000   774.64   0.02883424   922.70
+6           5   0.01027080   328.67  0.01290000   413.58   0.01504728   481.51
+7           6   0.00549605   175.87  0.00701000   224.26   0.00791582   253.31
+8           7   0.00298120    95.40  0.00384000   122.94   0.00418801   134.02
+9           8   0.00163343    52.27  0.00212000    67.95   0.00222519    71.21
+10          9   0.00090194    28.86  0.00118000    37.79   0.00118620    37.96
+11         10   0.00050111    16.04  0.00066000    21.12   0.00063400    20.29
+12         11   0.00027981     8.95  0.00037000    11.85   0.00033959    10.87
+13         12   0.00015689     5.02  0.00020900     6.67   0.00018222     5.83
+14         13   0.00008828     2.82  0.00011800     3.77   0.00009792     3.13
+15         14   0.00004982     1.59  0.00006670     2.13   0.00005269     1.69
+16         15   0.00002819     0.90  0.00003780     1.21   0.00002838     0.91
+17         16   0.00001599     0.51  0.00002150     0.69   0.00001531     0.49
+18         17   0.00000908     0.29  0.00001220     0.39   0.00000826     0.26
+19         18   0.00000517     0.17  0.00000698     0.22   0.00000446     0.14
+20         19   0.00000295     0.09  0.00000398     0.13   0.00000241     0.08
+21         20   0.00000168     0.05  0.00000228     0.07   0.00000130     0.04
+> 
+> 
 > 
 > # Initialize network ----------
 > 
@@ -148,11 +238,16 @@ $ hcv_status                <chr> "sucseptible", "sucseptible", "sucseptible",â€
 > 
 > # Compute target number of edges ----------
 > 
-> inedges_target <- sum(inedges.data$k * inedges.data$nbprob * n)
-> outedges_target <- sum(outedges.data$k * outedges.data$nbprob * n)
+> inedges_target <- sum(indegree_data$in_degree * indegree_data$mean_n)
+> outedges_target <- sum(outdegree_data$out_degree * outdegree_data$mean_n)
 > edges_target <- mean(c(inedges_target, outedges_target))
 > 
-> 
+> inedges_target
+[1] 20256.49
+> outedges_target
+[1] 25663.36
+> edges_target
+[1] 22959.93
 > 
 > 
 > # Assign vertex attributes to the network ----------
@@ -297,19 +392,19 @@ age.cat    0    1
 > 
 > 
 > # Generate target statistics from meta-mixing data ----------
->   ## Update with values meta mixing values from 08/31/2021
+>   ## Update with values meta mixing values from 10/17/2024
 >   ## See https://anl.box.com/s/jrf5usly4ujuv3gagmdxlwxaiuvnlq1o
->   ## All network mixing parameters with CIs: https://anl.box.com/s/jg6y221hcbql1sd9kvsxpq0cei03qlr0
+>   ## All network mixing parameters with CIs: https://anl.box.com/s/jg6y221hcbql1sd9kvsxpq0cei03qlr0 (Dec 5, 2024)
 > 
 > ## gender 
 > ### mixing information from meta-analysis of sathcap AND socnet
-> edges.male.end <- 0.58
-> edges.female.end <- 0.40
+> edges.male.end <- 0.60
+> edges.female.end <- 0.38
 > 
-> male.pctmale <- 0.68 
-> male.pctfemale <- 0.32
-> female.pctmale <- 0.61
-> female.pctfemale <- 0.39
+> male.pctmale <- 0.55
+> male.pctfemale <- 0.44
+> female.pctmale <- 0.72
+> female.pctfemale <- 0.28
 > 
 > ### set gender targets 
 > tgt.male.pctmale <- edges_target*edges.male.end*male.pctmale
@@ -319,13 +414,13 @@ age.cat    0    1
 > 
 > ## young (1=young; 0=old)
 > ### mixing information from meta-analysis of sathcap AND socnet
-> edges.young.end <- 0.10
-> edges.old.end <- 0.90
+> edges.young.end <- 0.16
+> edges.old.end <- 0.84
 >   
-> young.pctyoung <- 0.61
-> young.pctold <- 0.39
-> old.pctyoung <- 0.14
-> old.pctold <- 0.86
+> young.pctyoung <- 048
+> young.pctold <- 0.52
+> old.pctyoung <- 0.10
+> old.pctold <- 0.90
 >  
 > ## set young targets from meta data
 > tgt.young.pctyoung <- edges_target * edges.young.end * young.pctyoung
@@ -347,27 +442,27 @@ age.cat    0    1
 15403  8317  6853  1429 
 > 
 > 
-> pct_to_white	<- 0.30
-> pct_to_black	<- 0.41
-> pct_to_hispanic	<- 0.21
-> pct_to_other	<- 0.04
+> pct_to_white	<- 0.59
+> pct_to_black	<- 0.18
+> pct_to_hispanic	<- 0.17
+> pct_to_other	<- 0.03
 > 
-> race.w.w <- 0.74 # (marks sum to 1)
-> race.b.w <- 0.31 #-
-> race.h.w <- 0.37 ##
-> race.o.w <- 0.54 #--
-> race.w.b <- 0.11 #
-> race.b.b <- 0.57 #-
-> race.h.b <- 0.10 ##
-> race.o.b <- 0.23 #--
-> race.w.h <- 0.13 #
-> race.b.h <- 0.07 #-
-> race.h.h <- 0.51 ##
-> race.o.h <- 0.16 #--
-> race.w.o <- 0.02 #
-> race.b.o <- 0.05 #-
-> race.h.o <- 0.02 ##
-> race.o.o <- 0.07 #--
+> race.w.w <- 0.758 # (marks sum to 1, i.e., sum of all race.w.* = 1, sum of all race.b.* = 1)
+> race.b.w <- 0.333 #-
+> race.h.w <- 0.345 ##
+> race.o.w <- 0.638 #--
+> race.w.b <- 0.091 #
+> race.b.b <- 0.495 #-
+> race.h.b <- 0.011 ##
+> race.o.b <- 0.106 #--
+> race.w.h <- 0.111 #
+> race.b.h <- 0.161 #-
+> race.h.h <- 0.632 ##
+> race.o.h <- 0.202 #--
+> race.w.o <- 0.040 #
+> race.b.o <- 0.011 #-
+> race.h.o <- 0.011 ##
+> race.o.o <- 0.053 #--
 > 
 > target.w.w <- edges_target * pct_to_white * race.w.w
 > target.b.w <- edges_target * pct_to_white * race.b.w
@@ -397,9 +492,9 @@ age.cat    0    1
 + )
 > 
 > target_race_num
- [1] 2292.63576 2736.37172 3993.62359 1111.80509 5761.17180 1010.73190
- [7] 2324.68336  672.99953  362.38436 2640.22893  828.30711   19.72160
-[13]   49.30399   19.72160   69.02559
+ [1] 4510.936465 4673.492734 8642.574969  376.083572 2045.729317   45.460651
+ [7]  438.075369  433.253785  628.413147 2466.814342  788.443825   27.551910
+[13]    7.576775    7.576775   36.506281
 > 
 > # Fit network only with edges ----------
 > fit_edges_only_net <- 
@@ -418,8 +513,8 @@ Finished MPLE.
 Starting Monte Carlo maximum likelihood estimation (MCMLE):
 Iteration 1 of at most 60:
 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.0045.
-Convergence test p-value: 0.0039. Converged with 99% confidence.
+The log-likelihood improved by 0.0476.
+Convergence test p-value: 0.0082. Converged with 99% confidence.
 Finished MCMLE.
 This model was fit using MCMC.  To examine model diagnostics and check
 for degeneracy, use the mcmc.diagnostics() function.
@@ -438,20 +533,20 @@ for degeneracy, use the mcmc.diagnostics() function.
 >   # Print them for reference
 >   print(race_num_alignment)
 mix.race.num.2.1 mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 
-            2993             2560              505             3117 
+            2906             2371              515             2883 
 mix.race.num.2.2 mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 
-            1645             1438              272             2542 
+            1594             1296              271             2463 
 mix.race.num.2.3 mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 
-            1418             1119              236              520 
+            1253             1078              248              507 
 mix.race.num.2.4 mix.race.num.3.4 mix.race.num.4.4 
-             270              258               56 
+             253              220               56 
 >   print(race_term_alignment)
 mix.race.Hi.Bl mix.race.Ot.Bl mix.race.Wh.Bl mix.race.Bl.Hi mix.race.Hi.Hi 
-          1438            272           3117           1418           1119 
+          1296            271           2883           1253           1078 
 mix.race.Ot.Hi mix.race.Wh.Hi mix.race.Bl.Ot mix.race.Hi.Ot mix.race.Ot.Ot 
-           236           2542            270            258             56 
+           248           2463            253            220             56 
 mix.race.Wh.Ot mix.race.Bl.Wh mix.race.Hi.Wh mix.race.Ot.Wh mix.race.Wh.Wh 
-           520           2993           2560            505           5647 
+           507           2906           2371            515           5516 
 > 
 >   cat("\nChecking all numeric-to-category race mappings:\n\n")
 
@@ -485,32 +580,32 @@ Checking all numeric-to-category race mappings:
 +     }
 +   }
 Term not found for ( 1 , 1 ):  mix.race.num.1.1  or  mix.race.Wh.Wh 
-Confirmed: ( 1 , 2 ) in race.num = ( Wh , Bl ) in race. Count: 3117 
-Confirmed: ( 1 , 3 ) in race.num = ( Wh , Hi ) in race. Count: 2542 
-Confirmed: ( 1 , 4 ) in race.num = ( Wh , Ot ) in race. Count: 520 
-Confirmed: ( 2 , 1 ) in race.num = ( Bl , Wh ) in race. Count: 2993 
+Confirmed: ( 1 , 2 ) in race.num = ( Wh , Bl ) in race. Count: 2883 
+Confirmed: ( 1 , 3 ) in race.num = ( Wh , Hi ) in race. Count: 2463 
+Confirmed: ( 1 , 4 ) in race.num = ( Wh , Ot ) in race. Count: 507 
+Confirmed: ( 2 , 1 ) in race.num = ( Bl , Wh ) in race. Count: 2906 
 Term not found for ( 2 , 2 ):  mix.race.num.2.2  or  mix.race.Bl.Bl 
-Confirmed: ( 2 , 3 ) in race.num = ( Bl , Hi ) in race. Count: 1418 
-Confirmed: ( 2 , 4 ) in race.num = ( Bl , Ot ) in race. Count: 270 
-Confirmed: ( 3 , 1 ) in race.num = ( Hi , Wh ) in race. Count: 2560 
-Confirmed: ( 3 , 2 ) in race.num = ( Hi , Bl ) in race. Count: 1438 
-Confirmed: ( 3 , 3 ) in race.num = ( Hi , Hi ) in race. Count: 1119 
-Confirmed: ( 3 , 4 ) in race.num = ( Hi , Ot ) in race. Count: 258 
-Confirmed: ( 4 , 1 ) in race.num = ( Ot , Wh ) in race. Count: 505 
-Confirmed: ( 4 , 2 ) in race.num = ( Ot , Bl ) in race. Count: 272 
-Confirmed: ( 4 , 3 ) in race.num = ( Ot , Hi ) in race. Count: 236 
+Confirmed: ( 2 , 3 ) in race.num = ( Bl , Hi ) in race. Count: 1253 
+Confirmed: ( 2 , 4 ) in race.num = ( Bl , Ot ) in race. Count: 253 
+Confirmed: ( 3 , 1 ) in race.num = ( Hi , Wh ) in race. Count: 2371 
+Confirmed: ( 3 , 2 ) in race.num = ( Hi , Bl ) in race. Count: 1296 
+Confirmed: ( 3 , 3 ) in race.num = ( Hi , Hi ) in race. Count: 1078 
+Confirmed: ( 3 , 4 ) in race.num = ( Hi , Ot ) in race. Count: 220 
+Confirmed: ( 4 , 1 ) in race.num = ( Ot , Wh ) in race. Count: 515 
+Confirmed: ( 4 , 2 ) in race.num = ( Ot , Bl ) in race. Count: 271 
+Confirmed: ( 4 , 3 ) in race.num = ( Ot , Hi ) in race. Count: 248 
 Confirmed: ( 4 , 4 ) in race.num = ( Ot , Ot ) in race. Count: 56 
 > 
-> ## degree distributions
-> inedges <- inedges %>% 
-+   mutate(n_nodes = n*nbprob)
-> outedges <- outedges %>% 
-+   mutate(n_nodes = n*nbprob)
+> # ## degree distributions
+> # inedges <- inedges %>% 
+> #   mutate(n_nodes = n*nbprob)
+> # outedges <- outedges %>% 
+> #   mutate(n_nodes = n*nbprob)
 > 
-> negbin_inedges <- negbin_indeg %>% 
-+   mutate(n_nodes = n*nbprob)
-> negbin_outedges <- negbin_outdeg %>% 
-+   mutate(n_nodes = n*nbprob)
+> # negbin_inedges <- negbin_indeg %>% 
+> #   mutate(n_nodes = n*nbprob)
+> # negbin_outedges <- negbin_outdeg %>% 
+> #   mutate(n_nodes = n*nbprob)
 > 
 > ## distance term
 > 
@@ -518,6 +613,9 @@ Confirmed: ( 4 , 4 ) in race.num = ( Ot , Ot ) in race. Count: 56
 > dist.nedge.distribution <- edges_target*dist.prop.distribution
 > 
 > # Save RDS Objects ----
+> 
+> ## stop()
+> 
 > 
 > # create a list of objects to save
 > data_objects <- list(
@@ -532,8 +630,8 @@ Confirmed: ( 4 , 4 ) in race.num = ( Ot , Ot ) in race. Count: 56
 +   tgt.male.pctfemale=tgt.male.pctfemale, 
 +   tgt.male.pctmale=tgt.male.pctmale,
 +   target_race_num = target_race_num,
-+   negbin_inedges = negbin_inedges,
-+   outedges = outedges,
++   indegree_data = indegree_data,
++   outdegree_data = outdegree_data,
 +   dist_nedge_distribution = dist.nedge.distribution
 + )
 > 
@@ -546,52 +644,46 @@ Confirmed: ( 4 , 4 ) in race.num = ( Ot , Ot ) in race. Count: 56
   loops = FALSE 
   multiple = FALSE 
   bipartite = FALSE 
-  total edges= 24596 
+  total edges= 23430 
     missing edges= 0 
-    non-missing edges= 24596 
+    non-missing edges= 23430 
 
  Vertex attribute names: 
     age age_lb age_started age_ub agecat daily_injection_intensity fraction_recept_sharing hcv_status lat lon race race.num sex syringe_source vertex.names young Zip zipcode 
 
  Edge attribute names not shown 
 > data_objects$tgt.old.pctyoung
-[1] 3106.152
+[1] 1928.634
 > data_objects$tgt.young.pctold
-[1] 961.4279
+[1] 1910.266
 > data_objects$tgt.young.pctyoung
-[1] 1503.772
+[1] 176332.2
 > data_objects$edges_target
-[1] 24652
+[1] 22959.93
 > data_objects$tgt.female.pctmale
-[1] 6015.087
+[1] 6281.835
 > data_objects$tgt.male.pctfemale
-[1] 4575.411
+[1] 6061.42
 > data_objects$tgt.male.pctmale
-[1] 9722.748
+[1] 7576.775
 > names(data_objects$target_race_num) <- 
 +   c("target.b.w", "target.h.w", "target.o.w",
 +     "target.w.b", "target.b.b", "target.h.b", "target.o.b",
 +     "target.w.h", "target.b.h", "target.h.h", "target.o.h",
 +     "target.w.o", "target.b.o", "target.h.o", "target.o.o")
 > data_objects$target_race_num
-target.b.w target.h.w target.o.w target.w.b target.b.b target.h.b target.o.b 
-2292.63576 2736.37172 3993.62359 1111.80509 5761.17180 1010.73190 2324.68336 
-target.w.h target.b.h target.h.h target.o.h target.w.o target.b.o target.h.o 
- 672.99953  362.38436 2640.22893  828.30711   19.72160   49.30399   19.72160 
-target.o.o 
-  69.02559 
+ target.b.w  target.h.w  target.o.w  target.w.b  target.b.b  target.h.b 
+4510.936465 4673.492734 8642.574969  376.083572 2045.729317   45.460651 
+ target.o.b  target.w.h  target.b.h  target.h.h  target.o.h  target.w.o 
+ 438.075369  433.253785  628.413147 2466.814342  788.443825   27.551910 
+ target.b.o  target.h.o  target.o.o 
+   7.576775    7.576775   36.506281 
 > data_objects$negbin_inedges[1:2,]
-  k    nbprob  n_nodes
-1 0 0.7238265 23163.90
-2 1 0.1299956  4160.12
+NULL
 > data_objects$outedges[1:4,]
-  k     nbprob  X   n_nodes
-1 0 0.63676240 NA 20377.670
-2 1 0.16774029 NA  5368.025
-3 2 0.08056306 NA  2578.179
-4 3 0.04451676 NA  1424.625
+NULL
 > data_objects$dist_nedge_distribution
-[1] 3870.364 8652.851 5941.131 5423.439
+[1] 3604.708 8058.934 5533.342 5051.184
 > 
 > 
 > # Save the list as an RDS file
@@ -611,4 +703,4 @@ target.o.o
 > 
 > proc.time()
    user  system elapsed 
- 13.874   1.004  19.081 
+ 12.377   0.649  17.137 
