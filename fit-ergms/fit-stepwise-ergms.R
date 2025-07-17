@@ -6,7 +6,7 @@
 rm(list = ls())
 
 # Label and outputs for this run
-run_label <- "mixing-aligned-pop-dated-2025-jan-23" # set manually to ensure intentional updates
+run_label <- "new-mixing-data-2" # set manually to ensure intentional updates
 
 # Activate R environment ----------
 
