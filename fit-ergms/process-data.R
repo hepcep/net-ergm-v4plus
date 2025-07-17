@@ -188,7 +188,7 @@ tgt.female.pctfemale <- edges_target*edges.female.end*female.pctfemale
 edges.young.end <- 0.16
 edges.old.end <- 0.84
   
-young.pctyoung <- 048
+young.pctyoung <- 0.48
 young.pctold <- 0.52
 old.pctyoung <- 0.10
 old.pctold <- 0.90
