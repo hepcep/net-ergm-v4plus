@@ -207,27 +207,27 @@ table(n0 %v% "race")
 table(n0 %v% "race.num", exclude=NULL) # will be sorted as per 1=W, 2=B, 3=H, 4=O
 
 
-pct_to_white	<- 0.30
-pct_to_black	<- 0.41
-pct_to_hispanic	<- 0.21
-pct_to_other	<- 0.04
+pct_to_white	<- 0.59
+pct_to_black	<- 0.18
+pct_to_hispanic	<- 0.17
+pct_to_other	<- 0.03
 
-race.w.w <- 0.74 # (marks sum to 1)
-race.b.w <- 0.31 #-
-race.h.w <- 0.37 ##
-race.o.w <- 0.54 #--
-race.w.b <- 0.11 #
-race.b.b <- 0.57 #-
-race.h.b <- 0.10 ##
-race.o.b <- 0.23 #--
-race.w.h <- 0.13 #
-race.b.h <- 0.07 #-
-race.h.h <- 0.51 ##
-race.o.h <- 0.16 #--
-race.w.o <- 0.02 #
-race.b.o <- 0.05 #-
-race.h.o <- 0.02 ##
-race.o.o <- 0.07 #--
+race.w.w <- 0.758 # (marks sum to 1, i.e., sum of all race.w.* = 1, sum of all race.b.* = 1)
+race.b.w <- 0.333 #-
+race.h.w <- 0.345 ##
+race.o.w <- 0.638 #--
+race.w.b <- 0.091 #
+race.b.b <- 0.495 #-
+race.h.b <- 0.011 ##
+race.o.b <- 0.106 #--
+race.w.h <- 0.111 #
+race.b.h <- 0.161 #-
+race.h.h <- 0.632 ##
+race.o.h <- 0.202 #--
+race.w.o <- 0.040 #
+race.b.o <- 0.011 #-
+race.h.o <- 0.011 ##
+race.o.o <- 0.053 #--
 
 target.w.w <- edges_target * pct_to_white * race.w.w
 target.b.w <- edges_target * pct_to_white * race.b.w
