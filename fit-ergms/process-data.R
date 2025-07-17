@@ -185,13 +185,13 @@ tgt.female.pctfemale <- edges_target*edges.female.end*female.pctfemale
 
 ## young (1=young; 0=old)
 ### mixing information from meta-analysis of sathcap AND socnet
-edges.young.end <- 0.10
-edges.old.end <- 0.90
+edges.young.end <- 0.16
+edges.old.end <- 0.84
   
-young.pctyoung <- 0.61
-young.pctold <- 0.39
-old.pctyoung <- 0.14
-old.pctold <- 0.86
+young.pctyoung <- 048
+young.pctold <- 0.52
+old.pctyoung <- 0.10
+old.pctold <- 0.90
  
 ## set young targets from meta data
 tgt.young.pctyoung <- edges_target * edges.young.end * young.pctyoung
