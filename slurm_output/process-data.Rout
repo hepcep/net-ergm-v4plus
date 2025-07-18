@@ -417,7 +417,7 @@ age.cat    0    1
 > edges.young.end <- 0.16
 > edges.old.end <- 0.84
 >   
-> young.pctyoung <- 048
+> young.pctyoung <- 0.48
 > young.pctold <- 0.52
 > old.pctyoung <- 0.10
 > old.pctold <- 0.90
@@ -513,8 +513,12 @@ Finished MPLE.
 Starting Monte Carlo maximum likelihood estimation (MCMLE):
 Iteration 1 of at most 60:
 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.0476.
-Convergence test p-value: 0.0082. Converged with 99% confidence.
+The log-likelihood improved by 0.0004.
+Convergence test p-value: 0.0105. Not converged with 99% confidence; increasing sample size.
+Iteration 2 of at most 60:
+Optimizing with step length 1.0000.
+The log-likelihood improved by 0.0051.
+Convergence test p-value: 0.0009. Converged with 99% confidence.
 Finished MCMLE.
 This model was fit using MCMC.  To examine model diagnostics and check
 for degeneracy, use the mcmc.diagnostics() function.
@@ -533,20 +537,20 @@ for degeneracy, use the mcmc.diagnostics() function.
 >   # Print them for reference
 >   print(race_num_alignment)
 mix.race.num.2.1 mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 
-            2906             2371              515             2883 
+            2913             2354              472             2832 
 mix.race.num.2.2 mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 
-            1594             1296              271             2463 
+            1486             1275              263             2373 
 mix.race.num.2.3 mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 
-            1253             1078              248              507 
+            1225             1038              209              483 
 mix.race.num.2.4 mix.race.num.3.4 mix.race.num.4.4 
-             253              220               56 
+             258              225               48 
 >   print(race_term_alignment)
 mix.race.Hi.Bl mix.race.Ot.Bl mix.race.Wh.Bl mix.race.Bl.Hi mix.race.Hi.Hi 
-          1296            271           2883           1253           1078 
+          1275            263           2832           1225           1038 
 mix.race.Ot.Hi mix.race.Wh.Hi mix.race.Bl.Ot mix.race.Hi.Ot mix.race.Ot.Ot 
-           248           2463            253            220             56 
+           209           2373            258            225             48 
 mix.race.Wh.Ot mix.race.Bl.Wh mix.race.Hi.Wh mix.race.Ot.Wh mix.race.Wh.Wh 
-           507           2906           2371            515           5516 
+           483           2913           2354            472           5338 
 > 
 >   cat("\nChecking all numeric-to-category race mappings:\n\n")
 
@@ -580,21 +584,21 @@ Checking all numeric-to-category race mappings:
 +     }
 +   }
 Term not found for ( 1 , 1 ):  mix.race.num.1.1  or  mix.race.Wh.Wh 
-Confirmed: ( 1 , 2 ) in race.num = ( Wh , Bl ) in race. Count: 2883 
-Confirmed: ( 1 , 3 ) in race.num = ( Wh , Hi ) in race. Count: 2463 
-Confirmed: ( 1 , 4 ) in race.num = ( Wh , Ot ) in race. Count: 507 
-Confirmed: ( 2 , 1 ) in race.num = ( Bl , Wh ) in race. Count: 2906 
+Confirmed: ( 1 , 2 ) in race.num = ( Wh , Bl ) in race. Count: 2832 
+Confirmed: ( 1 , 3 ) in race.num = ( Wh , Hi ) in race. Count: 2373 
+Confirmed: ( 1 , 4 ) in race.num = ( Wh , Ot ) in race. Count: 483 
+Confirmed: ( 2 , 1 ) in race.num = ( Bl , Wh ) in race. Count: 2913 
 Term not found for ( 2 , 2 ):  mix.race.num.2.2  or  mix.race.Bl.Bl 
-Confirmed: ( 2 , 3 ) in race.num = ( Bl , Hi ) in race. Count: 1253 
-Confirmed: ( 2 , 4 ) in race.num = ( Bl , Ot ) in race. Count: 253 
-Confirmed: ( 3 , 1 ) in race.num = ( Hi , Wh ) in race. Count: 2371 
-Confirmed: ( 3 , 2 ) in race.num = ( Hi , Bl ) in race. Count: 1296 
-Confirmed: ( 3 , 3 ) in race.num = ( Hi , Hi ) in race. Count: 1078 
-Confirmed: ( 3 , 4 ) in race.num = ( Hi , Ot ) in race. Count: 220 
-Confirmed: ( 4 , 1 ) in race.num = ( Ot , Wh ) in race. Count: 515 
-Confirmed: ( 4 , 2 ) in race.num = ( Ot , Bl ) in race. Count: 271 
-Confirmed: ( 4 , 3 ) in race.num = ( Ot , Hi ) in race. Count: 248 
-Confirmed: ( 4 , 4 ) in race.num = ( Ot , Ot ) in race. Count: 56 
+Confirmed: ( 2 , 3 ) in race.num = ( Bl , Hi ) in race. Count: 1225 
+Confirmed: ( 2 , 4 ) in race.num = ( Bl , Ot ) in race. Count: 258 
+Confirmed: ( 3 , 1 ) in race.num = ( Hi , Wh ) in race. Count: 2354 
+Confirmed: ( 3 , 2 ) in race.num = ( Hi , Bl ) in race. Count: 1275 
+Confirmed: ( 3 , 3 ) in race.num = ( Hi , Hi ) in race. Count: 1038 
+Confirmed: ( 3 , 4 ) in race.num = ( Hi , Ot ) in race. Count: 225 
+Confirmed: ( 4 , 1 ) in race.num = ( Ot , Wh ) in race. Count: 472 
+Confirmed: ( 4 , 2 ) in race.num = ( Ot , Bl ) in race. Count: 263 
+Confirmed: ( 4 , 3 ) in race.num = ( Ot , Hi ) in race. Count: 209 
+Confirmed: ( 4 , 4 ) in race.num = ( Ot , Ot ) in race. Count: 48 
 > 
 > # ## degree distributions
 > # inedges <- inedges %>% 
@@ -644,9 +648,9 @@ Confirmed: ( 4 , 4 ) in race.num = ( Ot , Ot ) in race. Count: 56
   loops = FALSE 
   multiple = FALSE 
   bipartite = FALSE 
-  total edges= 23430 
+  total edges= 22792 
     missing edges= 0 
-    non-missing edges= 23430 
+    non-missing edges= 22792 
 
  Vertex attribute names: 
     age age_lb age_started age_ub agecat daily_injection_intensity fraction_recept_sharing hcv_status lat lon race race.num sex syringe_source vertex.names young Zip zipcode 
@@ -657,7 +661,7 @@ Confirmed: ( 4 , 4 ) in race.num = ( Ot , Ot ) in race. Count: 56
 > data_objects$tgt.young.pctold
 [1] 1910.266
 > data_objects$tgt.young.pctyoung
-[1] 176332.2
+[1] 1763.322
 > data_objects$edges_target
 [1] 22959.93
 > data_objects$tgt.female.pctmale
@@ -703,4 +707,4 @@ NULL
 > 
 > proc.time()
    user  system elapsed 
- 12.377   0.649  17.137 
+ 13.271   0.679  15.678 

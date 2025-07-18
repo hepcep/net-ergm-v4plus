@@ -99,11 +99,26 @@ print(age_mixing_align_order)
 sum(age_mixing_align_order)
 
 
-race_mixing_terms <- summary(n0 ~ nodemix("race.num", levels2 = -1))
+race_mixing_terms <- summary(n0 ~ nodemix("race.num"))
 print(names(race_mixing_terms))
-# race order is already aligned
+# race order is already aligned on num
 print(target_race_num)
 sum(target_race_num)
+
+race_mixing_terms_cat <- summary(n0 ~ nodemix("race"))
+print(names(race_mixing_terms))
+term_names <- names(race_mixing_terms_cat)
+desired_order <- c(
+  "mix.race.Wh.Wh", "mix.race.Wh.Bl", "mix.race.Wh.Hi", "mix.race.Wh.Ot",
+  "mix.race.Bl.Wh", "mix.race.Bl.Bl", "mix.race.Bl.Hi", "mix.race.Bl.Ot",
+  "mix.race.Hi.Wh", "mix.race.Hi.Bl", "mix.race.Hi.Hi", "mix.race.Hi.Ot",
+  "mix.race.Ot.Wh", "mix.race.Ot.Bl", "mix.race.Ot.Hi", "mix.race.Ot.Ot"
+)
+
+# Reorder
+race_mixing_terms_cat_ordered <- race_mixing_terms_cat[desired_order]
+race_mixing_terms_cat_ordered
+
 
 fit_nonempty_network_w_sex <-
   load_or_run("fit_nonempty_network_w_sex", quote(
@@ -171,41 +186,46 @@ non_empty_net_w_sex_age <- load_or_run("non_empty_net_w_sex_age", quote(
 ))
 non_empty_net_w_sex_age
 
-# fit_nonempty_network_w_race_num <-
-#   load_or_run("fit_nonempty_network_w_race_num", quote(
-#     ergm(
-#       edges_only_net ~
-#         edges +
-#         nodemix("sex", levels2 = -1) +
-#         nodemix("young", levels2 = -1) +
-#         nodemix("race.num", levels2 = -1),
-#       target.stats =
-#         c(
-#           edges_target,
-#           sex_mixing_align_order,
-#           age_mixing_align_order,
-#           target_race_num
-#         ),
-#       eval.loglik = FALSE,
-#       control = control.ergm(
-#         MCMLE.maxit = 500,
-#         main.method = c("Stochastic-Approximation"),
-#         MCMC.interval = 1e6,
-#         MCMC.samplesize = 1e6,
-#         MCMLE.termination = "Hotelling",
-#         MCMC.effectiveSize = NULL,
-#         SAN = control.san(
-#           SAN.maxit = 500,
-#           SAN.nsteps = 1e8
-#         )
-#       )
-#     )
-#   ))
+race_levels <- setdiff(
+  as.list(as.data.frame(t(expand.grid(1:4, 1:4)))),
+  list(c(4, 4))
+)
 
-# non_empty_net_w_race_term <- load_or_run("net_nonempty_w_race_term", quote(
-#   simulate(fit_nonempty_network_w_race_num, nsim = 1)
-# ))
-# non_empty_net_w_race_term
+fit_nonempty_network_w_race_num <-
+  load_or_run("fit_nonempty_network_w_race_num", quote(
+    ergm(
+      edges_only_net ~
+        edges +
+        #nodemix("sex", levels2 = -1) +
+        #nodemix("young", levels2 = -1) +
+        nodemix("race", levels2 = race_levels),
+      target.stats =
+        c(
+          edges_target,
+          #sex_mixing_align_order,
+          #age_mixing_align_order,
+          target_full_race_matrix[1:15]
+        ),
+      eval.loglik = FALSE,
+      control = control.ergm(
+        MCMLE.maxit = 500,
+        main.method = c("Stochastic-Approximation"),
+        MCMC.interval = 1e6,
+        MCMC.samplesize = 1e6,
+        MCMLE.termination = "Hotelling",
+        MCMC.effectiveSize = NULL,
+        SAN = control.san(
+          SAN.maxit = 500,
+          SAN.nsteps = 1e8
+        )
+      )
+    )
+  ))
+
+non_empty_net_w_race_term <- load_or_run("net_nonempty_w_race_term", quote(
+  simulate(fit_nonempty_network_w_race_num, nsim = 1)
+))
+non_empty_net_w_race_term
 
 # fit.stepwise.dist <-
 #   load_or_run("fit.stepwise.dist", quote(

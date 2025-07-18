@@ -258,6 +258,27 @@ target_race_num  <- c(
 
 target_race_num
 
+target_full_race_num  <- c(
+  target.w.w, target.b.w, target.h.w, target.o.w,
+  target.w.b, target.b.b, target.h.b, target.o.b,
+  target.w.h, target.b.h, target.h.h, target.o.h,
+  target.w.o, target.b.o, target.h.o, target.o.o
+)
+
+target_full_race_num
+
+target_full_race_matrix <- matrix(
+  c(target.w.w, target.w.b, target.w.h, target.w.o,
+    target.b.w, target.b.b, target.b.h, target.b.o,
+    target.h.w, target.h.b, target.h.h, target.h.o,
+    target.o.w, target.o.b, target.o.h, target.o.o),
+  nrow = 4, ncol = 4, byrow = TRUE
+)
+
+rownames(target_full_race_matrix) <- c("Wh", "Bl", "Hi", "Ot")
+colnames(target_full_race_matrix) <- c("Wh", "Bl", "Hi", "Ot")
+
+
 # Fit network only with edges ----------
 fit_edges_only_net <- 
   ergm(
@@ -345,6 +366,7 @@ data_objects <- list(
   tgt.male.pctfemale=tgt.male.pctfemale, 
   tgt.male.pctmale=tgt.male.pctmale,
   target_race_num = target_race_num,
+  target_full_race_matrix = target_full_race_matrix,
   indegree_data = indegree_data,
   outdegree_data = outdegree_data,
   dist_nedge_distribution = dist.nedge.distribution
@@ -368,6 +390,11 @@ data_objects$target_race_num
 data_objects$negbin_inedges[1:2,]
 data_objects$outedges[1:4,]
 data_objects$dist_nedge_distribution
+data_objects$target_full_race_matrix
+names(data_objects$target_full_race_matrix) <- 
+  c("target.w.w", names(data_objects$target_race_num))
+
+data_objects$target_full_race_num
 
 
 # Save the list as an RDS file
