@@ -230,23 +230,23 @@ race.h.o <- 0.011 ##
 race.o.o <- 0.053 #--
 
 target.w.w <- edges_target * pct_to_white * race.w.w
-target.b.w <- edges_target * pct_to_white * race.b.w
-target.h.w <- edges_target * pct_to_white * race.h.w
-target.o.w <- edges_target * pct_to_white * race.o.w
+target.b.w <- edges_target * pct_to_black * race.b.w
+target.h.w <- edges_target * pct_to_hispanic * race.h.w
+target.o.w <- edges_target * pct_to_other * race.o.w
 
-target.w.b <- edges_target * pct_to_black * race.w.b
+target.w.b <- edges_target * pct_to_white * race.w.b
 target.b.b <- edges_target * pct_to_black * race.b.b
-target.h.b <- edges_target * pct_to_black * race.h.b
-target.o.b <- edges_target * pct_to_black * race.o.b
+target.h.b <- edges_target * pct_to_hispanic * race.h.b
+target.o.b <- edges_target * pct_to_other * race.o.b
 
-target.w.h <- edges_target * pct_to_hispanic * race.w.h
-target.b.h <- edges_target * pct_to_hispanic * race.b.h
+target.w.h <- edges_target * pct_to_white * race.w.h
+target.b.h <- edges_target * pct_to_black * race.b.h
 target.h.h <- edges_target * pct_to_hispanic * race.h.h
-target.o.h <- edges_target * pct_to_hispanic * race.o.h
+target.o.h <- edges_target * pct_to_other * race.o.h
 
-target.w.o <- edges_target * pct_to_other * race.w.o
-target.b.o <- edges_target * pct_to_other * race.b.o
-target.h.o <- edges_target * pct_to_other * race.h.o
+target.w.o <- edges_target * pct_to_white * race.w.o
+target.b.o <- edges_target * pct_to_black * race.b.o
+target.h.o <- edges_target * pct_to_hispanic * race.h.o
 target.o.o <- edges_target * pct_to_other * race.o.o
 
 target_race_num  <- c(
@@ -322,10 +322,38 @@ edges_only_net <- simulate(fit_edges_only_net, nsim=1)
 # negbin_outedges <- negbin_outdeg %>% 
 #   mutate(n_nodes = n*nbprob)
 
-## distance term
+## distance as mixing 
 
-dist.prop.distribution <- c(15.7, 35.1, 24.1, 22)/100
-dist.nedge.distribution <- edges_target*dist.prop.distribution
+pct_to_near <- 0.66
+pct_to_far <- 0.38
+
+dist_pct_to_near_pct_to_far <- c(
+  pct_to_near,
+  pct_to_far
+)
+
+names(dist_pct_to_near_pct_to_far) <- c(
+  "pct_to_near",
+  "pct_to_far"
+)
+
+non_chicago_to_pct_near <- 0.53
+non_chicago_to_pct_far <- 0.46
+chicago_to_pct_near <- 0.66
+chicago_to_pct_far <- 0.033
+
+dist_as_mixing_matrix <- c(
+  non_chicago_to_pct_near, 
+  non_chicago_to_pct_far,
+  chicago_to_pct_near,
+  chicago_to_pct_far)
+
+names(dist_as_mixing_matrix) <- c(
+  "non_chicago_to_pct_near", 
+  "non_chicago_to_pct_far",
+  "chicago_to_pct_near",
+  "chicago_to_pct_far")
+
 
 # Save RDS Objects ----
 
@@ -347,7 +375,8 @@ data_objects <- list(
   target_race_num = target_race_num,
   indegree_data = indegree_data,
   outdegree_data = outdegree_data,
-  dist_nedge_distribution = dist.nedge.distribution
+  dist_as_mixing_matrix = dist_as_mixing_matrix,
+  dist_pct_to_near_pct_to_far = dist_pct_to_near_pct_to_far
 )
 
 # Print Objects for comparison --------
@@ -367,8 +396,8 @@ names(data_objects$target_race_num) <-
 data_objects$target_race_num
 data_objects$negbin_inedges[1:2,]
 data_objects$outedges[1:4,]
-data_objects$dist_nedge_distribution
-
+data_objects$dist_as_mixing_matrix
+data_objects$dist_pct_to_near_pct_to_far
 
 # Save the list as an RDS file
 saveRDS(data_objects, file = here("fit-ergms", "out", "processed_data.rds"))
