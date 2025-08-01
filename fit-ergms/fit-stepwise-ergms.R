@@ -6,7 +6,7 @@
 rm(list = ls())
 
 # Label and outputs for this run
-run_label <- "new-mixing-data-2" # set manually to ensure intentional updates
+run_label <- "new-mixing-data-2-recomp-race-mix" # set manually to ensure intentional updates
 
 # Activate R environment ----------
 
@@ -44,6 +44,8 @@ sum(inedges_target)
 outedges_target <- outdegree_data$out_degree * outdegree_data$mean_n
 sum(outedges_target)
 
+edges_target #target number of total edges
+
 # Degree and dist assignments ---------
 
 ## outdegrees
@@ -58,8 +60,16 @@ indeg.terms.0 <- 0
 indeg.terms <- 0:1
 
 ## dist
-dist.terms <- 1:3 # fourth is left out
+dist_as_mixing_matrix
+names(dist_as_mixing_matrix)
 
+dist_pct_to_near_pct_to_far
+names(dist_pct_to_near_pct_to_far)
+
+dist.prop.distribution <- c(15.7, 35.1, 24.1, 22)/100 #old dist terms
+dist.nedge.distribution <- edges_target*dist.prop.distribution
+
+## race
 class(target_race_num)
 target_race_num <- unname(target_race_num)
 
@@ -97,7 +107,6 @@ age_mixing_align_order <- c(
 )
 print(age_mixing_align_order)
 sum(age_mixing_align_order)
-
 
 race_mixing_terms <- summary(n0 ~ nodemix("race.num", levels2 = -1))
 print(names(race_mixing_terms))
@@ -171,51 +180,50 @@ non_empty_net_w_sex_age <- load_or_run("non_empty_net_w_sex_age", quote(
 ))
 non_empty_net_w_sex_age
 
-# fit_nonempty_network_w_race_num <-
-#   load_or_run("fit_nonempty_network_w_race_num", quote(
-#     ergm(
-#       edges_only_net ~
-#         edges +
-#         nodemix("sex", levels2 = -1) +
-#         nodemix("young", levels2 = -1) +
-#         nodemix("race.num", levels2 = -1),
-#       target.stats =
-#         c(
-#           edges_target,
-#           sex_mixing_align_order,
-#           age_mixing_align_order,
-#           target_race_num
-#         ),
-#       eval.loglik = FALSE,
-#       control = control.ergm(
-#         MCMLE.maxit = 500,
-#         main.method = c("Stochastic-Approximation"),
-#         MCMC.interval = 1e6,
-#         MCMC.samplesize = 1e6,
-#         MCMLE.termination = "Hotelling",
-#         MCMC.effectiveSize = NULL,
-#         SAN = control.san(
-#           SAN.maxit = 500,
-#           SAN.nsteps = 1e8
-#         )
-#       )
-#     )
-#   ))
+fit_nonempty_network_w_race_num <-
+  load_or_run("fit_nonempty_network_w_race_num", quote(
+    ergm(
+      edges_only_net ~
+        edges +
+        nodemix("sex", levels2 = -1) +
+        nodemix("young", levels2 = -1) +
+        nodemix("race.num", levels2 = -1),
+      target.stats =
+        c(
+          edges_target,
+          sex_mixing_align_order,
+          age_mixing_align_order,
+          target_race_num
+        ),
+      eval.loglik = FALSE,
+      control = control.ergm(
+        MCMLE.maxit = 500,
+        main.method = c("Stochastic-Approximation"),
+        MCMC.interval = 1e6,
+        MCMC.samplesize = 1e6,
+        MCMLE.termination = "Hotelling",
+        MCMC.effectiveSize = NULL,
+        SAN = control.san(
+          SAN.maxit = 500,
+          SAN.nsteps = 1e8
+        )
+      )
+    )
+  ))
 
-# non_empty_net_w_race_term <- load_or_run("net_nonempty_w_race_term", quote(
-#   simulate(fit_nonempty_network_w_race_num, nsim = 1)
-# ))
-# non_empty_net_w_race_term
+non_empty_net_w_race_term <- load_or_run("net_nonempty_w_race_term", quote(
+  simulate(fit_nonempty_network_w_race_num, nsim = 1)
+))
+non_empty_net_w_race_term
 
 fit.stepwise.dist <-
   load_or_run("fit.stepwise.dist", quote(
     ergm(
-      #non_empty_net_w_race_term ~
-      non_empty_net_w_sex_age ~
+      non_empty_net_w_race_term ~
         edges +
         nodemix("sex", levels2 = -1) +
         nodemix("young", levels2 = -1) +
-        #nodemix("race.num", levels2 = -1) +
+        nodemix("race.num", levels2 = -1) +
         # idegree(indeg.terms)+
         # odegree(deg.terms)+
         dist(dist.terms),
@@ -224,7 +232,7 @@ fit.stepwise.dist <-
           edges_target,
           sex_mixing_align_order,
           age_mixing_align_order,
-          #target_race_num,
+          target_race_num,
           # c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
           # c(outedges$n_nodes[c(deg.terms+1)])
           c(dist_nedge_distribution[dist.terms])
@@ -259,7 +267,7 @@ fit.stepwise.dist.odeg.0 <-
         edges +
         nodemix("sex", levels2 = -1) +
         nodemix("young", levels2 = -1) +
-        # nodemix("race.num", levels2 = -1) +
+        nodemix("race.num", levels2 = -1) +
         # idegree(indeg.terms)+
         odegree(deg.terms.0) +
         dist(dist.terms),
@@ -268,7 +276,7 @@ fit.stepwise.dist.odeg.0 <-
           edges_target,
           sex_mixing_align_order,
           age_mixing_align_order,
-          #target_race_num,
+          target_race_num,
           # c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
           c(outdegree_data$mean_n[c(deg.terms.0 + 1)]),
           c(dist_nedge_distribution[dist.terms])
@@ -301,7 +309,7 @@ fit.stepwise.dist.odeg.0.1 <-
         edges +
         nodemix("sex", levels2 = -1) +
         nodemix("young", levels2 = -1) +
-        #nodemix("race.num", levels2 = -1) +
+        nodemix("race.num", levels2 = -1) +
         # idegree(indeg.terms)+
         odegree(deg.terms.0_1) +
         dist(dist.terms),
@@ -310,7 +318,7 @@ fit.stepwise.dist.odeg.0.1 <-
           edges_target,
           sex_mixing_align_order,
           age_mixing_align_order,
-          #target_race_num,
+          target_race_num,
           # c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
           c(outdegree_data$mean_n[c(deg.terms.0_1 + 1)]),
           c(dist_nedge_distribution[dist.terms])
@@ -344,7 +352,7 @@ fit.stepwise.dist.odeg.0.2 <-
         edges +
         nodemix("sex", levels2 = -1) +
         nodemix("young", levels2 = -1) +
-        #nodemix("race.num", levels2 = -1) +
+        nodemix("race.num", levels2 = -1) +
         # idegree(indeg.terms)+
         odegree(deg.terms.0_2) +
         dist(dist.terms),
@@ -353,7 +361,7 @@ fit.stepwise.dist.odeg.0.2 <-
           edges_target,
           sex_mixing_align_order,
           age_mixing_align_order,
-          #target_race_num,
+          target_race_num,
           # c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
           c(outdegree_data$mean_n[c(deg.terms.0_2 + 1)]),
           c(dist_nedge_distribution[dist.terms])
@@ -380,42 +388,42 @@ load_or_run("net_fit_stepwise_dist_odeg0_2", quote(
 ))
 net_fit_stepwise_dist_odeg0_2 #this is degenerate
 
-fit.stepwise.dist.odeg.013 <-
-  load_or_run("fit.stepwise.dist.odeg.0.2", quote(
-    ergm(
-      net_fit_stepwise_dist_odeg0_1 ~
-        edges +
-        nodemix("sex", levels2 = -1) +
-        nodemix("young", levels2 = -1) +
-        #nodemix("race.num", levels2 = -1) +
-        # idegree(indeg.terms)+
-        odegree(deg.terms.013) +
-        dist(dist.terms),
-      target.stats =
-        c(
-          edges_target,
-          sex_mixing_align_order,
-          age_mixing_align_order,
-          #target_race_num,
-          # c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
-          c(outdegree_data$mean_n[c(deg.terms.013 + 1)]),
-          c(dist_nedge_distribution[dist.terms])
-        ),
-      eval.loglik = FALSE,
-      control = control.ergm(
-        MCMLE.maxit = 500,
-        main.method = c("Stochastic-Approximation"),
-        MCMC.interval = 1e6,
-        MCMC.samplesize = 1e6,
-        MCMLE.termination = "Hotelling",
-        MCMC.effectiveSize = NULL,
-        SAN = control.san(
-          SAN.maxit = 500,
-          SAN.nsteps = 1e8
-        )
-      )
-    )
-  ))
+# fit.stepwise.dist.odeg.013 <-
+#   load_or_run("fit.stepwise.dist.odeg.0.2", quote(
+#     ergm(
+#       net_fit_stepwise_dist_odeg0_1 ~
+#         edges +
+#         nodemix("sex", levels2 = -1) +
+#         nodemix("young", levels2 = -1) +
+#         nodemix("race.num", levels2 = -1) +
+#         # idegree(indeg.terms)+
+#         odegree(deg.terms.013) +
+#         dist(dist.terms),
+#       target.stats =
+#         c(
+#           edges_target,
+#           sex_mixing_align_order,
+#           age_mixing_align_order,
+#           target_race_num,
+#           # c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
+#           c(outdegree_data$mean_n[c(deg.terms.013 + 1)]),
+#           c(dist_nedge_distribution[dist.terms])
+#         ),
+#       eval.loglik = FALSE,
+#       control = control.ergm(
+#         MCMLE.maxit = 500,
+#         main.method = c("Stochastic-Approximation"),
+#         MCMC.interval = 1e6,
+#         MCMC.samplesize = 1e6,
+#         MCMLE.termination = "Hotelling",
+#         MCMC.effectiveSize = NULL,
+#         SAN = control.san(
+#           SAN.maxit = 500,
+#           SAN.nsteps = 1e8
+#         )
+#       )
+#     )
+#   ))
 
 # net_fit_stepwise_dist_odeg013 <- 
 # load_or_run("net_fit_stepwise_dist_odeg013", quote(
@@ -431,7 +439,7 @@ fit.stepwise.dist.odeg.01.indeg0 <-
         edges +
         nodemix("sex", levels2 = -1) +
         nodemix("young", levels2 = -1) +
-        #nodemix("race.num", levels2 = -1) +
+        nodemix("race.num", levels2 = -1) +
         idegree(indeg.terms.0)+
         odegree(deg.terms.0_1) +
         dist(dist.terms),
@@ -440,7 +448,7 @@ fit.stepwise.dist.odeg.01.indeg0 <-
           edges_target,
           sex_mixing_align_order,
           age_mixing_align_order,
-          #target_race_num,
+          target_race_num,
           c(indegree_data$mean_n[c(indeg.terms.0 + 1)]),
           c(outdegree_data$mean_n[c(deg.terms.0_1 + 1)]),
           c(dist_nedge_distribution[dist.terms])
@@ -462,9 +470,9 @@ fit.stepwise.dist.odeg.01.indeg0 <-
   ))
 
 net_fit_stepwise_dist_odeg01_indeg0 <- 
-load_or_run("net_fit_stepwise_dist_odeg01_indeg0", quote(
-  simulate(fit.stepwise.dist.odeg.01.indeg0, nsim = 1)
-))
+  load_or_run("net_fit_stepwise_dist_odeg01_indeg0", quote(
+    simulate(fit.stepwise.dist.odeg.01.indeg0, nsim = 1)
+  ))
 net_fit_stepwise_dist_odeg01_indeg0 
 
 ###
@@ -476,7 +484,7 @@ fit.stepwise.dist.odeg.01.indeg <-
         edges +
         nodemix("sex", levels2 = -1) +
         nodemix("young", levels2 = -1) +
-        #nodemix("race.num", levels2 = -1) +
+        nodemix("race.num", levels2 = -1) +
         idegree(indeg.terms)+
         odegree(deg.terms.0_1) +
         dist(dist.terms),
@@ -485,7 +493,7 @@ fit.stepwise.dist.odeg.01.indeg <-
           edges_target,
           sex_mixing_align_order,
           age_mixing_align_order,
-          #target_race_num,
+          target_race_num,
           c(indegree_data$mean_n[c(indeg.terms + 1)]),
           c(outdegree_data$mean_n[c(deg.terms.0_1 + 1)]),
           c(dist_nedge_distribution[dist.terms])
