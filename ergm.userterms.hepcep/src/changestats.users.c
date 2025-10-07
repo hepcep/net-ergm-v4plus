@@ -79,16 +79,11 @@ CHANGESTAT_FN(d_dist) {
 
 /** 
  dnf (distance near/far)
- 
- 
- 
- 
  **/
 CHANGESTAT_FN(d_dnf) {
   Vertex t, h;
   int i, j;
-  double t_nodecov, h_nodecov;
-  int dist_cat, target_cat;
+  int dist_cat;
   int num_cats, base, t_cat;
   int change, change_stat_idx;
   int offset, termid;
@@ -123,23 +118,27 @@ CHANGESTAT_FN(d_dnf) {
     dist = sqrt( (xunit * xunit) + (yunit * yunit) ) * radius;
     
     
-    // Find node category
+    // Find node category, this is at the end of the inputs: c(num.cats, thresholds, base, nodelat, nodelon, nodecat)
     t_cat = INPUT_PARAM[t + (2*N_NODES) + num_cats + 1];
+    // Thresholds are right after the first entry in inputs
     t_threshold = INPUT_PARAM[t_cat];
     
     if (dist < t_threshold){
       offset = 1;
     } else offset = 2;
     
+    // termid defines which term is the relevant one: 1,...,2*num_cats
     termid = (t_cat - 1) * 2 + offset;
     
+    // if termid is not the base term, adjust appropriate CHANGE_STAT
     if (termid != base){
+      // change_stat_idx depends on whether termid is less than or greater than base
       change_stat_idx = termid < base ? termid - 1 : termid - 2;
       change = IS_OUTEDGE(t,h) ? -1 : 1;
       CHANGE_STAT[change_stat_idx] += change;
     }
     
-    // Debug
+    // To debug, one can pass data through the CHANGE_STAT array
     // CHANGE_STAT[0] = num_cats;
     // CHANGE_STAT[0] = -99;
     // CHANGE_STAT[1] = base;
