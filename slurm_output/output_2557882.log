@@ -1,0 +1,9 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 2557882
+##  Job Name : main_stochastic_rep
+##  Nodelist : node1317
+##      CPUs : 1
+##  Mem/Node : 10000 MB
+## Directory : /oscar/home/akhann16/code/net-ergm-v4plus
+##   Job Started : Thu May 30 03:36:22 PM EDT 2024
+###############################################################################

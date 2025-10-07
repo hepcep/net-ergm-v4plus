@@ -1,0 +1,9 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 7035963
+##  Job Name : updated-metamixing-params-stochastic-approx-hotelling-non-empty-net
+##  Nodelist : node1745
+##      CPUs : 1
+##  Mem/Node : 10000 MB
+## Directory : /oscar/home/akhann16/code/net-ergm-v4plus
+##   Job Started : Thu Dec  5 02:06:32 PM EST 2024
+###############################################################################

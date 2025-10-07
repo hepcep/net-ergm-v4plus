@@ -1,0 +1,743 @@
+
+R version 4.4.0 (2024-04-24) -- "Puppy Cup"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+- Project '/oscar/home/akhann16/code/net-ergm-v4plus' loaded. [renv 1.0.7]
+> # Summarize simulated statistics across multiple networks
+> 
+> 
+> rm(list = ls())
+> 
+> # Initiate environment ------------------------------
+> 
+> library(renv)
+
+Attaching package: ‘renv’
+
+The following objects are masked from ‘package:stats’:
+
+    embed, update
+
+The following objects are masked from ‘package:utils’:
+
+    history, upgrade
+
+The following objects are masked from ‘package:base’:
+
+    autoload, load, remove, use
+
+> renv::activate()
+> 
+> .libPaths()
+[1] "/oscar/home/akhann16/code/net-ergm-v4plus/renv/library/linux-rhel-9.2/R-4.4/x86_64-pc-linux-gnu"
+[2] "/oscar/home/akhann16/.cache/R/renv/sandbox/linux-rhel-9.2/R-4.4/x86_64-pc-linux-gnu/c8a2d945"   
+> 
+> 
+> # Libraries ----------
+> 
+> library(network)
+
+‘network’ 1.18.2 (2023-12-04), part of the Statnet Project
+* ‘news(package="network")’ for changes since last version
+* ‘citation("network")’ for citation information
+* ‘https://statnet.org’ for help, support, and other information
+
+> library(ergm)
+
+‘ergm’ 4.6.0 (2023-12-17), part of the Statnet Project
+* ‘news(package="ergm")’ for changes since last version
+* ‘citation("ergm")’ for citation information
+* ‘https://statnet.org’ for help, support, and other information
+
+‘ergm’ 4 is a major update that introduces some backwards-incompatible
+changes. Please type ‘news(package="ergm")’ for a list of major
+changes.
+
+> library(dplyr)
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+> library(ergm.userterms)
+Loading required package: statnet.common
+
+Attaching package: ‘statnet.common’
+
+The following objects are masked from ‘package:base’:
+
+    attr, order
+
+
+‘ergm.userterms’ 3.1.1 (2020-02-01), part of the Statnet Project
+* ‘news(package="ergm.userterms")’ for changes since last version
+* ‘citation("ergm.userterms")’ for citation information
+* ‘https://statnet.org’ for help, support, and other information
+
+NOTE: If you use custom ERGM terms based on ‘ergm.userterms’ version
+prior to 3.1, you will need to perform a one-time update of the package
+boilerplate files (the files that you did not write or modify) from
+‘ergm.userterms’ 3.1 or later. See help('eut-upgrade') for
+instructions.
+
+> library(here)
+here() starts at /oscar/home/akhann16/code/net-ergm-v4plus
+> library(ggplot2)
+> library(qs)
+qs 0.27.3. Announcement: https://github.com/qsbase/qs/issues/103
+> 
+> 
+> # Data ----------
+> 
+> run_label <- "mixing-aligned-pop-dated-2025-jan-23" # set manually to ensure intentional updates
+> ## should match the object from the ERGM fitting code 
+> 
+>   ## load data
+>   ## sim_results <- qread(here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_10.qs")))
+>   sim_results <- qread(here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_100.qs")))
+> 
+> 
+> ## input params
+>   data_objects <- readRDS(here("fit-ergms", "out", "processed_data.rds"))
+>   names(data_objects)
+ [1] "data"                    "n0"                     
+ [3] "edges_only_net"          "tgt.old.pctyoung"       
+ [5] "tgt.young.pctold"        "tgt.young.pctyoung"     
+ [7] "edges_target"            "tgt.female.pctmale"     
+ [9] "tgt.male.pctfemale"      "tgt.male.pctmale"       
+[11] "target_race_num"         "indegree_data"          
+[13] "outdegree_data"          "dist_nedge_distribution"
+> 
+> ## confirm which run
+>   run_label
+[1] "mixing-aligned-pop-dated-2025-jan-23"
+> 
+> ## Unpack objects in data_objects
+> intersect(names(data_objects), ls())
+character(0)
+> list2env(data_objects, envir = globalenv())
+<environment: R_GlobalEnv>
+> ls()
+ [1] "data"                    "data_objects"           
+ [3] "dist_nedge_distribution" "edges_only_net"         
+ [5] "edges_target"            "indegree_data"          
+ [7] "n0"                      "outdegree_data"         
+ [9] "run_label"               "sim_results"            
+[11] "target_race_num"         "tgt.female.pctmale"     
+[13] "tgt.male.pctfemale"      "tgt.male.pctmale"       
+[15] "tgt.old.pctyoung"        "tgt.young.pctold"       
+[17] "tgt.young.pctyoung"     
+> 
+> 
+> # Compute summaries and IQRs ----------
+> 
+> n <- network.size(sim_results[[1]])
+> n_edges <- edges_target
+> 
+> 
+> ## edges
+>   ### simulated
+>   edgecount.sim.data <- (unlist(lapply(
++     sim_results,
++     function(x) network.edgecount(x)
++   ))) # edge count summary
+> 
+>   mean(edgecount.sim.data)
+[1] 23030.5
+>   quantile(edgecount.sim.data, probs = c(2.5 / 100, 97.5 / 100))
+    2.5%    97.5% 
+22786.22 23240.12 
+> 
+>   ### target
+>    edges_target
+[1] 22959.93
+> 
+> 
+> ## outdegree
+>   ## target
+>   target_stats_outdeg <- outdegree_data$mean_n[1:2] #target
+>   target_stats_outdeg
+[1] 19387.2  6469.3
+> 
+>   ## simulated
+>   outdeg0 <- unlist(lapply(sim_results, 
++                           function (x) summary(x ~ odegree(0))
++                           ))
+>   outdeg1 <- unlist(lapply(sim_results, 
++                           function (x) summary(x ~ odegree(1))))
+>   #
+>   summary(outdeg0)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  19116   19334   19388   19386   19435   19589 
+>   quantile(outdeg0, probs = c(2.5 / 100, 97.5 / 100))
+    2.5%    97.5% 
+19242.47 19513.00 
+>   summary(outdeg1)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   6306    6426    6474    6466    6508    6669 
+>   quantile(outdeg1, probs = c(2.5 / 100, 97.5 / 100))
+    2.5%    97.5% 
+6338.275 6604.175 
+> 
+>   outdeg.gr.0.1 <- n - (sum(target_stats_outdeg))
+>   summary(outdeg.gr.0.1)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   6146    6146    6146    6146    6146    6146 
+>   quantile(outdeg.gr.0.1, probs = c(2.5 / 100, 97.5 / 100))
+  2.5%  97.5% 
+6145.5 6145.5 
+> 
+> ## indegree
+>   ## target
+>   target_stats_indeg <- indegree_data$mean_n[1:2]
+> 
+> 
+>   ## simulated
+>   indeg0 <- unlist(lapply(sim_results, 
++                          function (x) summary(x ~ idegree(0))
++   ))
+> 
+>   indeg1 <- unlist(lapply(sim_results, 
++                           function (x) summary(x ~ idegree(1))
++     ))
+> 
+>   summary(indeg0)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  20464   20625   20660   20664   20711   20803 
+>   quantile(indeg0, probs = c(2.5 / 100, 97.5 / 100))
+    2.5%    97.5% 
+20540.12 20781.35 
+>   summary(indeg1)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   4725    4825    4864    4864    4903    5034 
+>   quantile(indeg1, probs = c(2.5 / 100, 97.5 / 100))
+    2.5%    97.5% 
+4753.425 4985.325 
+> 
+>   indeg.gr.0.1 <- n - (sum(target_stats_indeg))
+>   summary(indeg.gr.0.1)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   4836    4836    4836    4836    4836    4836 
+>   quantile(indeg.gr.0.1, probs = c(2.5 / 100, 97.5 / 100))
+   2.5%   97.5% 
+4835.83 4835.83 
+> 
+>   ### target
+>   target_stats_indeg
+[1] 20666.67  6499.50
+> 
+> ## race
+>   ### simulated
+>   sim.race.num <- lapply(1:length(sim_results), 
++     function(x) summary(sim_results[[x]] ~ nodemix("race.num")))
+>   #summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.1.1"])))
+>   summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.2.1"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   2027    2118    2146    2151    2185    2333 
+>   summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.3.1"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   2403    2530    2564    2565    2607    2667 
+>   summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.4.1"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   3591    3700    3744    3738    3782    3867 
+>   summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.1.2"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    936    1002    1018    1021    1042    1096 
+>   summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.2.2"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   5168    5330    5376    5375    5419    5536 
+>   summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.3.2"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  851.0   908.8   928.0   925.9   944.0   993.0 
+>   summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.4.2"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   2102    2176    2200    2201    2226    2291 
+>   summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.1.3"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  566.0   613.0   631.0   630.4   647.0   716.0 
+>   summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.2.3"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  284.0   313.8   327.5   327.0   339.2   364.0 
+>   summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.3.3"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   2343    2416    2449    2453    2484    2563 
+>   summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.4.3"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  710.0   762.8   781.5   781.7   800.0   861.0 
+>   summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.1.4"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   9.00   16.00   18.00   18.31   21.00   29.00 
+>   summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.2.4"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  26.00   39.00   43.00   43.85   48.00   61.00 
+>   summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.3.4"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   7.00   14.00   17.00   17.06   20.00   29.00 
+>   summary(unlist(lapply(sim.race.num, function(x) x["mix.race.num.4.4"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  44.00   58.00   63.00   63.78   70.00   80.00 
+> 
+>   #quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.1.1"])), probs = c(2.5 / 100, 97.5 / 100))
+>   quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.2.1"])), probs = c(2.5 / 100, 97.5 / 100))
+  2.5%  97.5% 
+2058.6 2249.1 
+>   quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.3.1"])), probs = c(2.5 / 100, 97.5 / 100))
+    2.5%    97.5% 
+2457.475 2660.525 
+>   quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.4.1"])), probs = c(2.5 / 100, 97.5 / 100))
+    2.5%    97.5% 
+3618.425 3842.525 
+>   quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.1.2"])), probs = c(2.5 / 100, 97.5 / 100))
+    2.5%    97.5% 
+ 962.375 1081.575 
+>   quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.2.2"])), probs = c(2.5 / 100, 97.5 / 100))
+    2.5%    97.5% 
+5243.800 5501.575 
+>   quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.3.2"])), probs = c(2.5 / 100, 97.5 / 100))
+   2.5%   97.5% 
+868.475 978.525 
+>   quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.4.2"])), probs = c(2.5 / 100, 97.5 / 100))
+    2.5%    97.5% 
+2112.475 2273.625 
+>   quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.1.3"])), probs = c(2.5 / 100, 97.5 / 100))
+   2.5%   97.5% 
+585.325 678.050 
+>   quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.2.3"])), probs = c(2.5 / 100, 97.5 / 100))
+   2.5%   97.5% 
+293.475 359.525 
+>   quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.3.3"])), probs = c(2.5 / 100, 97.5 / 100))
+    2.5%    97.5% 
+2362.925 2548.675 
+>   quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.4.3"])), probs = c(2.5 / 100, 97.5 / 100))
+   2.5%   97.5% 
+728.175 831.525 
+>   quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.1.4"])), probs = c(2.5 / 100, 97.5 / 100))
+ 2.5% 97.5% 
+ 10.0  27.1 
+>   quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.2.4"])), probs = c(2.5 / 100, 97.5 / 100))
+ 2.5% 97.5% 
+31.95 58.00 
+>   quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.3.4"])), probs = c(2.5 / 100, 97.5 / 100))
+  2.5%  97.5% 
+ 9.000 25.575 
+>   quantile(unlist(lapply(sim.race.num, function(x) x["mix.race.num.4.4"])), probs = c(2.5 / 100, 97.5 / 100))
+  2.5%  97.5% 
+45.475 79.525 
+> 
+> ### target
+> target_race_mixing <- target_race_num
+> 
+> ## sex
+>   ### simulated
+> sim.sex <- lapply(sim_results, function(x) {
++     s <- summary(x ~ nodemix("sex"))})
+>   #summary(unlist(lapply(sim.sex, function(x) x["mix.sex.F.F"])))
+>   summary(unlist(lapply(sim.sex, function(x) x["mix.sex.M.F"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   4127    4230    4273    4272    4310    4480 
+>   summary(unlist(lapply(sim.sex, function(x) x["mix.sex.F.M"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   5453    5557    5610    5613    5666    5809 
+>   summary(unlist(lapply(sim.sex, function(x) x["mix.sex.M.M"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   8911    9031    9090    9098    9156    9286 
+> 
+>   #quantile(unlist(lapply(sim.sex, function(x) x["mix.sex.F.F"])), probs = c(2.5 / 100, 97.5 / 100))
+>   quantile(unlist(lapply(sim.sex, function(x) x["mix.sex.M.F"])), probs = c(2.5 / 100, 97.5 / 100))
+    2.5%    97.5% 
+4159.075 4423.525 
+>   quantile(unlist(lapply(sim.sex, function(x) x["mix.sex.F.M"])), probs = c(2.5 / 100, 97.5 / 100))
+    2.5%    97.5% 
+5485.950 5782.125 
+>   quantile(unlist(lapply(sim.sex, function(x) x["mix.sex.M.M"])), probs = c(2.5 / 100, 97.5 / 100))
+    2.5%    97.5% 
+8929.325 9263.200 
+> 
+>   ### 
+>   target_sex_mixing <- c(tgt.male.pctfemale, tgt.female.pctmale, tgt.male.pctmale)
+>   names(target_sex_mixing) <- c("mix.sex.M.F", "mix.sex.F.M", "mix.sex.M.M")
+> 
+> 
+> ## age
+>   ### simulated
+>   sim.young <- lapply(sim_results, function(x) {
++     s <- summary(x ~ nodemix("young"))})
+> 
+>   #summary(unlist(lapply(sim.young, function(x) x["mix.young.0.0"])))
+>   summary(unlist(lapply(sim.young, function(x) x["mix.young.1.0"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  827.0   882.8   899.5   900.9   920.2   969.0 
+>   summary(unlist(lapply(sim.young, function(x) x["mix.young.0.1"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   2769    2885    2919    2919    2954    3061 
+>   summary(unlist(lapply(sim.young, function(x) x["mix.young.1.1"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   1314    1376    1405    1401    1426    1476 
+> 
+>   #quantile(unlist(lapply(sim.young, function(x) x["mix.young.0.0"])), probs = c(2.5 / 100, 97.5 / 100))
+>   quantile(unlist(lapply(sim.young, function(x) x["mix.young.1.0"])), probs = c(2.5 / 100, 97.5 / 100))
+   2.5%   97.5% 
+845.275 951.150 
+>   quantile(unlist(lapply(sim.young, function(x) x["mix.young.0.1"])), probs = c(2.5 / 100, 97.5 / 100))
+   2.5%   97.5% 
+2804.95 3028.50 
+>   quantile(unlist(lapply(sim.young, function(x) x["mix.young.1.1"])), probs = c(2.5 / 100, 97.5 / 100))
+    2.5%    97.5% 
+1340.475 1461.625 
+> 
+>   ### target
+>   target_age_mixing <- c(
++     tgt.young.pctold,
++     tgt.old.pctyoung,
++     tgt.young.pctyoung
++   )
+>   names(target_age_mixing) <- c("mix.young.1.0", "mix.young.0.1", "mix.young.1.1")
+> 
+> 
+> ## distance
+>   ### simulated
+>   sim.dist <- lapply(1:length(sim_results), 
++       function(x) summary(sim_results[[x]] ~ dist(1:4)))
+>   summary(unlist(lapply(sim.dist, function(x) x["dist1"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   3527    3580    3605    3604    3625    3682 
+>   summary(unlist(lapply(sim.dist, function(x) x["dist2"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   7921    8071    8122    8124    8160    8276 
+>   summary(unlist(lapply(sim.dist, function(x) x["dist3"])))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   5340    5482    5536    5535    5586    5745 
+>   #summary(unlist(lapply(sim.dist, function(x) x["dist4"])))
+> 
+>   quantile(unlist(lapply(sim.dist, function(x) x["dist1"])), probs = c(2.5 / 100, 97.5 / 100))
+    2.5%    97.5% 
+3551.000 3664.625 
+>   quantile(unlist(lapply(sim.dist, function(x) x["dist2"])), probs = c(2.5 / 100, 97.5 / 100))
+   2.5%   97.5% 
+7972.85 8268.00 
+>   quantile(unlist(lapply(sim.dist, function(x) x["dist3"])), probs = c(2.5 / 100, 97.5 / 100))
+    2.5%    97.5% 
+5391.500 5691.825 
+>   #quantile(unlist(lapply(sim.dist, function(x) x["dist4"])), probs = c(2.5 / 100, 97.5 / 100))
+> 
+>   ### target
+>   target_distance <- dist_nedge_distribution
+>   target_distance <- target_distance[1:3] #hard coded that 4th term is left out
+> 
+> 
+> # Violin Plots ----------
+> 
+> ## edges
+>   edgecount_df <- data.frame(
++     count = edgecount.sim.data,
++     category = "edges"
++   )
+> 
+>   ggplot(edgecount_df, aes(x = category, y = count)) +
++     geom_violin(trim = FALSE, fill = "#66C2A5") +
++     geom_hline(
++       yintercept = edges_target, linetype = "solid",
++       color = "black", size = 1.5
++     ) +
++     scale_y_continuous(
++       limits = c(min(edgecount.sim.data) - 1000, max(edgecount.sim.data) + 1000),
++       breaks = seq(24000, 27000, by = 1000),
++       labels = scales::comma # Format labels with commas
++     ) +
++     theme_minimal() +
++     labs(y = "Edge Count", x = "") +
++     theme(
++       axis.text.x = element_blank(), # Hide x-axis text
++       axis.title.x = element_blank(), # Hide x-axis title
++       axis.title.y = element_text(size = 14),
++       panel.grid.major = element_blank(),
++       panel.grid.minor = element_blank(),
++       plot.title = element_text(size = 16, face = "bold") # Make "edges" prominent
++     ) +
++     ggtitle("EDGES") # Add "edges" as the title
+Warning message:
+Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+ℹ Please use `linewidth` instead. 
+> 
+>   ggsave(here("simulate-from-ergms", "out", "edges_violin_plot.png"), width = 8, height = 6)
+> 
+> ## outdegree
+>   outdeg_df <- data.frame(
++     outdegree = 
++     c(outdeg0, outdeg1),
++     category = rep(c("outdeg0", "outdeg1"), each = c(length(outdeg0), length(outdeg1))
++       )    
++       )
+Warning message:
+In rep(c("outdeg0", "outdeg1"), each = c(length(outdeg0), length(outdeg1))) :
+  first element used of 'each' argument
+> 
+> 
+>   target_values <- target_stats_outdeg
+> 
+>   ggplot(outdeg_df, aes(x = category, y = outdegree)) +
++     geom_violin(trim = FALSE, fill = "#66C2A5") +
++     geom_hline(
++       data = data.frame(
++         category = c("outdeg0", "outdeg1"),
++         y = target_values
++       ),
++       mapping = aes(yintercept = y, category = category),
++       linetype = "solid", color = "black", size = 1.5
++     )+
++     facet_wrap(~category, scales = "free_y") +
++     theme_minimal() +
++     labs(y = "outdegree", x = "") +
++     theme(
++       axis.text = element_text(size = 12),
++       axis.title = element_text(size = 14),
++       panel.grid.major = element_blank(),
++       panel.grid.minor = element_blank(),
++       strip.text = element_text(size = 14, face = "bold")
++     )
+Warning message:
+In geom_hline(data = data.frame(category = c("outdeg0", "outdeg1"),  :
+  Ignoring unknown aesthetics: category
+>     ggsave(here("simulate-from-ergms", "out", "outdeg_violin_plot.png"), width = 8, height = 6)
+> 
+> 
+> ## indegree
+> 
+>   target_values <- target_stats_indeg[1:2]
+> 
+>   # Manually create a new data frame
+>   indeg_df_clean <- data.frame(
++     indegree = c(indeg0, indeg1),
++     category = rep(c("indeg0", "indeg1"), each = length(indeg0))
++   )
+> 
+>   # Plot the clean data frame
+>   # Create the plot with target lines
+>   ggplot(indeg_df_clean, aes(x = category, y = indegree)) +
++     geom_violin(trim = FALSE, fill = "#66C2A5") +
++     geom_hline(
++       data = data.frame(
++         category = c("indeg0", "indeg1"),
++         y = target_values
++       ), aes(yintercept = y),
++       linetype = "solid", color = "black", size = 1.5
++     ) +
++     facet_wrap(~category, scales = "free_y", nrow = 1, ncol = 2) +
++     theme_minimal() +
++     labs(y = "indegree", x = "") +
++     theme(
++       axis.text = element_text(size = 12),
++       axis.title = element_text(size = 14),
++       panel.grid.major = element_blank(),
++       panel.grid.minor = element_blank(),
++       strip.text = element_text(size = 14, face = "bold")
++     )
+> 
+>     ggsave(here("simulate-from-ergms", "out", "indeg_violin_plot.png"), width = 8, height = 6)
+> 
+> ## race
+>   ## create an empty data frame
+>   race_mixing_df <- data.frame()
+> 
+>   ## loop through sim.race.num and extract data into a proper format
+>   for (i in seq_along(sim.race.num)) {
++     temp_df <- as.data.frame(t(sim.race.num[[i]]))  # Transpose to get each category in columns
++     temp_df <- stack(temp_df)  # Stack to get a long format
++     race_mixing_df <- rbind(race_mixing_df, temp_df)  # Bind to the main data frame
++   }
+> 
+>   str(race_mixing_df)
+'data.frame':	1500 obs. of  2 variables:
+ $ values: num  2092 2646 3743 1067 5375 ...
+ $ ind   : Factor w/ 15 levels "mix.race.num.2.1",..: 1 2 3 4 5 6 7 8 9 10 ...
+> 
+>   # Rename the columns
+>   colnames(race_mixing_df) <- c("count", "category")
+> 
+>   # convert category to factor
+>   race_mixing_df$category <- factor(race_mixing_df$category)
+> 
+>   # Remove the first target value
+>   #target_race_mixing_filtered <- target_race_mixing[-1]
+>   target_race_mixing_filtered <- target_race_mixing
+> 
+>   # plot the data
+>   ggplot(race_mixing_df, aes(x = category, y = count)) +
++     geom_violin(trim = FALSE, fill = "#66C2A5") +
++     geom_hline(data = data.frame(category = unique(race_mixing_df$category), 
++                                 y = target_race_mixing_filtered), aes(yintercept = y), 
++               linetype = "solid", color = "black", linewidth = 1.5) +
++     facet_wrap(~ category, scales = "free_y") +
++     theme_minimal() +
++     labs(y = "Race Mixing Count", x = NULL) +
++     theme(
++       axis.text.x = element_blank(),  # Hide x-axis text
++       axis.title.x = element_blank(),  # Hide x-axis title
++       axis.title.y = element_text(size = 14),
++       panel.grid.major = element_blank(), 
++       panel.grid.minor = element_blank(),
++       strip.text = element_text(size = 14, face = "bold")  # Make panel titles more prominent
++     )
+> 
+>   ggsave(here("simulate-from-ergms", "out", "racemix_violin_plot.png"), width = 8, height = 6)
+> 
+> 
+> 
+> ## sex
+>   sex_mixing_df <- do.call(rbind, lapply(seq_along(sim.sex), function(i) {
++   data.frame(
++     run = i,
++     category = names(sim.sex[[i]]),
++     count = as.numeric(sim.sex[[i]])
++   )
++ }))
+> 
+> 
+>   sex_mixing_df$category <- factor(sex_mixing_df$category)
+>   head(sex_mixing_df)
+  run    category count
+1   1 mix.sex.M.F  4307
+2   1 mix.sex.F.M  5652
+3   1 mix.sex.M.M  9034
+4   2 mix.sex.M.F  4346
+5   2 mix.sex.F.M  5809
+6   2 mix.sex.M.M  9267
+> 
+>   target_sex_mixing
+mix.sex.M.F mix.sex.F.M mix.sex.M.M 
+   4261.362    5602.222    9055.394 
+> 
+>   ggplot(sex_mixing_df, aes(x = category, y = count)) +
++     geom_violin(trim = FALSE, fill = "#66C2A5") +
++     geom_hline(data = data.frame(category = names(target_sex_mixing), 
++                                 y = as.numeric(target_sex_mixing)), aes(yintercept = y), 
++               linetype = "solid", color = "black", linewidth = 1.5) +
++     facet_wrap(~ category, scales = "free_y") +
++     theme_minimal() +
++     labs(y = "Sex Mixing Count", x = NULL) +
++     theme(
++       axis.text.x = element_blank(),  # Hide x-axis text
++       axis.title.x = element_blank(),  # Hide x-axis title
++       axis.title.y = element_text(size = 14),
++       panel.grid.major = element_blank(), 
++       panel.grid.minor = element_blank(),
++       strip.text = element_text(size = 14, face = "bold")  # Make panel titles more prominent
++     )
+> 
+>       ggsave(here("simulate-from-ergms", "out", "sexmix_violin_plot.png"), width = 8, height = 6)
+> 
+>   
+>   #stop("\n", "!!!RUN UP TO HERE!!!", "\n")
+> 
+>   ## age
+>     # Combine the list elements into a data frame, excluding the base category
+>     age_mixing_df <- do.call(rbind, lapply(seq_along(sim.young), function(i) {
++       data.frame(
++         run = i,
++         category = names(sim.young[[i]]),
++         count = as.numeric(sim.young[[i]])
++       )
++     }))
+> 
+>     # Filter out the base category
+>     age_mixing_df <- age_mixing_df[!age_mixing_df$category %in% "mix.young.0.0", ]
+>     levels(age_mixing_df$category)
+NULL
+> 
+>     # Create a target values dataframe
+>     target_age_df <- data.frame(
++       category = names(target_age_mixing),
++       target = as.numeric(target_age_mixing)
++     )
+> 
+>     # Apply same factor levels to target dataframe
+>     target_age_df$category <- factor(target_age_df$category)
+> 
+>     # Merge target into main dataframe
+>     age_mixing_df <- dplyr::left_join(age_mixing_df, target_age_df, by = "category")
+> 
+>     # Plot
+>     ggplot(age_mixing_df, aes(x = category, y = count)) +
++       geom_violin(trim = FALSE, fill = "#66C2A5") +
++       geom_hline(aes(yintercept = target), linetype = "solid", color = "black", linewidth = 1.5) +
++       facet_wrap(~ category, scales = "free_y") +
++       theme_minimal() +
++       labs(y = "Age Mixing Count", x = NULL) +
++       theme(
++         axis.text.x = element_blank(),
++         axis.title.x = element_blank(),
++         axis.title.y = element_text(size = 14),
++         panel.grid.major = element_blank(),
++         panel.grid.minor = element_blank(),
++         strip.text = element_text(size = 14, face = "bold")
++       )
+> 
+>     # Save the plot
+>     ggsave(here("simulate-from-ergms", "out", "agemix_violin_plot.png"), width = 8, height = 6)
+> 
+> 
+> 
+>   ## distance
+>     distance_mixing_df <- do.call(rbind, lapply(seq_along(sim.dist), function(i) {
++       data.frame(
++         run = i,
++         category = names(sim.dist[[i]]),
++         count = as.numeric(sim.dist[[i]])
++       )
++     }))
+> 
+>     distance_mixing_df$category <- factor(distance_mixing_df$category)
+> 
+>     distance_mixing_df_filtered <- distance_mixing_df[distance_mixing_df$category != "dist4", ]
+> 
+>     names(target_distance) <- c("dist1", "dist2", "dist3")
+> 
+>     # Plot the violin plot excluding dist4
+>     ggplot(distance_mixing_df_filtered, aes(x = category, y = count)) +
++       geom_violin(trim = FALSE, fill = "#66C2A5") +
++       geom_hline(data = data.frame(category = names(target_distance), 
++                                   y = as.numeric(target_distance)), aes(yintercept = y), 
++                 linetype = "solid", color = "black", linewidth = 1.5) +
++       facet_wrap(~ category, scales = "free_y") +
++       theme_minimal() +
++       labs(y = "Distance Metric Count", x = NULL) +
++       theme(
++         axis.text.x = element_blank(),  # Hide x-axis text
++         axis.title.x = element_blank(),  # Hide x-axis title
++         axis.title.y = element_text(size = 14),
++         panel.grid.major = element_blank(), 
++         panel.grid.minor = element_blank(),
++         strip.text = element_text(size = 14, face = "bold")  # Make panel titles more prominent
++       )
+> 
+>     # Save the plot
+>     ggsave(here("simulate-from-ergms", "out", "distance_violin_plot.png"), width = 8, height = 6)
+> 
+> 
+> 
+> 
+> 
+> proc.time()
+   user  system elapsed 
+357.782  13.162 378.586 

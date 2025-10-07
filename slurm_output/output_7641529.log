@@ -1,0 +1,9 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 7641529
+##  Job Name : new-refactored-code--edges-indeg-first
+##  Nodelist : node1320
+##      CPUs : 1
+##  Mem/Node : 20000 MB
+## Directory : /oscar/home/akhann16/code/net-ergm-v4plus
+##   Job Started : Thu Jan 16 01:57:00 PM EST 2025
+###############################################################################

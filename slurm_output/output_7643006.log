@@ -1,0 +1,9 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 7643006
+##  Job Name : new-refactored-code--std-order
+##  Nodelist : node1321
+##      CPUs : 1
+##  Mem/Node : 20000 MB
+## Directory : /oscar/home/akhann16/code/net-ergm-v4plus
+##   Job Started : Thu Jan 16 04:35:21 PM EST 2025
+###############################################################################

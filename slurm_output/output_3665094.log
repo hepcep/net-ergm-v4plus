@@ -1,0 +1,9 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 3665094
+##  Job Name : summaries-from-updated-with-oct12-2024-synthpop-ergmv4-6-all-plosone-terms-increase-mcmc-samplesize-1e6
+##  Nodelist : node1325
+##      CPUs : 1
+##  Mem/Node : 64000 MB
+## Directory : /oscar/home/akhann16/code/net-ergm-v4plus
+##   Job Started : Thu Jul 18 02:44:36 PM EDT 2024
+###############################################################################

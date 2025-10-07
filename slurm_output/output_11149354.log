@@ -1,0 +1,9 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 11149354
+##  Job Name : mixing-aligned-pop-dated-2025-jan-23
+##  Nodelist : node2335
+##      CPUs : 1
+##  Mem/Node : 20000 MB
+## Directory : /oscar/home/akhann16/code/net-ergm-v4plus
+##   Job Started : Thu Apr 24 02:38:45 PM EDT 2025
+###############################################################################

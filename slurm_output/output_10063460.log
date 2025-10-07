@@ -1,0 +1,9 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 10063460
+##  Job Name : simulate-networks-from-meta-data-ergm-fit
+##  Nodelist : node2304
+##      CPUs : 1
+##  Mem/Node : 64000 MB
+## Directory : /oscar/home/akhann16/code/net-ergm-v4plus
+##   Job Started : Thu Apr  3 01:32:54 PM EDT 2025
+###############################################################################

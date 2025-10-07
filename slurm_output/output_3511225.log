@@ -1,0 +1,9 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 3511225
+##  Job Name : synthpop-2023-10-12-w-dist-all-plos-one-increase-mcmc-5e5
+##  Nodelist : node1740
+##      CPUs : 1
+##  Mem/Node : 10000 MB
+## Directory : /oscar/home/akhann16/code/net-ergm-v4plus
+##   Job Started : Sun Jul  7 08:39:26 PM EDT 2024
+###############################################################################

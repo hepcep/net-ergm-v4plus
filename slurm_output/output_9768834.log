@@ -1,0 +1,9 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 9768834
+##  Job Name : revised-edges-dyad-ind-checkpointing-data-dated-2025-jan-23
+##  Nodelist : node1322
+##      CPUs : 1
+##  Mem/Node : 20000 MB
+## Directory : /oscar/home/akhann16/code/net-ergm-v4plus
+##   Job Started : Thu Mar 27 11:28:16 AM EDT 2025
+###############################################################################

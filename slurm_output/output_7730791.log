@@ -1,0 +1,9 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 7730791
+##  Job Name : process-data
+##  Nodelist : node1318
+##      CPUs : 1
+##  Mem/Node : 20000 MB
+## Directory : /oscar/home/akhann16/code/net-ergm-v4plus
+##   Job Started : Thu Jan 23 11:44:45 AM EST 2025
+###############################################################################

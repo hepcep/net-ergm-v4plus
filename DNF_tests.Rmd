@@ -1,0 +1,126 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+install.packages("ergm.userterms.hepcep", type="source", repos=NULL)
+```
+```{r}
+library(ergm.userterms.hepcep)
+```
+
+```{r}
+nw.size <- 3
+m = matrix(c(rep(1,nw.size-1),2:nw.size), byrow = FALSE, ncol = 2)
+ggg <- as.network(m, matrix.type='edgelist',directed = T)
+ggg %v% "lat" <- c(41.9,41.889,41.889)
+ggg %v% "lon" <- rep(-87,times = nw.size)
+ggg %v% "chicago" <- rep(2,size = nw.size, replace = TRUE)
+
+
+summary(ggg ~ dist(1:7))    
+summary(ggg ~ dnf(by = "chicago", thresholds = c(2,2), base = 1))
+summary(ggg ~ dnf(by = "chicago", thresholds = c(2,2), base = 2))
+summary(ggg ~ dnf(by = "chicago", thresholds = c(2,2), base = 3))
+summary(ggg ~ dnf(by = "chicago", thresholds = c(2,2)))
+# dist1 dist2 dist3 dist4 dist5 dist6 dist7 
+#    30   211  4613  5145     0     0     0
+```
+
+```{r}
+nw.size <- 10000
+m = matrix(c(rep(1,nw.size-1),2:nw.size), byrow = FALSE, ncol = 2)
+ggg <- as.network(m, matrix.type='edgelist',directed = T)
+ggg %v% "lat" <- seq(41.9,41.3,length.out = nw.size)
+ggg %v% "lon" <- rep(-87,times = nw.size)
+ggg %v% "chicago" <- sample(c(1,2),size = nw.size, replace = TRUE)
+
+# Checking what the head node label is, which determines which label will be non-zero
+(ggg %v% "chicago")[1]
+
+summary(ggg ~ dist(1:7))    
+summary(ggg ~ dnf(by = "chicago", thresholds = c(2,2), base = 1))
+summary(ggg ~ dnf(by = "chicago", thresholds = c(2,2), base = 2))
+summary(ggg ~ dnf(by = "chicago", thresholds = c(2,2), base = 3))
+summary(ggg ~ dnf(by = "chicago", thresholds = c(2,2)))
+# dist1 dist2 dist3 dist4 dist5 dist6 dist7 
+#    30   211  4613  5145     0     0     0
+```
+
+```{r}
+nw.size <- 3
+# 1 -> 2
+# 2 -> 3
+# 3 -> 1
+m = matrix(c(1,2,2,3,3,1), byrow = TRUE, ncol = 2)
+ggg <- as.network(m, matrix.type='edgelist',directed = T)
+
+# Promontory point
+# 41.7960270149015, -87.57731041040785
+
+# MSI
+# 41.79063574148906, -87.5824817096801
+
+# South Shore Cultural Center
+# 41.768875816495026, -87.56237522945183
+
+
+ggg %v% "lat" <- c(41.7960270149015,41.79063574148906,41.768875816495026)
+ggg %v% "lon" <- c(-87.57731041040785, -87.5824817096801, -87.56237522945183)
+ggg %v% "cat1" <- c(1,1,2)
+
+# Categories in dist are:
+# < 0.2km ; 0.2km  - 1.6km ; 1.6km - 32.2km ; > 32.2km
+summary(ggg ~ dist(1:7))    
+
+cat("\nReference case\n")
+summary(ggg ~ dnf(by = "cat1", thresholds = c(2,2), base = 1))
+summary(ggg ~ dnf(by = "cat1", thresholds = c(2,2), base = 2))
+summary(ggg ~ dnf(by = "cat1", thresholds = c(2,2), base = 3))
+summary(ggg ~ dnf(by = "cat1", thresholds = c(2,2)))
+
+# Reduce threshold for cat1 == 1
+cat("\nReduce threshold for cat1 == 1\n")
+summary(ggg ~ dnf(by = "cat1", thresholds = c(0.1,2), base = 1))
+summary(ggg ~ dnf(by = "cat1", thresholds = c(0.1,2), base = 2))
+summary(ggg ~ dnf(by = "cat1", thresholds = c(0.1,2), base = 3))
+summary(ggg ~ dnf(by = "cat1", thresholds = c(0.1,2)))
+
+cat("\nIncrease threshold for cat1 == 1\n")
+summary(ggg ~ dnf(by = "cat1", thresholds = c(3,2), base = 1))
+summary(ggg ~ dnf(by = "cat1", thresholds = c(3,2), base = 2))
+summary(ggg ~ dnf(by = "cat1", thresholds = c(3,2), base = 3))
+summary(ggg ~ dnf(by = "cat1", thresholds = c(3,2)))
+
+```
+
+
+Extras below:
+
+```{r}
+locations <- cbind(ggg %v% "lat", ggg %v% "lon")
+# locations <- cbind(c(41.9,41.6,41.3),c(-87,-87,-87))
+# locations <- cbind(c(41.9,41.8,41.1),c(-87,-87,-87))
+labels <- ggg %v% "lat"
+plot(ggg, coord = locations, label = labels, xlim = c(41,42), ylim = c(-88,-86), jitter = FALSE)
+```
+```{r}
+ggg %v% "chicago"
+```
+
+```{r}
+#Construct a sparse graph
+m<-matrix(rbinom(100,1,1.5/9),10)
+diag(m)<-0
+g<-network(m)
+#Plot the graph
+plot(g)
+#Load Padgett's marriage data
+data(flo)
+nflo<-network(flo)
+#Display the network, indicating degree and flagging the Medicis
+plot(nflo, vertex.cex=apply(flo,2,sum)+1, usearrows=FALSE,
+# vertex.sides=3+apply(flo,2,sum),
+vertex.col=2+(network.vertex.names(nflo)=="Medici"))
+```
+

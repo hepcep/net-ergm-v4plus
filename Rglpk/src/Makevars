@@ -1,0 +1,8 @@
+PKG_CPPFLAGS = -I/oscar/home/akhann16/sfw/glpk-5.0/include
+PKG_LIBS = -L/oscar/home/akhann16/sfw/glpk-5.0/lib -lglpk
+
+.PHONY: all GLPK.ts
+
+all: $(SHLIB)
+$(OBJECTS): GLPK.ts 
+

@@ -1,0 +1,9 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 3665020
+##  Job Name : summaries-from-updated-synthpop-2023-10-12-w-dist-all-plos-one-1e6-hotelling
+##  Nodelist : node1603
+##      CPUs : 1
+##  Mem/Node : 64000 MB
+## Directory : /oscar/home/akhann16/code/net-ergm-v4plus
+##   Job Started : Thu Jul 18 02:33:37 PM EDT 2024
+###############################################################################
