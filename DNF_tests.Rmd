@@ -13,7 +13,7 @@ library(ergm.userterms.hepcep)
 nw.size <- 3
 m = matrix(c(rep(1,nw.size-1),2:nw.size), byrow = FALSE, ncol = 2)
 ggg <- as.network(m, matrix.type='edgelist',directed = T)
-ggg %v% "lat" <- c(41.9,41.889,41.889)
+ggg %v% "lat" <- c(41.9,41.889,41.8)
 ggg %v% "lon" <- rep(-87,times = nw.size)
 ggg %v% "chicago" <- rep(2,size = nw.size, replace = TRUE)
 
@@ -23,8 +23,6 @@ summary(ggg ~ dnf(by = "chicago", thresholds = c(2,2), base = 1))
 summary(ggg ~ dnf(by = "chicago", thresholds = c(2,2), base = 2))
 summary(ggg ~ dnf(by = "chicago", thresholds = c(2,2), base = 3))
 summary(ggg ~ dnf(by = "chicago", thresholds = c(2,2)))
-# dist1 dist2 dist3 dist4 dist5 dist6 dist7 
-#    30   211  4613  5145     0     0     0
 ```
 
 ```{r}
