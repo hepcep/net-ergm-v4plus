@@ -277,7 +277,7 @@ fit.stepwise.dnf <-
 
 net_stepwise_dnf <- load_or_run(
   "net.stepwise.dnf",
-  quote(simulate(fit.stepwise.dist, nsim = 1))
+  quote(simulate(fit.stepwise.dnf, nsim = 1))
 )
 
 net_stepwise_dnf

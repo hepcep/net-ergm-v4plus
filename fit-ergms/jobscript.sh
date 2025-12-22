@@ -20,4 +20,3 @@ R CMD BATCH --no-restore fit-ergms/fit-stepwise-ergms.R slurm_output/$SLURM_JOB_
 
 ## fit starting with indegrees
 ##R CMD BATCH --no-restore fit-ergms/fit-stepwise-indegree-first.R slurm_output/$SLURM_JOB_ID_$SLURM_JOB_NAME.Rout
-
