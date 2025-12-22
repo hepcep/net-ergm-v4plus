@@ -6,7 +6,7 @@
 rm(list = ls())
 
 # Label and outputs for this run
-run_label <- "new-mixing-data-2-recomp-race-mix" # set manually to ensure intentional updates
+run_label <- "edges+dnf" # set manually to ensure intentional updates
 
 # Activate R environment ----------
 
@@ -153,11 +153,15 @@ list.vertex.attributes(edges_only_net)
       dnf(by = "chicago", thresholds = c(2,2))
     )
 
+edges_only_net_w_chicago <- edges_only_net
+edges_only_net_w_chicago
+
+list.vertex.attributes(edges_only_net_w_chicago)
+
 ## Fit ERGM with DNF
 fit_nonempty_network_w_dnf <-
-  load_or_run("fit_nonempty_network_w_dnf", quote(
     ergm(
-      edges_only_net ~
+      edges_only_net_w_chicago ~ 
         edges +
         dnf(by="chicago", thresholds=c(2, 2)),
       target.stats =
@@ -179,13 +183,12 @@ fit_nonempty_network_w_dnf <-
         )
       )
     )
-  )
-  )
+  
+  
   
 
-non_empty_net_w_dnf <- load_or_run("non_empty_net_w_dnf", quote(
-   simulate(fit_nonempty_network_w_dnf, nsim = 1)
- ))
+non_empty_net_w_dnf <- simulate(fit_nonempty_network_w_dnf, nsim = 1)
+
 
 non_empty_net_w_dnf
 list.vertex.attributes(non_empty_net_w_dnf)
