@@ -148,6 +148,9 @@ list.vertex.attributes(edges_only_net)
     tgt_1.n <- edges_target * prop_1.n
     tgt_1.f <- edges_target * prop_1.f
 
+    c(tgt_1.n, tgt_1.f, tgt_2.n) #specified target statistics
+    tgt_2.f #unspecified
+
     ## Check term ordering for specifying targets
     summary(edges_only_net ~ 
       dnf(by = "chicago", thresholds = c(2,2))
@@ -196,3 +199,5 @@ list.vertex.attributes(non_empty_net_w_dnf)
 summary(non_empty_net_w_dnf ~       
   dnf(by = "chicago", thresholds = c(2,2))
     )
+# Targets: 
+c(tgt_1.n, tgt_1.f, tgt_2.n)
