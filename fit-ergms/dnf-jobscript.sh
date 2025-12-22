@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#SBATCH --job-name="new-mixing-data-2-2025-july"
+#SBATCH --job-name="edges+dnf"
 #SBATCH --time=5:00:00
 #SBATCH --mem=20000
 #SBATCH --nodes=1
