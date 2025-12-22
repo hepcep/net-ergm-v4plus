@@ -19,7 +19,8 @@ renv::activate()
 library(network)
 library(ergm)
 library(dplyr)
-library(ergm.userterms)
+#library(ergm.userterms)
+library(ergm.userterms.hepcep)
 library(here)
 library(styler)
 
@@ -120,50 +121,75 @@ sum(target_race_num)
 edges_only_net
 list.vertex.attributes(edges_only_net)
 
-## We have "lat, lon" "zipcode" information, 
+## We have "lat, lon", "zipcode" information, 
 ## but not chicago, non-chicago information
 
-  ## use zipcide
+  ## use zipcode
   z <- edges_only_net %v% "zipcode"
   is_chicago <- !is.na(z) & substr(as.character(z), 1, 3) == "606"
   edges_only_net %v% "chicago" <- ifelse(is_chicago, 1L, 2L)
   table(edges_only_net %v% "chicago", exclude=NULL)
 
+  list.vertex.attributes(edges_only_net)
+  
+  stopifnot(all((edges_only_net %v% "chicago") %in% 1:2)) # test assignment
 
+ ## compute target stats
+    ## From prior computation (notion, Jul 21, 2025), we know the following:
+    ## Of all  edges:
+    prop_2.n = 16.3/100 #i.e., 16.3%, and so on...
+    prop_2.f = 14.2/100 
+    prop_1.n = 45.7/100
+    prop_1.f = 22.9/100
 
+    ## Target number of edges is 22959.93
+    tgt_2.n <- edges_target * prop_2.n
+    tgt_2.f <- edges_target * prop_2.f
+    tgt_1.n <- edges_target * prop_1.n
+    tgt_1.f <- edges_target * prop_1.f
 
+    ## Check term ordering for specifying targets
+    summary(edges_only_net ~ 
+      dnf(by = "chicago", thresholds = c(2,2))
+    )
 
+## Fit ERGM with DNF
+fit_nonempty_network_w_dnf <-
+  load_or_run("fit_nonempty_network_w_dnf", quote(
+    ergm(
+      edges_only_net ~
+        edges +
+        dnf(by="chicago", thresholds=c(2, 2)),
+      target.stats =
+        c(
+          edges_target,
+          c(tgt_1.n, tgt_1.f, tgt_2.n)
+        ),
+      eval.loglik = FALSE,
+      control = control.ergm(
+        MCMLE.maxit = 500,
+        main.method = c("Stochastic-Approximation"),
+        MCMC.interval = 1e6,
+        MCMC.samplesize = 1e6,
+        MCMLE.termination = "Hotelling",
+        MCMC.effectiveSize = NULL,
+        SAN = control.san(
+          SAN.maxit = 500,
+          SAN.nsteps = 1e8
+        )
+      )
+    )
+  )
+  )
+  
 
+non_empty_net_w_dnf <- load_or_run("non_empty_net_w_dnf", quote(
+   simulate(fit_nonempty_network_w_dnf, nsim = 1)
+ ))
 
-# fit_nonempty_network_w_dnf <-
-#   load_or_run("fit_nonempty_network_w_sex", quote(
-#     ergm(
-#       edges_only_net ~
-#         edges +
-        
-#       target.stats =
-#         c(
-#           edges_target,
-#           sex_mixing_align_order
-#         ),
-#       eval.loglik = FALSE,
-#       control = control.ergm(
-#         MCMLE.maxit = 500,
-#         main.method = c("Stochastic-Approximation"),
-#         MCMC.interval = 1e6,
-#         MCMC.samplesize = 1e6,
-#         MCMLE.termination = "Hotelling",
-#         MCMC.effectiveSize = NULL,
-#         SAN = control.san(
-#           SAN.maxit = 500,
-#           SAN.nsteps = 1e8
-#         )
-#       )
-#     )
-#   ))
+non_empty_net_w_dnf
+list.vertex.attributes(non_empty_net_w_dnf)
 
-# non_empty_net_w_sex <- load_or_run("non_empty_net_w_sex", quote(
-#   simulate(fit_nonempty_network_w_sex, nsim = 1)
-# ))
-# non_empty_net_w_sex
-
+summary(non_empty_net_w_dnf ~       
+  dnf(by = "chicago", thresholds = c(2,2))
+    )
