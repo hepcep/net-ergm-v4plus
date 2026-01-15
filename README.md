@@ -33,7 +33,11 @@ Make sure it remains an executable:
 chmod +x launch_R.sh
 ```
 
+For resolving dependencies in `renv`, the old ergm.userterms.hepcep package many need to be installed manually: 
 
+```
+install.packages("/oscar/home/akhann16/code/hepcep_networks-OLD/ergm.userterms", type="source", repos=NULL)
+```
 
 
 ## 🧩 Modeling Steps 
