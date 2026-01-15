@@ -26,8 +26,8 @@ library(qs)
 
 ## fit output
   load(here("fit-ergms", "out", 
-      "mixing-aligned-pop-dated-2025-jan-23",
-      "mixing-aligned-pop-dated-2025-jan-23.RData"
+      "new-mixing-data-w-dnf",
+      "new-mixing-data-w-dnf.RData"
       )
   )
 
@@ -39,7 +39,7 @@ library(qs)
   run_label
 
 # Model summary
-  summary(fit.stepwise.dist.odeg.01.indeg0)
+  summary(fit.stepwise.dnf.odeg.01.indeg)
 
 
 # Simulate 100 networks ----------
