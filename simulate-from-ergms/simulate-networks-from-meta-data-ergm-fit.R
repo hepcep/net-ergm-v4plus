@@ -51,7 +51,7 @@ library(qs)
 
   for (iter in 1:length(nsim.vec)){
     sim_results[[iter]] <- simulate(
-      fit.stepwise.dist.odeg.01.indeg0,
+      fit.stepwise.dist.odeg.01.indeg,
       nsim=1
     )
   }
