@@ -10,8 +10,12 @@
 #SBATCH --output=slurm_output/output_%j.log
 #SBATCH --error=slurm_output/error_%j.log
 
-module load r/4.4.0-yycctsj  
-module load glpk/5.0-zifs7bb
+#module load glpk/5.0-zifs7bb
+#module load r/4.4.0-yycctsj  
+module load glpk/5.0-55rr
+module load r/4.5.1-iikl
+
+
 
 # COMMENT OUT ONE BATCH COMMAND BELOW AS NEEDED
 
