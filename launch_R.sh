@@ -4,8 +4,10 @@
 # Make 'module' available in non-interactive shells (VS Code often runs this way)
 source /etc/profile.d/modules.sh
 
+module purge 
+
 # Load the R module
- #module load r/4.4.0-yycctsj
+ #OLD R MODULE module load r/4.4.0-yycctsj
  module load r/4.5.1-iikl
  
 

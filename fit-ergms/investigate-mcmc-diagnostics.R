@@ -19,15 +19,15 @@ library(here)
 
 # Load Data ----------
 
-new_dataset <- "new-mixing-data-with-hotelling-stochasticapprox-non-empty-net"
+new_dataset <- "new-mixing-data-w-dnf"
 new_rdata_object <- paste0(new_dataset, ".RData")
 
-load(file=here("fit-ergms", "out", new_rdata_object))
+load(file=here("fit-ergms", "out", new_dataset, new_rdata_object))
 
 # Investigate MCMC diagnositics ----------
 
 pdf(file=here("fit-ergms", "out", paste0("mcmc_plot_", new_dataset, ".pdf")))
-mcmc_diag <- mcmc.diagnostics(fit.metadata.mixing)
+mcmc_diag <- mcmc.diagnostics(fit.stepwise.dnf.odeg.01.indeg)
 dev.off()
 
 

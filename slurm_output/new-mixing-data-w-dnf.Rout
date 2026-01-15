@@ -1,6 +1,6 @@
 
-R version 4.4.0 (2024-04-24) -- "Puppy Cup"
-Copyright (C) 2024 The R Foundation for Statistical Computing
+R version 4.5.1 (2025-06-13) -- "Great Square Root"
+Copyright (C) 2025 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -51,14 +51,14 @@ The following objects are masked from ‘package:base’:
 > 
 > library(network)
 
-‘network’ 1.18.2 (2023-12-04), part of the Statnet Project
+‘network’ 1.19.0 (2024-12-08), part of the Statnet Project
 * ‘news(package="network")’ for changes since last version
 * ‘citation("network")’ for citation information
 * ‘https://statnet.org’ for help, support, and other information
 
 > library(ergm)
 
-‘ergm’ 4.6.0 (2023-12-17), part of the Statnet Project
+‘ergm’ 4.11.0 (2025-12-22), part of the Statnet Project
 * ‘news(package="ergm")’ for changes since last version
 * ‘citation("ergm")’ for citation information
 * ‘https://statnet.org’ for help, support, and other information
@@ -87,7 +87,7 @@ Attaching package: ‘statnet.common’
 
 The following objects are masked from ‘package:base’:
 
-    attr, order
+    attr, order, replace
 
 
 ‘ergm.userterms.hepcep’ 3.1.1 (2020-02-01), part of the Statnet Project
@@ -206,7 +206,7 @@ pct_to_near  pct_to_far
 +       dnf(by = "chicago", thresholds = c(2,2))
 +       )
 dnf.chicago.1.n dnf.chicago.1.f dnf.chicago.2.n 
-            268           12882              37 
+            218           12948              36 
 > 
 >     c(tgt_1.n, tgt_1.f, tgt_2.n) #specified target statistics
 [1] 10492.686  5257.823  3742.468
@@ -462,7 +462,7 @@ Loading saved fit.stepwise.dnf
 +   "net.stepwise.dnf",
 +   quote(simulate(fit.stepwise.dnf, nsim = 1))
 + )
-Running and saving net.stepwise.dnf
+Loading saved net.stepwise.dnf
 > 
 > net_stepwise_dnf
  Network attributes:
@@ -517,53 +517,12 @@ Running and saving net.stepwise.dnf
 +       )
 +     )
 +   ))
-Running and saving fit.stepwise.dnf.odeg.0
-Unable to match target stats. Using MCMLE estimation.
-Starting maximum pseudolikelihood estimation (MPLE):
-Obtaining the responsible dyads.
-Evaluating the predictor and response matrix.
-Maximizing the pseudolikelihood.
-Finished MPLE.
-Stochastic approximation algorithm with theta_0 equal to:
-           edges      mix.sex.M.F      mix.sex.F.M      mix.sex.M.M 
-     -10.2663199        0.2882996        0.3886363        0.0673533 
-   mix.young.1.0    mix.young.0.1    mix.young.1.1 mix.race.num.2.1 
-      -0.8263172       -0.9940095       -0.2038180       -1.2577818 
-mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 mix.race.num.2.2 
-      -1.1552079       -0.6861782       -1.9387926       -1.3322200 
-mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 mix.race.num.2.3 
-      -4.6893825       -2.4582431       -1.5512234       -1.8327874 
-mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 mix.race.num.2.4 
-      -0.3180318       -1.7792184       -0.9522520       -3.4925273 
-mix.race.num.3.4 mix.race.num.4.4         odegree0  dnf.chicago.1.n 
-      -3.2059186       -1.9461820        1.0841077        4.9396077 
- dnf.chicago.1.f  dnf.chicago.2.n 
-       0.1025257        5.7714397 
-Starting burnin of 16000000 steps
-Phase 1: 200 steps (interval = 1000000)
-Stochastic Approximation estimate:
-           edges      mix.sex.M.F      mix.sex.F.M      mix.sex.M.M 
-     -10.3901978        0.3955049        0.4110449        0.1768191 
-   mix.young.1.0    mix.young.0.1    mix.young.1.1 mix.race.num.2.1 
-      -0.9435800       -1.1212759       -0.1602947       -1.5100738 
-mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 mix.race.num.2.2 
-      -1.3917820       -0.8537376       -1.8449235       -1.3418729 
-mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 mix.race.num.2.3 
-      -4.6814259       -2.4025625       -1.4593548       -1.8965663 
-mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 mix.race.num.2.4 
-      -0.4831203       -1.6766973       -0.8513555       -2.8769423 
-mix.race.num.3.4 mix.race.num.4.4         odegree0  dnf.chicago.1.n 
-      -2.8885059       -1.7783582        0.9322535        4.8915368 
- dnf.chicago.1.f  dnf.chicago.2.n 
-       0.2043998        5.4486867 
-Phase 3:  1000 iterations (interval=1e+06)
-This model was fit using MCMC.  To examine model diagnostics and check
-for degeneracy, use the mcmc.diagnostics() function.
+Loading saved fit.stepwise.dnf.odeg.0
 > 
 > net_fit_stepwise_dnf_odeg0 <- load_or_run("net_fit_stepwise_dnf_odeg0", quote(
 +   simulate(fit.stepwise.dnf.odeg.0, nsim = 1)
 + ))
-Running and saving net_fit_stepwise_dnf_odeg0
+Loading saved net_fit_stepwise_dnf_odeg0
 > net_fit_stepwise_dnf_odeg0
  Network attributes:
   vertices = 32002 
@@ -617,54 +576,13 @@ Running and saving net_fit_stepwise_dnf_odeg0
 +       )
 +     )
 +   ))
-Running and saving fit.stepwise.dnf.odeg.0.1
-Unable to match target stats. Using MCMLE estimation.
-Starting maximum pseudolikelihood estimation (MPLE):
-Obtaining the responsible dyads.
-Evaluating the predictor and response matrix.
-Maximizing the pseudolikelihood.
-Finished MPLE.
-Stochastic approximation algorithm with theta_0 equal to:
-           edges      mix.sex.M.F      mix.sex.F.M      mix.sex.M.M 
-   -10.316675676      0.319789967      0.140860488     -0.109860485 
-   mix.young.1.0    mix.young.0.1    mix.young.1.1 mix.race.num.2.1 
-    -0.937887967     -1.071805257     -0.129494354     -1.293505326 
-mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 mix.race.num.2.2 
-    -1.106204731     -0.627443433     -1.817836661     -1.655878500 
-mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 mix.race.num.2.3 
-    -4.858998954     -2.907760760     -1.192856459     -1.658349528 
-mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 mix.race.num.2.4 
-    -0.053332779     -1.094730696     -1.304860538     -3.120247368 
-mix.race.num.3.4 mix.race.num.4.4         odegree0         odegree1 
-    -2.722100089     -0.733349469      0.881557615     -0.009705593 
- dnf.chicago.1.n  dnf.chicago.1.f  dnf.chicago.2.n 
-     4.969518289      0.189062296      5.477174938 
-Starting burnin of 16000000 steps
-Phase 1: 200 steps (interval = 1000000)
-Stochastic Approximation estimate:
-           edges      mix.sex.M.F      mix.sex.F.M      mix.sex.M.M 
-   -10.420814701      0.413630071      0.427209389      0.196170817 
-   mix.young.1.0    mix.young.0.1    mix.young.1.1 mix.race.num.2.1 
-    -0.941692666     -1.115310539     -0.151776838     -1.513560130 
-mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 mix.race.num.2.2 
-    -1.391131707     -0.849157562     -1.838657302     -1.341801070 
-mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 mix.race.num.2.3 
-    -4.685433596     -2.408965576     -1.452900614     -1.890613917 
-mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 mix.race.num.2.4 
-    -0.485181369     -1.670727252     -0.851877370     -2.878399855 
-mix.race.num.3.4 mix.race.num.4.4         odegree0         odegree1 
-    -2.878226286     -1.754150131      0.925041014     -0.001068374 
- dnf.chicago.1.n  dnf.chicago.1.f  dnf.chicago.2.n 
-     4.902661795      0.215561395      5.454260128 
-Phase 3:  1000 iterations (interval=1e+06)
-This model was fit using MCMC.  To examine model diagnostics and check
-for degeneracy, use the mcmc.diagnostics() function.
+Loading saved fit.stepwise.dnf.odeg.0.1
 > 
 > net_fit_stepwise_dnf_odeg0_1 <- 
 + load_or_run("net_fit_stepwise_dnf_odeg0_1", quote(
 +   simulate(fit.stepwise.dnf.odeg.0.1, nsim = 1)
 + ))
-Running and saving net_fit_stepwise_dnf_odeg0_1
+Loading saved net_fit_stepwise_dnf_odeg0_1
 > net_fit_stepwise_dnf_odeg0_1
  Network attributes:
   vertices = 32002 
@@ -718,54 +636,13 @@ Running and saving net_fit_stepwise_dnf_odeg0_1
 +       )
 +     )
 +   ))
-Running and saving fit.stepwise.dnf.odeg.0.2
-Unable to match target stats. Using MCMLE estimation.
-Starting maximum pseudolikelihood estimation (MPLE):
-Obtaining the responsible dyads.
-Evaluating the predictor and response matrix.
-Maximizing the pseudolikelihood.
-Finished MPLE.
-Stochastic approximation algorithm with theta_0 equal to:
-           edges      mix.sex.M.F      mix.sex.F.M      mix.sex.M.M 
-     -10.9882482        0.6072013        0.5659884        0.2140066 
-   mix.young.1.0    mix.young.0.1    mix.young.1.1 mix.race.num.2.1 
-      -0.8900890       -1.0554653       -0.3219440       -1.6650894 
-mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 mix.race.num.2.2 
-      -1.6275186       -0.5650261       -2.0253500       -1.3540898 
-mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 mix.race.num.2.3 
-      -4.4500986       -2.0565333       -1.7800522       -2.3460665 
-mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 mix.race.num.2.4 
-      -0.9180335       -2.1579671       -1.0027545       -3.4803856 
-mix.race.num.3.4 mix.race.num.4.4         odegree0         odegree1 
-      -2.7343707       -1.8750000       -1.1391123       -1.4807314 
-        odegree2  dnf.chicago.1.n  dnf.chicago.1.f  dnf.chicago.2.n 
-      -1.1433299        5.1427009        0.2547021        5.3444874 
-Starting burnin of 16000000 steps
-Phase 1: 200 steps (interval = 1000000)
-Stochastic Approximation estimate:
-           edges      mix.sex.M.F      mix.sex.F.M      mix.sex.M.M 
-     -10.9847218        0.4342669        0.4516211        0.2200883 
-   mix.young.1.0    mix.young.0.1    mix.young.1.1 mix.race.num.2.1 
-      -0.9606682       -1.1145897       -0.1746269       -1.5451083 
-mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 mix.race.num.2.2 
-      -1.4208348       -0.8816261       -1.8237626       -1.3807586 
-mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 mix.race.num.2.3 
-      -4.7244066       -2.4479006       -1.4493009       -1.9297989 
-mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 mix.race.num.2.4 
-      -0.5223402       -1.7149647       -0.8350355       -2.9080526 
-mix.race.num.3.4 mix.race.num.4.4         odegree0         odegree1 
-      -2.9234182       -1.8025967       -1.0872178       -1.4695553 
-        odegree2  dnf.chicago.1.n  dnf.chicago.1.f  dnf.chicago.2.n 
-      -1.1032975        4.9441164        0.2466564        5.4879595 
-Phase 3:  1000 iterations (interval=1e+06)
-This model was fit using MCMC.  To examine model diagnostics and check
-for degeneracy, use the mcmc.diagnostics() function.
+Loading saved fit.stepwise.dnf.odeg.0.2
 > 
 > net_fit_stepwise_dnf_odeg0_2 <- 
 + load_or_run("net_fit_stepwise_dnf_odeg0_2", quote(
 +   simulate(fit.stepwise.dnf.odeg.0.2, nsim = 1)
 + ))
-Running and saving net_fit_stepwise_dnf_odeg0_2
+Loading saved net_fit_stepwise_dnf_odeg0_2
 > net_fit_stepwise_dnf_odeg0_2 #this is degenerate
  Network attributes:
   vertices = 32002 
@@ -863,56 +740,13 @@ Running and saving net_fit_stepwise_dnf_odeg0_2
 +       )
 +     )
 +   ))
-Running and saving fit.stepwise.dnf.odeg.01.indeg0
-Unable to match target stats. Using MCMLE estimation.
-Starting maximum pseudolikelihood estimation (MPLE):
-Obtaining the responsible dyads.
-Evaluating the predictor and response matrix.
-Maximizing the pseudolikelihood.
-Finished MPLE.
-Stochastic approximation algorithm with theta_0 equal to:
-           edges      mix.sex.M.F      mix.sex.F.M      mix.sex.M.M 
-      -9.9998365        0.5162618        0.6012795        0.1364670 
-   mix.young.1.0    mix.young.0.1    mix.young.1.1 mix.race.num.2.1 
-      -0.8678344       -0.9254900        0.2816428       -1.6301051 
-mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 mix.race.num.2.2 
-      -1.5780729       -0.6669888       -1.5498066       -0.8756034 
-mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 mix.race.num.2.3 
-      -3.9364553       -1.3644627       -1.4087836       -2.3424120 
-mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 mix.race.num.2.4 
-      -0.6225942       -1.8829739       -0.5518108       -3.2667275 
-mix.race.num.3.4 mix.race.num.4.4         idegree0         odegree0 
-      -2.1034376       -0.9007996        1.5702436        0.7166083 
-        odegree1  dnf.chicago.1.n  dnf.chicago.1.f  dnf.chicago.2.n 
-      -0.0722207        4.9164737        0.2656703        5.1237666 
-Starting burnin of 16000000 steps
-Phase 1: 200 steps (interval = 1000000)
-Stochastic Approximation estimate:
-           edges      mix.sex.M.F      mix.sex.F.M      mix.sex.M.M 
-    -10.04744452       0.41270288       0.41950371       0.19606000 
-   mix.young.1.0    mix.young.0.1    mix.young.1.1 mix.race.num.2.1 
-     -0.96320795      -0.88370688       0.06514337      -1.59808799 
-mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 mix.race.num.2.2 
-     -1.44634443      -0.91624565      -1.47366409      -1.02733749 
-mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 mix.race.num.2.3 
-     -4.36552337      -2.11761828      -1.28071472      -1.82067647 
-mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 mix.race.num.2.4 
-     -0.37654624      -1.55637386      -0.55783831      -2.67636097 
-mix.race.num.3.4 mix.race.num.4.4         idegree0         odegree0 
-     -2.63820046      -1.50728391       1.39858274       0.65497383 
-        odegree1  dnf.chicago.1.n  dnf.chicago.1.f  dnf.chicago.2.n 
-     -0.10516849       4.75215987       0.28002311       5.37622501 
-Phase 3:  1000 iterations (interval=1e+06)
-This model was fit using MCMC.  To examine model diagnostics and check
-for degeneracy, use the mcmc.diagnostics() function.
-Warning message:
-In mple.existence(pl) : The MPLE does not exist!
+Loading saved fit.stepwise.dnf.odeg.01.indeg0
 > 
 > net_fit_stepwise_dnf_odeg01_indeg0 <- 
 +   load_or_run("net_fit_stepwise_dnf_odeg01_indeg0", quote(
 +     simulate(fit.stepwise.dnf.odeg.01.indeg0, nsim = 1)
 +   ))
-Running and saving net_fit_stepwise_dnf_odeg01_indeg0
+Loading saved net_fit_stepwise_dnf_odeg01_indeg0
 > net_fit_stepwise_dnf_odeg01_indeg0 
  Network attributes:
   vertices = 32002 
@@ -968,58 +802,13 @@ Running and saving net_fit_stepwise_dnf_odeg01_indeg0
 +       )
 +     )
 +   ))
-Running and saving fit.stepwise.dnf.odeg.01.indeg
-Unable to match target stats. Using MCMLE estimation.
-Starting maximum pseudolikelihood estimation (MPLE):
-Obtaining the responsible dyads.
-Evaluating the predictor and response matrix.
-Maximizing the pseudolikelihood.
-Finished MPLE.
-Stochastic approximation algorithm with theta_0 equal to:
-           edges      mix.sex.M.F      mix.sex.F.M      mix.sex.M.M 
-     -9.74849715       0.45550750       0.44272064       0.24960798 
-   mix.young.1.0    mix.young.0.1    mix.young.1.1 mix.race.num.2.1 
-     -1.03211237      -1.02551893      -0.03111976      -1.86612378 
-mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 mix.race.num.2.2 
-     -1.55651818      -1.53798206      -1.13168895      -0.87962188 
-mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 mix.race.num.2.3 
-     -4.19985940      -1.91372317      -1.29793881      -1.75033696 
-mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 mix.race.num.2.4 
-     -0.37874186      -0.78168222       0.15034070      -2.42838821 
-mix.race.num.3.4 mix.race.num.4.4         idegree0         idegree1 
-     -1.95175045      -0.67124737       2.73452209       1.27705879 
-        odegree0         odegree1  dnf.chicago.1.n  dnf.chicago.1.f 
-      0.59471676      -0.11477746       4.51618752       0.29863628 
- dnf.chicago.2.n 
-      5.39986601 
-Starting burnin of 16000000 steps
-Phase 1: 200 steps (interval = 1000000)
-Stochastic Approximation estimate:
-           edges      mix.sex.M.F      mix.sex.F.M      mix.sex.M.M 
-      -9.7415322        0.4211610        0.4246099        0.1998222 
-   mix.young.1.0    mix.young.0.1    mix.young.1.1 mix.race.num.2.1 
-      -0.9723789       -0.8192592        0.1145157       -1.6452851 
-mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 mix.race.num.2.2 
-      -1.4704792       -0.9367971       -1.3819070       -0.9539874 
-mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 mix.race.num.2.3 
-      -4.2973512       -2.0537998       -1.2169939       -1.8003875 
-mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 mix.race.num.2.4 
-      -0.3398335       -1.5265076       -0.4650558       -2.6050370 
-mix.race.num.3.4 mix.race.num.4.4         idegree0         idegree1 
-      -2.5562522       -1.4197803        2.7501913        1.2167399 
-        odegree0         odegree1  dnf.chicago.1.n  dnf.chicago.1.f 
-       0.5044123       -0.1810953        4.6836524        0.2779992 
- dnf.chicago.2.n 
-       5.3275913 
-Phase 3:  1000 iterations (interval=1e+06)
-This model was fit using MCMC.  To examine model diagnostics and check
-for degeneracy, use the mcmc.diagnostics() function.
+Loading saved fit.stepwise.dnf.odeg.01.indeg
 > 
 > net_fit_stepwise_dnf_odeg01_indeg <- 
 + load_or_run("net_fit_stepwise_dnf_odeg01_indeg", quote(
 +   simulate(fit.stepwise.dnf.odeg.01.indeg0, nsim = 1)
 + ))
-Running and saving net_fit_stepwise_dnf_odeg01_indeg
+Loading saved net_fit_stepwise_dnf_odeg01_indeg
 > net_fit_stepwise_dnf_odeg01_indeg0 
  Network attributes:
   vertices = 32002 
@@ -1041,5 +830,5 @@ Running and saving net_fit_stepwise_dnf_odeg01_indeg
 > save.image(file = file.path(out_dir, paste0(run_label, ".RData")))
 > 
 > proc.time()
-    user   system  elapsed 
-5213.708  106.039 5344.481 
+   user  system elapsed 
+ 90.124   3.580  97.510 
