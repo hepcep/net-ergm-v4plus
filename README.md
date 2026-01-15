@@ -39,6 +39,13 @@ For resolving dependencies in `renv`, the old ergm.userterms.hepcep package many
 install.packages("/oscar/home/akhann16/code/net-ergm-v4plus/ergm.userterms.hepcep", type="source", repos=NULL)
 ```
 
+As of January 15, 2026, ergm.userterms package is not on CRAN. So a local install is need for the entire environment to be restored:
+
+```
+install.packages("/oscar/home/akhann16/code/net-ergm-v4plus/ergm.userterms", type="source", repos=NULL)
+```
+
+
 
 ## 🧩 Modeling Steps 
 
