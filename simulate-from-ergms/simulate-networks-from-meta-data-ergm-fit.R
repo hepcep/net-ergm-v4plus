@@ -181,9 +181,9 @@ dnf_sim <-
   unlist(lapply(sim_results_10, 
                             function (x) summary(x ~ dnf(by = "chicago", thresholds = c(2,2)))
   ))
-dist_sim
+dnf_sim
 
-round(dist_nedge_distribution[dist.terms])
+#round(dist_nedge_distribution[dist.terms])
 
 
 
