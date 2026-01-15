@@ -17,7 +17,8 @@ renv::activate()
 library(network)
 library(ergm)
 library(dplyr)
-library(ergm.userterms)
+#library(ergm.userterms)
+library(ergm.userterms.hepcep)
 library(here)
 library(qs)
 
@@ -51,7 +52,7 @@ library(qs)
 
   for (iter in 1:length(nsim.vec)){
     sim_results[[iter]] <- simulate(
-      fit.stepwise.dist.odeg.01.indeg,
+      fit.stepwise.dnf.odeg.01.indeg,
       nsim=1
     )
   }
@@ -59,6 +60,17 @@ library(qs)
 
 # Extract 10 networks ----------
 sim_results_10 <- sim_results[1:10]
+
+# Extract 10 networks ----------
+## (Save simulated objs before investigating stats)
+
+qsave(sim_results_10, 
+here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_10.qs")))
+
+qsave(sim_results, 
+here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_100.qs")))
+
+
 
 
 #  Investigate netstats on 100 networks ----------
@@ -163,24 +175,17 @@ young
 round(c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung))
 
 
-## dist
+## dnf
 
-dist_sim <- 
+dnf_sim <- 
   unlist(lapply(sim_results_10, 
-                            function (x) summary(x ~ dist(dist.terms))
+                            function (x) summary(x ~ dnf(by = "chicago", thresholds = c(2,2)))
   ))
 dist_sim
 
 round(dist_nedge_distribution[dist.terms])
 
 
-
-
-qsave(sim_results_10, 
-here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_10.qs")))
-
-qsave(sim_results, 
-here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_100.qs")))
 
 
 
