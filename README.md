@@ -36,7 +36,7 @@ chmod +x launch_R.sh
 For resolving dependencies in `renv`, the old ergm.userterms.hepcep package many need to be installed manually: 
 
 ```
-install.packages("/oscar/home/akhann16/code/hepcep_networks-OLD/ergm.userterms", type="source", repos=NULL)
+install.packages("/oscar/home/akhann16/code/net-ergm-v4plus/ergm.userterms.hepcep", type="source", repos=NULL)
 ```
 
 
