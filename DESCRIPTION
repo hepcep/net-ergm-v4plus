@@ -1,0 +1,11 @@
+# This DESCRIPTION file exists to support renv "explicit" snapshots.
+# It allows us to control dependency discovery in an HPC setting by
+# avoiding recursive scans of large output directories (e.g., slurm_output),
+# and makes package dependencies explicit and reproducible.
+
+Package: net.ergm.v4plus
+Type: Project
+Title: hepcep ergm fit, simulation, diagnostics 
+Version: 0.0.1
+Depends: R (>= 4.5.1)
+
