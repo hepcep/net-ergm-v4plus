@@ -22,6 +22,10 @@ library(ergm.userterms.hepcep)
 library(here)
 library(qs)
 
+# Utils ----------
+## Checkpointing
+# source(here("utils", "load_or_run.R")) ## not currently used
+
 
 # Data ----------
 
@@ -45,35 +49,45 @@ library(qs)
 
 # Simulate 100 networks ----------
 
-  nsim.vec <- 1:100
+  nsim.vec <- 1:10
 
   sim_results <- as.list(nsim.vec)
   set.seed(Sys.time())
 
-  for (iter in 1:length(nsim.vec)){
-    sim_results[[iter]] <- simulate(
-      fit.stepwise.dnf.odeg.01.indeg,
-      nsim=1
-    )
-  }
+#####################
+# COMMENTING OUT CODE BELOW SINCE WE ALREADY HAVE
+# THE SIM OUTPUT GENERATED
+#####################
 
 
-# Extract 10 networks ----------
+
+# for (iter in 1:length(nsim.vec)){
+#   sim_results[[iter]] <- simulate(
+#     fit.stepwise.dnf.odeg.01.indeg,
+#     nsim=1
+#   )
+# } 
+
+# # Extract 10 networks ----------
+# 
+
+# # Extract 10 networks ----------
+# ## (Save simulated objs before investigating stats)
+
+# qsave(sim_results_10, 
+# here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_10.qs")))
+
+# qsave(sim_results, 
+# here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_100.qs")))
+
+sim_results <- qread(here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_10.qs")))
+#qread(here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_100.qs")))
 sim_results_10 <- sim_results[1:10]
-
-# Extract 10 networks ----------
-## (Save simulated objs before investigating stats)
-
-qsave(sim_results_10, 
-here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_10.qs")))
-
-qsave(sim_results, 
-here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_100.qs")))
+#####################
 
 
 
-
-#  Investigate netstats on 100 networks ----------
+#  Investigate netstats on 10 networks ----------
 
 ## edgecount
   ecount <- unlist(lapply(sim_results_10, network.edgecount))
@@ -183,9 +197,24 @@ dnf_sim <-
   ))
 dnf_sim
 
-#round(dist_nedge_distribution[dist.terms])
 
+names(dnf_sim)
 
+dnf.chicago.1.n_sim <- dnf_sim[names(dnf_sim) == "dnf.chicago.1.n"]
+dnf.chicago.1.f_sim <- dnf_sim[names(dnf_sim) == "dnf.chicago.1.f"]
+dnf.chicago.2.n_sim <- dnf_sim[names(dnf_sim) == "dnf.chicago.2.n"]
 
+mean_dnf <- c(mean(dnf.chicago.1.n_sim), mean(dnf.chicago.1.f_sim), mean(dnf.chicago.2.n_sim))
+range_dnf <- c(range(dnf.chicago.1.n_sim), range(dnf.chicago.1.f_sim), range(dnf.chicago.2.n_sim))
+
+comparison_df_dnf <- data.frame(
+  Parameter = c("dnf.chicago.1.n", "dnf.chicago.1.f", "dnf.chicago.2.n"),
+  Mean = mean_dnf,
+  Range_Min = range_dnf[seq(1, length(range_dnf), by = 2)],
+  Range_Max = range_dnf[seq(2, length(range_dnf), by = 2)],
+  Target = c(tgt_1.n, tgt_1.f, tgt_2.n)
+)
+
+comparison_df_dnf
 
 
