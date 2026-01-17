@@ -47,6 +47,11 @@ sum(outedges_target)
 
 edges_target #target number of total edges
 
+# Load utils ---------
+
+## checkpointing function
+source(here("utils", "load_or_run.R"))
+
 # Degree and dist/dnf assignments ---------
 
 ## outdegrees
@@ -95,23 +100,6 @@ target_race_num <- unname(target_race_num)
 
     c(tgt_1.n, tgt_1.f, tgt_2.n) #specified target statistics
     tgt_2.f #unspecified
-
-# Helper function to only run fits that were not previously saved ----------
-
-load_or_run <- function(name, expr) {
-  path <- file.path(out_dir, paste0(name, ".rds"))
-  if (file.exists(path)) {
-    message("Loading saved ", name)
-    readRDS(path)
-  } else {
-    message("Running and saving ", name)
-    obj <- eval(expr)
-    saveRDS(obj, path)
-    obj
-  }
-}
-
-
 
 # Fit Non-empty net including race term ---------
 sex_mixing_terms <- summary(n0 ~ nodemix("sex", levels2 = -1))
