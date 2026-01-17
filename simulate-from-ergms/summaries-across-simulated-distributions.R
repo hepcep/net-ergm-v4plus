@@ -16,7 +16,7 @@ renv::activate()
 library(network)
 library(ergm)
 library(dplyr)
-library(ergm.userterms)
+library(ergm.userterms.hepcep)
 library(here)
 library(ggplot2)
 library(qs)
@@ -24,7 +24,7 @@ library(qs)
 
 # Data ----------
 
-run_label <- "mixing-aligned-pop-dated-2025-jan-23" # set manually to ensure intentional updates
+run_label <- "new-mixing-data-w-dnf" # set manually to ensure intentional updates
 ## should match the object from the ERGM fitting code 
 
   ## load data
@@ -44,6 +44,14 @@ intersect(names(data_objects), ls())
 list2env(data_objects, envir = globalenv())
 ls()
 
+## LOADING THIS JUST FOR THE DNF TARGETS --
+## EVENTUALLY THE DNF TARGETS SHOULD BE INCORPORATED INTO processed_data.rds
+
+load(here("fit-ergms", "out", 
+      "new-mixing-data-w-dnf",
+      "new-mixing-data-w-dnf.RData"
+      )
+  )
 
 # Compute summaries and IQRs ----------
 
@@ -76,7 +84,7 @@ n_edges <- edges_target
                           ))
   outdeg1 <- unlist(lapply(sim_results, 
                           function (x) summary(x ~ odegree(1))))
-  #
+  
   summary(outdeg0)
   quantile(outdeg0, probs = c(2.5 / 100, 97.5 / 100))
   summary(outdeg1)
@@ -199,20 +207,22 @@ sim.sex <- lapply(sim_results, function(x) {
 ## distance
   ### simulated
   sim.dist <- lapply(1:length(sim_results), 
-      function(x) summary(sim_results[[x]] ~ dist(1:4)))
-  summary(unlist(lapply(sim.dist, function(x) x["dist1"])))
-  summary(unlist(lapply(sim.dist, function(x) x["dist2"])))
-  summary(unlist(lapply(sim.dist, function(x) x["dist3"])))
+      function(x){summary(sim_results[[x]] ~ dnf(by = "chicago", thresholds = c(2,2)))})
+  
+  summary(unlist(lapply(sim.dist, function(x) x["dnf.chicago.1.n"])))
+  summary(unlist(lapply(sim.dist, function(x) x["dnf.chicago.1.f"])))
+  summary(unlist(lapply(sim.dist, function(x) x["dnf.chicago.2.n"])))
   #summary(unlist(lapply(sim.dist, function(x) x["dist4"])))
 
-  quantile(unlist(lapply(sim.dist, function(x) x["dist1"])), probs = c(2.5 / 100, 97.5 / 100))
-  quantile(unlist(lapply(sim.dist, function(x) x["dist2"])), probs = c(2.5 / 100, 97.5 / 100))
-  quantile(unlist(lapply(sim.dist, function(x) x["dist3"])), probs = c(2.5 / 100, 97.5 / 100))
+  quantile(unlist(lapply(sim.dist, function(x) x["dnf.chicago.1.n"])), probs = c(2.5 / 100, 97.5 / 100))
+  quantile(unlist(lapply(sim.dist, function(x) x["dnf.chicago.1.f"])), probs = c(2.5 / 100, 97.5 / 100))
+  quantile(unlist(lapply(sim.dist, function(x) x["dnf.chicago.2.n"])), probs = c(2.5 / 100, 97.5 / 100))
   #quantile(unlist(lapply(sim.dist, function(x) x["dist4"])), probs = c(2.5 / 100, 97.5 / 100))
 
   ### target
-  target_distance <- dist_nedge_distribution
-  target_distance <- target_distance[1:3] #hard coded that 4th term is left out
+  target_distance <- c(tgt_1.n, tgt_1.f, tgt_2.n) ## NOTE THESE ARE LOADED FROM THE SIMULATED RDATA -- COMMENT ABOVE
+  
+
 
 
 # Violin Plots ----------
@@ -458,24 +468,40 @@ sim.sex <- lapply(sim_results, function(x) {
 
     distance_mixing_df_filtered <- distance_mixing_df[distance_mixing_df$category != "dist4", ]
 
-    names(target_distance) <- c("dist1", "dist2", "dist3")
+    names(target_distance) <- c("dnf.1.n", "dnf.1.f", "dnf.2.n")
 
-    # Plot the violin plot excluding dist4
-    ggplot(distance_mixing_df_filtered, aes(x = category, y = count)) +
+    ## align facets so lines are superimposed on the violins
+    distance_mixing_df_filtered <- 
+      distance_mixing_df_filtered |>
+        dplyr::mutate(
+          facet = sub("^dnf\\.chicago\\.", "", category)
+        )
+
+    target_df <- data.frame(
+      facet = sub("^dnf\\.", "", names(target_distance)),
+      y     = as.numeric(target_distance)
+    )
+
+
+
+    # Plot the violin plot 
+    ggplot(distance_mixing_df_filtered, aes(x = facet, y = count)) +
       geom_violin(trim = FALSE, fill = "#66C2A5") +
-      geom_hline(data = data.frame(category = names(target_distance), 
-                                  y = as.numeric(target_distance)), aes(yintercept = y), 
-                linetype = "solid", color = "black", linewidth = 1.5) +
-      facet_wrap(~ category, scales = "free_y") +
+      geom_hline(
+        data = target_df,
+        aes(yintercept = y),
+        inherit.aes = FALSE,
+        color = "black", linewidth = 1.5
+      ) +
+      facet_wrap(~ facet, scales = "free_y", nrow = 1) +
       theme_minimal() +
       labs(y = "Distance Metric Count", x = NULL) +
       theme(
-        axis.text.x = element_blank(),  # Hide x-axis text
-        axis.title.x = element_blank(),  # Hide x-axis title
-        axis.title.y = element_text(size = 14),
-        panel.grid.major = element_blank(), 
+        axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        strip.text = element_text(size = 14, face = "bold")  # Make panel titles more prominent
+        strip.text = element_text(size = 14, face = "bold")
       )
 
     # Save the plot
