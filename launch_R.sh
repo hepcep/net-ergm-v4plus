@@ -8,6 +8,7 @@ module purge
 
 # Load the R module
  #OLD R MODULE module load r/4.4.0-yycctsj
+ module load glpk/5.0-55rr
  module load r/4.5.1-iikl
  
 
