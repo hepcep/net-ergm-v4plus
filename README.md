@@ -33,6 +33,23 @@ Make sure it remains an executable:
 chmod +x launch_R.sh
 ```
 
+### renv Cache
+
+The renv cache is disabled for this project (`renv::settings$use.cache(FALSE)`). Packages are installed directly into `renv/library/` rather than symlinked from `~/.cache`, which would break whenever Oscar purges the cache directory.
+
+If the library ever needs to be rebuilt from scratch:
+
+```bash
+module load r/4.5.1-iikl
+module load glpk/5.0-55rr
+R --no-save --no-restore
+```
+
+```r
+renv::settings$use.cache(FALSE)
+renv::repair()
+```
+
 For resolving dependencies in `renv`, the old ergm.userterms.hepcep package many need to be installed manually: 
 
 ```
