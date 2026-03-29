@@ -54,13 +54,30 @@ race_mixing_df <- race_mixing_df |>
   )
 
 # Order panels as a near-matrix: vary receiver across columns, sender down rows
-# (White→White is the omitted reference category)
+# White->White is included but flagged as unspecified (reference category)
 race_order  <- c("White", "Black", "Hispanic", "Other")
 level_order <- apply(expand.grid(sender = race_order, receiver = race_order), 1,
                      function(r) paste0(r["sender"], " -> ", r["receiver"]))
-level_order <- setdiff(level_order, "White -> White")
 
-race_mixing_df$label <- factor(race_mixing_df$label, levels = level_order)
+race_mixing_df$label    <- factor(race_mixing_df$label, levels = level_order)
+race_mixing_df$specified <- TRUE
+
+
+# Add White->White (reference category, not a model term) ---------------------
+
+ww_sim <- sapply(seq_along(sim_results), function(i)
+  network.edgecount(sim_results[[i]]) - sum(sim.race.num[[i]]))
+
+ww_df <- data.frame(
+  count    = ww_sim,
+  category = "mix.race.num.1.1",
+  sender   = "White",
+  receiver = "White",
+  label    = factor("White -> White", levels = level_order),
+  specified = FALSE
+)
+
+race_mixing_df <- dplyr::bind_rows(race_mixing_df, ww_df)
 
 
 # Target values ----------------------------------------------------------------
@@ -75,36 +92,89 @@ target_df <- data.frame(
     label    = factor(paste0(sender, " -> ", receiver), levels = level_order)
   )
 
+# Add White->White target
+target_df <- dplyr::bind_rows(
+  target_df,
+  data.frame(
+    category = "target.w.w",
+    y        = edges_target - sum(target_race_num),
+    sender   = "White",
+    receiver = "White",
+    label    = factor("White -> White", levels = level_order)
+  )
+)
+
 
 # Plot -------------------------------------------------------------------------
 
-ggplot(race_mixing_df, aes(x = label, y = count)) +
-  geom_violin(trim = FALSE, fill = "#4E79A7", alpha = 0.75, color = NA) +
-  geom_hline(
+ggplot(race_mixing_df, aes(x = label, y = count, fill = specified)) +
+  geom_violin(trim = FALSE, alpha = 0.75, color = NA) +
+geom_hline(
     data    = target_df,
     mapping = aes(yintercept = y),
     linetype = "dashed", color = "#E15759", linewidth = 0.9
   ) +
-  facet_wrap(~ label, scales = "free_y", ncol = 4) +
+  facet_wrap(~ label, scales = "free", ncol = 4) +
+  scale_fill_manual(
+    values = c("TRUE" = "#4E79A7", "FALSE" = "#B8B0AC"),
+    labels = c("TRUE" = "Model term", "FALSE" = "Reference (unspecified)"),
+    name   = NULL
+  ) +
   scale_y_continuous(labels = scales::comma) +
-  theme_minimal(base_size = 11) +
+  theme_minimal(base_size = 13) +
   labs(
     y       = "Edge Count",
     x       = NULL,
-    caption = "Dashed line = target; violin = distribution across 100 simulated networks"
+    caption = NULL
   ) +
   theme(
     axis.text.x      = element_blank(),
     axis.ticks.x     = element_blank(),
-    axis.title.y     = element_text(size = 12),
+    axis.text.y      = element_text(size = 10),
+    axis.title.y     = element_text(size = 13),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
-    strip.text       = element_text(size = 9, face = "bold"),
-    plot.caption     = element_text(size = 8, color = "grey50"),
-    panel.spacing    = unit(0.8, "lines")
+    strip.text       = element_text(size = 11, face = "bold"),
+    panel.spacing    = unit(1, "lines"),
+    legend.position  = "bottom",
+    legend.text      = element_text(size = 11)
   )
 
 ggsave(
   here("simulate-from-ergms", "out", "racemix_violin_abstract.png"),
-  width = 10, height = 8, dpi = 300
+  width = 14, height = 12, dpi = 300
+)
+
+
+# Supplemental plot: normalized deviations from target (single panel) ---------
+
+# Join target values into the simulated data and compute % deviation
+race_mixing_norm <- race_mixing_df |>
+  dplyr::left_join(
+    target_df |> dplyr::select(label, target = y),
+    by = "label"
+  ) |>
+  dplyr::mutate(pct_dev = (count - target) / target * 100)
+
+ggplot(race_mixing_norm, aes(x = label, y = pct_dev)) +
+  geom_violin(trim = FALSE, fill = "#4E79A7", alpha = 0.75, color = NA) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "#E15759", linewidth = 0.9) +
+  coord_flip() +
+  theme_minimal(base_size = 11) +
+  labs(
+    x       = NULL,
+    y       = "% deviation from target",
+    caption = "Dashed line = target; violin = distribution across 100 simulated networks"
+  ) +
+  theme(
+    axis.text.y      = element_text(size = 9),
+    axis.title.x     = element_text(size = 12),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.caption     = element_text(size = 8, color = "grey50")
+  )
+
+ggsave(
+  here("simulate-from-ergms", "out", "racemix_violin_abstract_supp.png"),
+  width = 7, height = 8, dpi = 300
 )
