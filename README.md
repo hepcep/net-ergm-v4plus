@@ -143,7 +143,7 @@ Violin plots saved via:
 Output extraction to HepCep4Py at:
 
 ```
-simulate-from-ergms/extract-vertex-atts.R
+simulate-from-ergms/crosswalk-extract-vertex-atts.R
 simulate-from-ergms/unpack-edgelist.R
 simulate-from-ergms/unpack-vertex-atts.R
 ```
