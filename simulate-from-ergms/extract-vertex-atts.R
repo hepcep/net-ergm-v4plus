@@ -10,12 +10,20 @@ rm(list=ls())
 
 # Libraries ----------
 
+
 library(here)
 library(network)
+library(qs)
 
 # Load data ----------
+run_label <- "new-mixing-data-w-dnf"
 
-load(here("simulate-from-ergms", "out", "simulated-updated-with-oct12-2024-synthpop-ergmv4-6-all-plos1-mcmc-int1e6-samp1e6-hotelling.RData"))
+sim_results <- qread(here("simulate-from-ergms", "out",
+                          paste0(run_label, "_sim_results_100.qs")))
+                          ## swap between _10.qs for quicker check
+                          ## and _100.qs for full run
+
+#load(here("simulate-from-ergms", "out", "simulated-updated-with-oct12-2024-synthpop-ergmv4-6-all-plos1-mcmc-int1e6-samp1e6-hotelling.RData"))
 
 data <- read.csv(here("data", "synthpop-2023-10-12 12_01_32.csv")) #updated oct 12 2023
 
@@ -56,7 +64,10 @@ for (i in 1:length(vertex.att.all)){
   names(vertex.att.all[[i]]) <- vertex.att.list
 }
 
-# Compare agent ordering above to network object ---------
+# Crosswalk: verify vertex ordering in simulated networks matches synthpop CSV ---------
+# The synthpop CSV has no explicit agent ID column. Each agent has a unique
+# (lat, lon) pair, so we use these as a fingerprint to confirm that vertex
+# ordering in every simulated network is aligned with the CSV row ordering.
 
 if (nrow(data) == 32001){
   data <- data[-32001,] #the dataset consists of 32001 agents but the networks only contain 32K nodes
@@ -64,9 +75,13 @@ if (nrow(data) == 32001){
 }
 dim(data)
 
-identical(sim_results[[1]] %v% "lat", data$lat)
-identical(sim_results[[1]] %v% "lon", data$lon)
-## ordering between the data set and the network matches
+for (k in seq_along(sim_results)) {
+  stopifnot(
+    "Vertex ordering mismatch (lat)" = identical(sim_results[[k]] %v% "lat", data$lat),
+    "Vertex ordering mismatch (lon)" = identical(sim_results[[k]] %v% "lon", data$lon)
+  )
+}
+message("Crosswalk verified: all ", length(sim_results), " networks match synthpop ordering.")
 
 
 # Extract vertex names and add to pwid_with_lat_lon.csv datset ---------
@@ -77,5 +92,5 @@ pwid_w_vertex_names <- cbind(vertex.names,
 
 # Save data
 
-saveRDS(vertex.att.all, file = here("simulate-from-ergms", "out","vertex_att_all_oct122023.RDS"))
-saveRDS(pwid_w_vertex_names, file=here("simulate-from-ergms", "out", "pwid_w_vertex_names_oct122023.RDS"))
+saveRDS(vertex.att.all, file = here("simulate-from-ergms", "out","vertex_att_all_2026_apr06.RDS"))
+saveRDS(pwid_w_vertex_names, file=here("simulate-from-ergms", "out", "pwid_w_vertex_names_2026_apr06.RDS"))
