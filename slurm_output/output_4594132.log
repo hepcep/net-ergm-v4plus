@@ -1,0 +1,9 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 4594132
+##  Job Name : synthpop-2023-10-12-w-dist-all-plos1-no-overriding-controls
+##  Nodelist : node1323
+##      CPUs : 1
+##  Mem/Node : 10000 MB
+## Directory : /oscar/home/akhann16/code/net-ergm-v4plus
+##   Job Started : Wed Sep 18 08:04:21 PM EDT 2024
+###############################################################################

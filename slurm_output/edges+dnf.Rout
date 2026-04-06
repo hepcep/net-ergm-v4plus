@@ -1,0 +1,438 @@
+
+R version 4.4.0 (2024-04-24) -- "Puppy Cup"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+- Project '/oscar/home/akhann16/code/net-ergm-v4plus' loaded. [renv 1.0.7]
+> # Analyze synthetic dataset with 32K nodes
+> 
+> 
+> # Fit ERGM with 5 dyadic independent terms
+> 
+> rm(list = ls())
+> 
+> # Label and outputs for this run
+> run_label <- "edges+dnf" # set manually to ensure intentional updates
+> 
+> # Activate R environment ----------
+> 
+> library(renv)
+
+Attaching package: ‘renv’
+
+The following objects are masked from ‘package:stats’:
+
+    embed, update
+
+The following objects are masked from ‘package:utils’:
+
+    history, upgrade
+
+The following objects are masked from ‘package:base’:
+
+    autoload, load, remove, use
+
+> renv::activate()
+> 
+> 
+> # Libraries ----------
+> 
+> library(network)
+
+‘network’ 1.18.2 (2023-12-04), part of the Statnet Project
+* ‘news(package="network")’ for changes since last version
+* ‘citation("network")’ for citation information
+* ‘https://statnet.org’ for help, support, and other information
+
+> library(ergm)
+
+‘ergm’ 4.6.0 (2023-12-17), part of the Statnet Project
+* ‘news(package="ergm")’ for changes since last version
+* ‘citation("ergm")’ for citation information
+* ‘https://statnet.org’ for help, support, and other information
+
+‘ergm’ 4 is a major update that introduces some backwards-incompatible
+changes. Please type ‘news(package="ergm")’ for a list of major
+changes.
+
+> library(dplyr)
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+> #library(ergm.userterms)
+> library(ergm.userterms.hepcep)
+Loading required package: statnet.common
+
+Attaching package: ‘statnet.common’
+
+The following objects are masked from ‘package:base’:
+
+    attr, order
+
+
+‘ergm.userterms.hepcep’ 3.1.1 (2020-02-01), part of the Statnet Project
+* ‘news(package="ergm.userterms.hepcep")’ for changes since last version
+* ‘citation("ergm.userterms.hepcep")’ for citation information
+* ‘https://statnet.org’ for help, support, and other information
+
+NOTE: If you use custom ERGM terms based on ‘ergm.userterms’ version
+prior to 3.1, you will need to perform a one-time update of the package
+boilerplate files (the files that you did not write or modify) from
+‘ergm.userterms’ 3.1 or later. See help('eut-upgrade') for
+instructions.
+
+> library(here)
+here() starts at /oscar/home/akhann16/code/net-ergm-v4plus
+> library(styler)
+> 
+> 
+> # Create output directory ---------
+> out_dir <- here("fit-ergms", "out", run_label)
+> if (!dir.exists(out_dir)) dir.create(out_dir, recursive = FALSE)
+> 
+> 
+> # Load data objects ----------
+> 
+> data_objects <- readRDS(here("fit-ergms", "out", "processed_data.rds"))
+> names(data_objects)
+ [1] "data"                        "n0"                         
+ [3] "edges_only_net"              "tgt.old.pctyoung"           
+ [5] "tgt.young.pctold"            "tgt.young.pctyoung"         
+ [7] "edges_target"                "tgt.female.pctmale"         
+ [9] "tgt.male.pctfemale"          "tgt.male.pctmale"           
+[11] "target_race_num"             "indegree_data"              
+[13] "outdegree_data"              "dist_as_mixing_matrix"      
+[15] "dist_pct_to_near_pct_to_far"
+> 
+> intersect(names(data_objects), ls())
+character(0)
+> list2env(data_objects, envir = globalenv())
+<environment: R_GlobalEnv>
+> ls()
+ [1] "data"                        "data_objects"               
+ [3] "dist_as_mixing_matrix"       "dist_pct_to_near_pct_to_far"
+ [5] "edges_only_net"              "edges_target"               
+ [7] "indegree_data"               "n0"                         
+ [9] "out_dir"                     "outdegree_data"             
+[11] "run_label"                   "target_race_num"            
+[13] "tgt.female.pctmale"          "tgt.male.pctfemale"         
+[15] "tgt.male.pctmale"            "tgt.old.pctyoung"           
+[17] "tgt.young.pctold"            "tgt.young.pctyoung"         
+> 
+> inedges_target <- indegree_data$in_degree * indegree_data$mean_n
+> sum(inedges_target)
+[1] 20256.49
+> 
+> outedges_target <- outdegree_data$out_degree * outdegree_data$mean_n
+> sum(outedges_target)
+[1] 25663.36
+> 
+> edges_target #target number of total edges
+[1] 22959.93
+> 
+> # Degree and dist assignments ---------
+> 
+> ## outdegrees
+> deg.terms <- 0:3
+> deg.terms.0 <- 0
+> deg.terms.0_1 <- 0:1
+> deg.terms.0_2 <- 0:2
+> deg.terms.013 <- c(0, 1, 3)
+> 
+> ## indegrees
+> indeg.terms.0 <- 0
+> indeg.terms <- 0:1
+> 
+> ## dist
+> dist_as_mixing_matrix
+non_chicago_to_pct_near  non_chicago_to_pct_far     chicago_to_pct_near 
+                  0.530                   0.460                   0.660 
+     chicago_to_pct_far 
+                  0.033 
+> names(dist_as_mixing_matrix)
+[1] "non_chicago_to_pct_near" "non_chicago_to_pct_far" 
+[3] "chicago_to_pct_near"     "chicago_to_pct_far"     
+> 
+> dist_pct_to_near_pct_to_far
+pct_to_near  pct_to_far 
+       0.66        0.38 
+> names(dist_pct_to_near_pct_to_far)
+[1] "pct_to_near" "pct_to_far" 
+> 
+> dist.prop.distribution <- c(15.7, 35.1, 24.1, 22)/100 #old dist terms
+> dist.nedge.distribution <- edges_target*dist.prop.distribution
+> 
+> ## race
+> class(target_race_num)
+[1] "numeric"
+> target_race_num <- unname(target_race_num)
+> 
+> 
+> # Helper function to only run fits that were not previously saved ----------
+> 
+> load_or_run <- function(name, expr) {
++   path <- file.path(out_dir, paste0(name, ".rds"))
++   if (file.exists(path)) {
++     message("Loading saved ", name)
++     readRDS(path)
++   } else {
++     message("Running and saving ", name)
++     obj <- eval(expr)
++     saveRDS(obj, path)
++     obj
++   }
++ }
+> 
+> 
+> 
+> # Fit Non-empty net including race term ---------
+> sex_mixing_terms <- summary(n0 ~ nodemix("sex", levels2 = -1))
+> print(names(sex_mixing_terms))
+[1] "mix.sex.M.F" "mix.sex.F.M" "mix.sex.M.M"
+> sex_mixing_align_order <- c(tgt.male.pctfemale, tgt.female.pctmale, tgt.male.pctmale)
+> print(sex_mixing_align_order)
+[1] 6061.420 6281.835 7576.775
+> sum(sex_mixing_align_order)
+[1] 19920.03
+> 
+> age_mixing_terms <- summary(n0 ~ nodemix("young", levels2 = -1))
+> print(names(age_mixing_terms))
+[1] "mix.young.1.0" "mix.young.0.1" "mix.young.1.1"
+> age_mixing_align_order <- c(
++   tgt.young.pctold,   # 1 → 0
++   tgt.old.pctyoung,   # 0 → 1
++   tgt.young.pctyoung  # 1 → 1
++ )
+> print(age_mixing_align_order)
+[1] 1910.266 1928.634 1763.322
+> sum(age_mixing_align_order)
+[1] 5602.222
+> 
+> race_mixing_terms <- summary(n0 ~ nodemix("race.num", levels2 = -1))
+> print(names(race_mixing_terms))
+ [1] "mix.race.num.2.1" "mix.race.num.3.1" "mix.race.num.4.1" "mix.race.num.1.2"
+ [5] "mix.race.num.2.2" "mix.race.num.3.2" "mix.race.num.4.2" "mix.race.num.1.3"
+ [9] "mix.race.num.2.3" "mix.race.num.3.3" "mix.race.num.4.3" "mix.race.num.1.4"
+[13] "mix.race.num.2.4" "mix.race.num.3.4" "mix.race.num.4.4"
+> # race order is already aligned
+> print(target_race_num)
+ [1] 1376.21790 1346.59960  439.45296 1232.71837 2045.72932   42.93506
+ [7]   73.01256 1503.64549  665.37863 2466.81434  139.13715  541.85423
+[13]   45.46065   42.93506   36.50628
+> sum(target_race_num)
+[1] 11998.4
+> 
+> # Incorporating DNF term ---------
+> 
+> ## network object
+> edges_only_net
+ Network attributes:
+  vertices = 32002 
+  directed = TRUE 
+  hyper = FALSE 
+  loops = FALSE 
+  multiple = FALSE 
+  bipartite = FALSE 
+  total edges= 22610 
+    missing edges= 0 
+    non-missing edges= 22610 
+
+ Vertex attribute names: 
+    age age_lb age_started age_ub agecat daily_injection_intensity fraction_recept_sharing hcv_status lat lon race race.num sex syringe_source vertex.names young Zip zipcode 
+
+ Edge attribute names not shown 
+> list.vertex.attributes(edges_only_net)
+ [1] "age"                       "age_lb"                   
+ [3] "age_started"               "age_ub"                   
+ [5] "agecat"                    "daily_injection_intensity"
+ [7] "fraction_recept_sharing"   "hcv_status"               
+ [9] "lat"                       "lon"                      
+[11] "na"                        "race"                     
+[13] "race.num"                  "sex"                      
+[15] "syringe_source"            "vertex.names"             
+[17] "young"                     "Zip"                      
+[19] "zipcode"                  
+> 
+> ## We have "lat, lon", "zipcode" information, 
+> ## but not chicago, non-chicago information
+> 
+>   ## use zipcode
+>   z <- edges_only_net %v% "zipcode"
+>   is_chicago <- !is.na(z) & substr(as.character(z), 1, 3) == "606"
+>   edges_only_net %v% "chicago" <- ifelse(is_chicago, 1L, 2L)
+>   table(edges_only_net %v% "chicago", exclude=NULL)
+
+    1     2 
+18395 13607 
+> 
+>   list.vertex.attributes(edges_only_net)
+ [1] "age"                       "age_lb"                   
+ [3] "age_started"               "age_ub"                   
+ [5] "agecat"                    "chicago"                  
+ [7] "daily_injection_intensity" "fraction_recept_sharing"  
+ [9] "hcv_status"                "lat"                      
+[11] "lon"                       "na"                       
+[13] "race"                      "race.num"                 
+[15] "sex"                       "syringe_source"           
+[17] "vertex.names"              "young"                    
+[19] "Zip"                       "zipcode"                  
+>   
+>   stopifnot(all((edges_only_net %v% "chicago") %in% 1:2)) # test assignment
+> 
+>  ## compute target stats
+>     ## From prior computation (notion, Jul 21, 2025), we know the following:
+>     ## Of all  edges:
+>     prop_2.n = 16.3/100 #i.e., 16.3%, and so on...
+>     prop_2.f = 14.2/100 
+>     prop_1.n = 45.7/100
+>     prop_1.f = 22.9/100
+> 
+>     ## Target number of edges is 22959.93
+>     tgt_2.n <- edges_target * prop_2.n
+>     tgt_2.f <- edges_target * prop_2.f
+>     tgt_1.n <- edges_target * prop_1.n
+>     tgt_1.f <- edges_target * prop_1.f
+> 
+>     ## Check term ordering for specifying targets
+>     summary(edges_only_net ~ 
++       dnf(by = "chicago", thresholds = c(2,2))
++     )
+dnf.chicago.1.n dnf.chicago.1.f dnf.chicago.2.n 
+            216           12709              44 
+> 
+> edges_only_net_w_chicago <- edges_only_net
+> edges_only_net_w_chicago
+ Network attributes:
+  vertices = 32002 
+  directed = TRUE 
+  hyper = FALSE 
+  loops = FALSE 
+  multiple = FALSE 
+  bipartite = FALSE 
+  total edges= 22610 
+    missing edges= 0 
+    non-missing edges= 22610 
+
+ Vertex attribute names: 
+    age age_lb age_started age_ub agecat chicago daily_injection_intensity fraction_recept_sharing hcv_status lat lon race race.num sex syringe_source vertex.names young Zip zipcode 
+
+ Edge attribute names not shown 
+> 
+> list.vertex.attributes(edges_only_net_w_chicago)
+ [1] "age"                       "age_lb"                   
+ [3] "age_started"               "age_ub"                   
+ [5] "agecat"                    "chicago"                  
+ [7] "daily_injection_intensity" "fraction_recept_sharing"  
+ [9] "hcv_status"                "lat"                      
+[11] "lon"                       "na"                       
+[13] "race"                      "race.num"                 
+[15] "sex"                       "syringe_source"           
+[17] "vertex.names"              "young"                    
+[19] "Zip"                       "zipcode"                  
+> 
+> ## Fit ERGM with DNF
+> fit_nonempty_network_w_dnf <-
++     ergm(
++       edges_only_net_w_chicago ~ 
++         edges +
++         dnf(by="chicago", thresholds=c(2, 2)),
++       target.stats =
++         c(
++           edges_target,
++           c(tgt_1.n, tgt_1.f, tgt_2.n)
++         ),
++       eval.loglik = FALSE,
++       control = control.ergm(
++         MCMLE.maxit = 500,
++         main.method = c("Stochastic-Approximation"),
++         MCMC.interval = 1e6,
++         MCMC.samplesize = 1e6,
++         MCMLE.termination = "Hotelling",
++         MCMC.effectiveSize = NULL,
++         SAN = control.san(
++           SAN.maxit = 500,
++           SAN.nsteps = 1e8
++         )
++       )
++     )
+Unable to match target stats. Using MCMLE estimation.
+Starting maximum pseudolikelihood estimation (MPLE):
+Obtaining the responsible dyads.
+Evaluating the predictor and response matrix.
+Maximizing the pseudolikelihood.
+Finished MPLE.
+Stochastic approximation algorithm with theta_0 equal to:
+          edges dnf.chicago.1.n dnf.chicago.1.f dnf.chicago.2.n 
+    -11.7371552       5.0026008       0.1264007       5.7017413 
+Starting burnin of 16000000 steps
+Phase 1: 200 steps (interval = 1000000)
+Stochastic Approximation estimate:
+          edges dnf.chicago.1.n dnf.chicago.1.f dnf.chicago.2.n 
+    -11.7386159       4.8153027       0.1305492       5.6176208 
+Phase 3:  1000 iterations (interval=1e+06)
+This model was fit using MCMC.  To examine model diagnostics and check
+for degeneracy, use the mcmc.diagnostics() function.
+>   
+>   
+>   
+> 
+> non_empty_net_w_dnf <- simulate(fit_nonempty_network_w_dnf, nsim = 1)
+> 
+> 
+> non_empty_net_w_dnf
+ Network attributes:
+  vertices = 32002 
+  directed = TRUE 
+  hyper = FALSE 
+  loops = FALSE 
+  multiple = FALSE 
+  bipartite = FALSE 
+  total edges= 23124 
+    missing edges= 0 
+    non-missing edges= 23124 
+
+ Vertex attribute names: 
+    age age_lb age_started age_ub agecat chicago daily_injection_intensity fraction_recept_sharing hcv_status lat lon race race.num sex syringe_source vertex.names young Zip zipcode 
+
+ Edge attribute names not shown 
+> list.vertex.attributes(non_empty_net_w_dnf)
+ [1] "age"                       "age_lb"                   
+ [3] "age_started"               "age_ub"                   
+ [5] "agecat"                    "chicago"                  
+ [7] "daily_injection_intensity" "fraction_recept_sharing"  
+ [9] "hcv_status"                "lat"                      
+[11] "lon"                       "na"                       
+[13] "race"                      "race.num"                 
+[15] "sex"                       "syringe_source"           
+[17] "vertex.names"              "young"                    
+[19] "Zip"                       "zipcode"                  
+> 
+> summary(non_empty_net_w_dnf ~       
++   dnf(by = "chicago", thresholds = c(2,2))
++     )
+dnf.chicago.1.n dnf.chicago.1.f dnf.chicago.2.n 
+          10584            5265            3772 
+> 
+> proc.time()
+   user  system elapsed 
+552.563   6.706 563.210 

@@ -33,6 +33,34 @@ Make sure it remains an executable:
 chmod +x launch_R.sh
 ```
 
+### renv Cache
+
+The renv cache is disabled for this project (`renv::settings$use.cache(FALSE)`). Packages are installed directly into `renv/library/` rather than symlinked from `~/.cache`, which would break whenever Oscar purges the cache directory.
+
+If the library ever needs to be rebuilt from scratch:
+
+```bash
+module load r/4.5.1-iikl
+module load glpk/5.0-55rr
+R --no-save --no-restore
+```
+
+```r
+renv::settings$use.cache(FALSE)
+renv::repair()
+```
+
+For resolving dependencies in `renv`, the old ergm.userterms.hepcep package many need to be installed manually: 
+
+```
+install.packages("/oscar/home/akhann16/code/net-ergm-v4plus/ergm.userterms.hepcep", type="source", repos=NULL)
+```
+
+As of January 15, 2026, ergm.userterms package is not on CRAN. So a local install is need for the entire environment to be restored:
+
+```
+install.packages("/oscar/home/akhann16/code/net-ergm-v4plus/ergm.userterms", type="source", repos=NULL)
+```
 
 
 
@@ -115,7 +143,7 @@ Violin plots saved via:
 Output extraction to HepCep4Py at:
 
 ```
-simulate-from-ergms/extract-vertex-atts.R
+simulate-from-ergms/crosswalk-extract-vertex-atts.R
 simulate-from-ergms/unpack-edgelist.R
 simulate-from-ergms/unpack-vertex-atts.R
 ```

@@ -1,0 +1,9 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 996633
+##  Job Name : jobscript.sh
+##  Nodelist : node1752
+##      CPUs : 1
+##  Mem/Node : 60000 MB
+## Directory : /oscar/home/akhann16/code/net-ergm-v4plus
+##   Job Started : Thu Mar  7 01:58:08 PM EST 2024
+###############################################################################

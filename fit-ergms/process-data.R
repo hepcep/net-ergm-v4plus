@@ -269,6 +269,15 @@ fit_edges_only_net <-
 
 edges_only_net <- simulate(fit_edges_only_net, nsim=1)
 
+# Add `chicago` attribute ----------
+  ## use zipcode information
+  z <- edges_only_net %v% "zipcode"
+  is_chicago <- !is.na(z) & substr(as.character(z), 1, 3) == "606"
+  edges_only_net %v% "chicago" <- ifelse(is_chicago, 1L, 2L)
+  table(edges_only_net %v% "chicago", exclude=NULL)
+
+  list.vertex.attributes(edges_only_net)
+
 # Test alignment of race_num ----------
 
   # Define the known mapping

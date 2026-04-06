@@ -1,0 +1,9 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 4601668
+##  Job Name : non-empty-net-all-control-params-1e6
+##  Nodelist : node1319
+##      CPUs : 1
+##  Mem/Node : 10000 MB
+## Directory : /oscar/home/akhann16/code/net-ergm-v4plus
+##   Job Started : Thu Sep 19 01:56:35 PM EDT 2024
+###############################################################################

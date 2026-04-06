@@ -1,0 +1,631 @@
+
+R version 4.4.0 (2024-04-24) -- "Puppy Cup"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+- Project '/oscar/home/akhann16/code/net-ergm-v4plus' loaded. [renv 1.0.7]
+> # Analyze synthetic dataset with 32K nodes 
+> 
+> 
+> # Fit ERGM with 5 dyadic independent terms
+> 
+> rm(list=ls())
+> 
+> # Activate R environment ----------
+> 
+> library(renv)
+
+Attaching package: ‘renv’
+
+The following objects are masked from ‘package:stats’:
+
+    embed, update
+
+The following objects are masked from ‘package:utils’:
+
+    history, upgrade
+
+The following objects are masked from ‘package:base’:
+
+    autoload, load, remove, use
+
+> renv::activate()
+> 
+> 
+> # Libraries ----------
+> 
+> library(network)
+
+‘network’ 1.18.2 (2023-12-04), part of the Statnet Project
+* ‘news(package="network")’ for changes since last version
+* ‘citation("network")’ for citation information
+* ‘https://statnet.org’ for help, support, and other information
+
+> library(ergm)
+
+‘ergm’ 4.6.0 (2023-12-17), part of the Statnet Project
+* ‘news(package="ergm")’ for changes since last version
+* ‘citation("ergm")’ for citation information
+* ‘https://statnet.org’ for help, support, and other information
+
+‘ergm’ 4 is a major update that introduces some backwards-incompatible
+changes. Please type ‘news(package="ergm")’ for a list of major
+changes.
+
+> library(dplyr)
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+> library(ergm.userterms)
+Loading required package: statnet.common
+
+Attaching package: ‘statnet.common’
+
+The following objects are masked from ‘package:base’:
+
+    attr, order
+
+
+‘ergm.userterms’ 3.1.1 (2020-02-01), part of the Statnet Project
+* ‘news(package="ergm.userterms")’ for changes since last version
+* ‘citation("ergm.userterms")’ for citation information
+* ‘https://statnet.org’ for help, support, and other information
+
+NOTE: If you use custom ERGM terms based on ‘ergm.userterms’ version
+prior to 3.1, you will need to perform a one-time update of the package
+boilerplate files (the files that you did not write or modify) from
+‘ergm.userterms’ 3.1 or later. See help('eut-upgrade') for
+instructions.
+
+> library(here)
+here() starts at /oscar/home/akhann16/code/net-ergm-v4plus
+> 
+> 
+> # Load data objects ----------
+> data_objects <- readRDS(here("fit-ergms", "out", "processed_data.rds"))
+> names(data_objects)
+ [1] "data"                    "n0"                     
+ [3] "edges_only_net"          "tgt.old.pctyoung"       
+ [5] "tgt.young.pctold"        "tgt.young.pctyoung"     
+ [7] "edges_target"            "tgt.female.pctmale"     
+ [9] "tgt.male.pctfemale"      "tgt.male.pctmale"       
+[11] "target_race_num"         "negbin_inedges"         
+[13] "outedges"                "dist_nedge_distribution"
+> 
+>  data <- data_objects$data
+>  n0 <- data_objects$n0                     
+>  edges_only_net <- data_objects$edges_only_net 
+>  edges_target <- data_objects$edges_target           
+>  tgt.female.pctmale <- data_objects$tgt.female.pctmale      
+>  tgt.male.pctfemale <- data_objects$tgt.male.pctfemale
+>  tgt.male.pctmale <- data_objects$tgt.male.pctmale    
+>  tgt.old.pctyoung <- data_objects$tgt.old.pctyoung
+>  tgt.young.pctold <- data_objects$tgt.young.pctold
+>  tgt.young.pctyoung <- data_objects$tgt.young.pctyoung
+>  negbin_inedges <- data_objects$negbin_inedges   
+>  target_race_num <- data_objects$target_race_num      
+>  outedges <- data_objects$outedges
+>  dist.nedge.distribution <- data_objects$dist_nedge_distribution
+> 
+> 
+> 
+> # Degree and dist assignments ---------
+> deg.terms <- 0:3
+> indeg.terms.0 <- 0
+> indeg.terms <- 0:1  
+> 
+> dist.terms <- 1:3 #fourth is left out
+> 
+> 
+> # Fit Non-empty net including race term ---------
+> 
+> fit_nonempty_network_w_race_num <- 
++   ergm(
++     edges_only_net ~
++       edges + 
++       nodemix("sex", levels2=-1)+
++       nodemix("young", levels2=-1)+
++       nodemix("race.num", levels2=-1),
++     target.stats = 
++     c(
++       edges_target,
++       c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),
++       c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
++       target_race_num      
++     ),
++     eval.loglik = FALSE,
++     control = control.ergm(
++       MCMLE.maxit = 500,
++       main.method = c("Stochastic-Approximation"),
++       MCMC.interval = 1e6,
++       MCMC.samplesize = 1e6,
++       MCMLE.termination = "Hotelling",
++       MCMC.effectiveSize=NULL,
++       SAN = control.san(
++         SAN.maxit = 500, 
++         SAN.nsteps = 1e8
++       )
++     )
++     )
+Unable to match target stats. Using MCMLE estimation.
+Starting maximum pseudolikelihood estimation (MPLE):
+Obtaining the responsible dyads.
+Evaluating the predictor and response matrix.
+Maximizing the pseudolikelihood.
+Finished MPLE.
+Stochastic approximation algorithm with theta_0 equal to:
+           edges      mix.sex.M.F      mix.sex.F.M      mix.sex.M.M 
+   -1.228908e+01    -5.690270e-02    -3.315157e-01    -1.220746e-04 
+   mix.young.1.0    mix.young.0.1    mix.young.1.1 mix.race.num.2.1 
+   -3.555216e-01    -1.734340e+00     9.224198e-02     1.757039e+00 
+mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 mix.race.num.2.2 
+    2.127763e+00     4.093633e+00     8.934597e-01     3.067946e+00 
+mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 mix.race.num.2.3 
+    1.545306e+00     3.990992e+00     5.813617e-01     5.930956e-01 
+mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 mix.race.num.2.4 
+    2.751185e+00     3.144005e+00    -1.330676e+00     2.352647e-01 
+mix.race.num.3.4 mix.race.num.4.4 
+   -5.251240e-01     2.108355e+00 
+Starting burnin of 16000000 steps
+Phase 1: 200 steps (interval = 1000000)
+Stochastic Approximation estimate:
+           edges      mix.sex.M.F      mix.sex.F.M      mix.sex.M.M 
+   -12.291862014     -0.055903272     -0.364160156     -0.008571118 
+   mix.young.1.0    mix.young.0.1    mix.young.1.1 mix.race.num.2.1 
+    -0.328957280     -1.712640808      0.138930138      1.786825118 
+mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 mix.race.num.2.2 
+     2.112119459      4.066703930      0.869629714      3.073111395 
+mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 mix.race.num.2.3 
+     1.528092715      3.968803047      0.623991675      0.609621126 
+mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 mix.race.num.2.4 
+     2.769947400      3.210392739     -1.332259896      0.225683087 
+mix.race.num.3.4 mix.race.num.4.4 
+    -0.521115338      2.313113559 
+Phase 3:  1000 iterations (interval=1e+06)
+This model was fit using MCMC.  To examine model diagnostics and check
+for degeneracy, use the mcmc.diagnostics() function.
+> 
+> non_empty_net_w_race_term <- simulate(fit_nonempty_network_w_race_num, nsim=1)
+> non_empty_net_w_race_term
+ Network attributes:
+  vertices = 32002 
+  directed = TRUE 
+  hyper = FALSE 
+  loops = FALSE 
+  multiple = FALSE 
+  bipartite = FALSE 
+  total edges= 24581 
+    missing edges= 0 
+    non-missing edges= 24581 
+
+ Vertex attribute names: 
+    age age_lb age_started age_ub agecat daily_injection_intensity fraction_recept_sharing hcv_status lat lon race race.num sex syringe_source vertex.names young Zip zipcode 
+
+ Edge attribute names not shown 
+> 
+> fit.stepwise.dist <-
++   ergm(
++     non_empty_net_w_race_term ~
++       edges + 
++       nodemix("sex", levels2=-1)+
++       nodemix("young", levels2=-1)+
++       nodemix("race.num", levels2=-1)+
++       #idegree(indeg.terms)+
++       #odegree(deg.terms)+
++       dist(dist.terms),
++     target.stats = 
++     c(
++       edges_target,
++       c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
++       c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
++       target_race_num,
++       #c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
++       #c(outedges$n_nodes[c(deg.terms+1)])
++       c(dist.nedge.distribution[dist.terms])
++     ),
++     eval.loglik = FALSE,
++     control = control.ergm(
++       MCMLE.maxit = 500,
++       main.method = c("Stochastic-Approximation"),
++       MCMC.interval = 1e6,
++       MCMC.samplesize = 1e6,
++       MCMLE.termination = "Hotelling",
++       MCMC.effectiveSize=NULL,
++       SAN = control.san(
++         SAN.maxit = 500, 
++         SAN.nsteps = 1e8
++       )
++     )
++                            
++     )
+Unable to match target stats. Using MCMLE estimation.
+Starting maximum pseudolikelihood estimation (MPLE):
+Obtaining the responsible dyads.
+Evaluating the predictor and response matrix.
+Maximizing the pseudolikelihood.
+Finished MPLE.
+Stochastic approximation algorithm with theta_0 equal to:
+           edges      mix.sex.M.F      mix.sex.F.M      mix.sex.M.M 
+     -12.5532381        0.4561776       -0.1504011        0.3632649 
+   mix.young.1.0    mix.young.0.1    mix.young.1.1 mix.race.num.2.1 
+      -0.2044554       -1.8241710        0.5074131        2.0393139 
+mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 mix.race.num.2.2 
+       2.2898815        4.2177984        0.6882087        2.7717841 
+mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 mix.race.num.2.3 
+       1.5630695        4.4129476        0.3072078        0.5308764 
+mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 mix.race.num.2.4 
+       2.1214694        2.5086094       -1.5939250        0.2401009 
+mix.race.num.3.4 mix.race.num.4.4            dist1            dist2 
+      -1.5558858        1.8111226        7.5551309        3.6443263 
+           dist3 
+      -1.2482830 
+Starting burnin of 16000000 steps
+Phase 1: 200 steps (interval = 1000000)
+Stochastic Approximation estimate:
+           edges      mix.sex.M.F      mix.sex.F.M      mix.sex.M.M 
+     -12.6028349        0.1997021       -0.1352777        0.2444566 
+   mix.young.1.0    mix.young.0.1    mix.young.1.1 mix.race.num.2.1 
+      -0.2700717       -1.6519794        0.2320597        1.8223568 
+mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 mix.race.num.2.2 
+       2.0961690        4.1183584        0.9206100        2.5989350 
+mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 mix.race.num.2.3 
+       1.3867734        3.9517341        0.6162012        0.4461441 
+mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 mix.race.num.2.4 
+       2.4469175        2.9881312       -1.3394372        0.1209975 
+mix.race.num.3.4 mix.race.num.4.4            dist1            dist2 
+      -0.7847428        1.5658540        7.3442466        3.7948436 
+           dist3 
+      -0.9044686 
+Phase 3:  1000 iterations (interval=1e+06)
+This model was fit using MCMC.  To examine model diagnostics and check
+for degeneracy, use the mcmc.diagnostics() function.
+>   
+> net_stepwise_dist <- simulate(fit.stepwise.dist, nsim=1)
+> net_stepwise_dist
+ Network attributes:
+  vertices = 32002 
+  directed = TRUE 
+  hyper = FALSE 
+  loops = FALSE 
+  multiple = FALSE 
+  bipartite = FALSE 
+  total edges= 26404 
+    missing edges= 0 
+    non-missing edges= 26404 
+
+ Vertex attribute names: 
+    age age_lb age_started age_ub agecat daily_injection_intensity fraction_recept_sharing hcv_status lat lon race race.num sex syringe_source vertex.names young Zip zipcode 
+
+ Edge attribute names not shown 
+> 
+> fit.stepwise.dist.odeg <-
++   ergm(
++     net_stepwise_dist ~
++       edges + 
++       nodemix("sex", levels2=-1)+
++       nodemix("young", levels2=-1)+
++       nodemix("race.num", levels2=-1)+
++       #idegree(indeg.terms)+
++       odegree(deg.terms)+
++       dist(dist.terms),
++     target.stats = 
++     c(
++       edges_target,
++       c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
++       c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
++       target_race_num,
++       #c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
++       c(outedges$n_nodes[c(deg.terms+1)]),
++       c(dist.nedge.distribution[dist.terms])
++     ),
++     eval.loglik = FALSE,
++     control = control.ergm(
++       MCMLE.maxit = 500,
++       main.method = c("Stochastic-Approximation"),
++       MCMC.interval = 1e6,
++       MCMC.samplesize = 1e6,
++       MCMLE.termination = "Hotelling",
++       MCMC.effectiveSize=NULL,
++       SAN = control.san(
++         SAN.maxit = 500, 
++         SAN.nsteps = 1e8
++       )
++     )                         
++     )
+Unable to match target stats. Using MCMLE estimation.
+Starting maximum pseudolikelihood estimation (MPLE):
+Obtaining the responsible dyads.
+Evaluating the predictor and response matrix.
+Maximizing the pseudolikelihood.
+Finished MPLE.
+Stochastic approximation algorithm with theta_0 equal to:
+           edges      mix.sex.M.F      mix.sex.F.M      mix.sex.M.M 
+    -40.51072244      -0.15687770      -0.10352500      -0.03333658 
+   mix.young.1.0    mix.young.0.1    mix.young.1.1 mix.race.num.2.1 
+     -0.24309793      -1.51005445       0.28307382       1.67118159 
+mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 mix.race.num.2.2 
+      2.03405175      31.55129280       0.99097658       2.70425855 
+mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 mix.race.num.2.3 
+      1.40590904      31.91712157       0.79478572       0.99909865 
+mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 mix.race.num.2.4 
+      3.06376531      30.52133829      -2.52128333      -0.07465984 
+mix.race.num.3.4 mix.race.num.4.4         odegree0         odegree1 
+     -0.19359734      28.14911283    -112.04985311     -84.06026625 
+        odegree2         odegree3            dist1            dist2 
+    -55.65251148     -26.25386299       6.88296618       3.62074402 
+           dist3 
+     -1.54739827 
+Starting burnin of 16000000 steps
+Phase 1: 200 steps (interval = 1000000)
+Stochastic Approximation estimate:
+           edges      mix.sex.M.F      mix.sex.F.M      mix.sex.M.M 
+     -40.4163429        0.2018533       -0.1331129        0.2530428 
+   mix.young.1.0    mix.young.0.1    mix.young.1.1 mix.race.num.2.1 
+      -0.2645419       -1.6622466        0.2350795        1.8354300 
+mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 mix.race.num.2.2 
+       2.1097987       31.6003087        1.2299286        2.7075149 
+mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 mix.race.num.2.3 
+       1.4280917       31.5252616        0.9508032        0.5063580 
+mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 mix.race.num.2.4 
+       2.5308189       30.6047644       -0.9997936        0.1790954 
+mix.race.num.3.4 mix.race.num.4.4         odegree0         odegree1 
+      -0.7185791       29.1995926     -112.5876344      -85.0685444 
+        odegree2         odegree3            dist1            dist2 
+     -56.8093398      -28.3073264        6.8118288        3.5601979 
+           dist3 
+      -1.1425720 
+Phase 3:  1000 iterations (interval=1e+06)
+This model was fit using MCMC.  To examine model diagnostics and check
+for degeneracy, use the mcmc.diagnostics() function.
+Warning messages:
+1: In mple.existence(pl) : The MPLE does not exist!
+2: Approximate Hessian matrix is singular. Standard errors due to MCMC approximation of the likelihood cannot be evaluated. This is likely due to insufficient MCMC sample size or highly correlated model terms. 
+> 
+>   net_fit_stepwise_dist_odeg <- simulate(fit.stepwise.dist.odeg, nsim=1)
+>   net_fit_stepwise_dist_odeg
+ Network attributes:
+  vertices = 32002 
+  directed = TRUE 
+  hyper = FALSE 
+  loops = FALSE 
+  multiple = FALSE 
+  bipartite = FALSE 
+  total edges= 25034 
+    missing edges= 0 
+    non-missing edges= 25034 
+
+ Vertex attribute names: 
+    age age_lb age_started age_ub agecat daily_injection_intensity fraction_recept_sharing hcv_status lat lon race race.num sex syringe_source vertex.names young Zip zipcode 
+
+ Edge attribute names not shown 
+> 
+> fit.stepwise.dist.odeg.ideg0 <-
++   ergm(
++     net_fit_stepwise_dist_odeg ~
++       edges + 
++       nodemix("sex", levels2=-1)+
++       nodemix("young", levels2=-1)+
++       nodemix("race.num", levels2=-1)+
++       idegree(indeg.terms.0)+
++       odegree(deg.terms)+
++       dist(dist.terms),
++     target.stats = 
++     c(
++       edges_target,
++       c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
++       c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
++       target_race_num,
++       c(negbin_inedges$n_nodes[c(indeg.terms.0+1)]),
++       c(outedges$n_nodes[c(deg.terms+1)]),
++       c(dist.nedge.distribution[dist.terms])
++     ),
++     eval.loglik = FALSE,
++     control = control.ergm(
++       MCMLE.maxit = 500,
++       main.method = c("Stochastic-Approximation"),
++       MCMC.interval = 1e6,
++       MCMC.samplesize = 1e6,
++       MCMLE.termination = "Hotelling",
++       MCMC.effectiveSize=NULL,
++       SAN = control.san(
++         SAN.maxit = 500, 
++         SAN.nsteps = 1e8
++       )
++     )                         
++     )
+Unable to match target stats. Using MCMLE estimation.
+Starting maximum pseudolikelihood estimation (MPLE):
+Obtaining the responsible dyads.
+Evaluating the predictor and response matrix.
+Maximizing the pseudolikelihood.
+Finished MPLE.
+Stochastic approximation algorithm with theta_0 equal to:
+           edges      mix.sex.M.F      mix.sex.F.M      mix.sex.M.M 
+     -40.2603282       -0.3437930        0.2562931        0.5970229 
+   mix.young.1.0    mix.young.0.1    mix.young.1.1 mix.race.num.2.1 
+      -0.4891474       -1.6432463        0.5318561        1.5605957 
+mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 mix.race.num.2.2 
+       2.4480733       32.3953329        0.9888937        2.9344451 
+mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 mix.race.num.2.3 
+       1.4357057       32.0363009        1.0322897        0.7993547 
+mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 mix.race.num.2.4 
+       3.0755410       29.6190860       -0.6953642        1.5550247 
+mix.race.num.3.4 mix.race.num.4.4         idegree0         odegree0 
+       0.7021245       30.0332163        3.5203509     -114.7687513 
+        odegree1         odegree2         odegree3            dist1 
+     -86.2539433      -57.1380288      -27.1887694        7.3732237 
+           dist2            dist3 
+       3.2755836       -1.7110447 
+Starting burnin of 16000000 steps
+Phase 1: 200 steps (interval = 1000000)
+Stochastic Approximation estimate:
+           edges      mix.sex.M.F      mix.sex.F.M      mix.sex.M.M 
+    -40.34082153       0.35543924      -0.06265488       0.44651467 
+   mix.young.1.0    mix.young.0.1    mix.young.1.1 mix.race.num.2.1 
+     -0.26379947      -1.15124293       0.76538246       1.95871551 
+mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 mix.race.num.2.2 
+      2.19826777      32.31224458       0.92561552       2.60515194 
+mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 mix.race.num.2.3 
+      1.23166436      31.97864275       0.98375429       0.66374601 
+mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 mix.race.num.2.4 
+      2.64154875      31.35812096      -0.01035936       1.28524034 
+mix.race.num.3.4 mix.race.num.4.4         idegree0         odegree0 
+      0.38174281      30.99995345       2.98969669    -114.52466173 
+        odegree1         odegree2         odegree3            dist1 
+    -86.16797763     -57.22347185     -27.99803601       7.08428734 
+           dist2            dist3 
+      3.34078239      -1.03733232 
+Phase 3:  1000 iterations (interval=1e+06)
+This model was fit using MCMC.  To examine model diagnostics and check
+for degeneracy, use the mcmc.diagnostics() function.
+Warning messages:
+1: In mple.existence(pl) : The MPLE does not exist!
+2: Approximate Hessian matrix is singular. Standard errors due to MCMC approximation of the likelihood cannot be evaluated. This is likely due to insufficient MCMC sample size or highly correlated model terms. 
+> 
+> net_fit_stepwise_dist_odeg_ideg0 <- simulate(fit.stepwise.dist.odeg.ideg0, nsim=1)
+> net_fit_stepwise_dist_odeg_ideg0
+ Network attributes:
+  vertices = 32002 
+  directed = TRUE 
+  hyper = FALSE 
+  loops = FALSE 
+  multiple = FALSE 
+  bipartite = FALSE 
+  total edges= 28734 
+    missing edges= 0 
+    non-missing edges= 28734 
+
+ Vertex attribute names: 
+    age age_lb age_started age_ub agecat daily_injection_intensity fraction_recept_sharing hcv_status lat lon race race.num sex syringe_source vertex.names young Zip zipcode 
+
+ Edge attribute names not shown 
+> 
+> 
+> fit.stepwise.dist.odeg.ideg <-
++   ergm(
++     net_fit_stepwise_dist_odeg_ideg0 ~
++       edges + 
++       nodemix("sex", levels2=-1)+
++       nodemix("young", levels2=-1)+
++       nodemix("race.num", levels2=-1)+
++       idegree(indeg.terms)+
++       odegree(deg.terms)+
++       dist(dist.terms),
++     target.stats = 
++     c(
++       edges_target,
++       c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale),           
++       c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung),
++       target_race_num,
++       c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
++       c(outedges$n_nodes[c(deg.terms+1)]),
++       c(dist.nedge.distribution[dist.terms])
++     ),
++     eval.loglik = FALSE,
++     control = control.ergm(
++       MCMLE.maxit = 500,
++       main.method = c("Stochastic-Approximation"),
++       MCMC.interval = 1e6,
++       MCMC.samplesize = 1e6,
++       MCMLE.termination = "Hotelling",
++       MCMC.effectiveSize=NULL,
++       SAN = control.san(
++         SAN.maxit = 500, 
++         SAN.nsteps = 1e8
++       )
++     )                         
++     )
+Unable to match target stats. Using MCMLE estimation.
+Starting maximum pseudolikelihood estimation (MPLE):
+Obtaining the responsible dyads.
+Evaluating the predictor and response matrix.
+Maximizing the pseudolikelihood.
+Finished MPLE.
+Stochastic approximation algorithm with theta_0 equal to:
+           edges      mix.sex.M.F      mix.sex.F.M      mix.sex.M.M 
+     -38.6211954       -0.1368083       -0.5923146       -0.1755218 
+   mix.young.1.0    mix.young.0.1    mix.young.1.1 mix.race.num.2.1 
+      -0.7351401       -1.2965024        0.8726738        1.6973850 
+mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 mix.race.num.2.2 
+       1.9660032       31.9099833        0.3736939        2.7258258 
+mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 mix.race.num.2.3 
+       1.4139410       31.2003610        0.7880569        0.1527717 
+mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 mix.race.num.2.4 
+       1.5380081       30.2882961       -0.4962300        0.5828853 
+mix.race.num.3.4 mix.race.num.4.4         idegree0         idegree1 
+       0.3058572       29.7707358        5.3804473        2.3690350 
+        odegree0         odegree1         odegree2         odegree3 
+    -112.1046494      -84.1626154      -55.5867924      -26.4574519 
+           dist1            dist2            dist3 
+       7.2143482        3.6280935       -1.3880235 
+Starting burnin of 16000000 steps
+Phase 1: 200 steps (interval = 1000000)
+Stochastic Approximation estimate:
+           edges      mix.sex.M.F      mix.sex.F.M      mix.sex.M.M 
+    -38.70084392      -0.24225441      -0.38474233       0.03043883 
+   mix.young.1.0    mix.young.0.1    mix.young.1.1 mix.race.num.2.1 
+     -0.34285809      -1.06155827       0.75301958       1.80483076 
+mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 mix.race.num.2.2 
+      2.05291494      31.44099450       0.63449857       2.50899604 
+mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 mix.race.num.2.3 
+      0.94363015      30.98135865       0.84328726       0.56247539 
+mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 mix.race.num.2.4 
+      2.52230471      30.52173512      -0.20514715       1.20661919 
+mix.race.num.3.4 mix.race.num.4.4         idegree0         idegree1 
+      0.30580552      30.07948866       5.14376987       2.38239554 
+        odegree0         odegree1         odegree2         odegree3 
+   -111.74152703     -83.99991830     -55.74730875     -27.23678837 
+           dist1            dist2            dist3 
+      6.86365447       3.47951525      -1.04759742 
+Phase 3:  1000 iterations (interval=1e+06)
+This model was fit using MCMC.  To examine model diagnostics and check
+for degeneracy, use the mcmc.diagnostics() function.
+Warning messages:
+1: In mple.existence(pl) : The MPLE does not exist!
+2: Approximate Hessian matrix is singular. Standard errors due to MCMC approximation of the likelihood cannot be evaluated. This is likely due to insufficient MCMC sample size or highly correlated model terms. 
+> 
+> net_fit_stepwise_dist_odeg_ideg <-simulate(fit.stepwise.dist.odeg.ideg, nsim=1)
+> net_fit_stepwise_dist_odeg_ideg
+ Network attributes:
+  vertices = 32002 
+  directed = TRUE 
+  hyper = FALSE 
+  loops = FALSE 
+  multiple = FALSE 
+  bipartite = FALSE 
+  total edges= 28310 
+    missing edges= 0 
+    non-missing edges= 28310 
+
+ Vertex attribute names: 
+    age age_lb age_started age_ub agecat daily_injection_intensity fraction_recept_sharing hcv_status lat lon race race.num sex syringe_source vertex.names young Zip zipcode 
+
+ Edge attribute names not shown 
+> 
+> save.image(file=here("fit-ergms", "out", "stepwise-refactored-std-order.RData"))  
+> 
+> proc.time()
+    user   system  elapsed 
+5414.412  104.494 5543.877 

@@ -1,0 +1,5 @@
+slurm_output/
+fit-ergms/out
+simulate-from-ergms/archive
+simulate-from-ergms/archive
+viz-simulated-nets/out

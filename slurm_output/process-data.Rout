@@ -7,8 +7,6 @@ R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
 Type 'license()' or 'licence()' for distribution details.
 
-  Natural language support but running in an English locale
-
 R is a collaborative project with many contributors.
 Type 'contributors()' for more information and
 'citation()' on how to cite R or R packages in publications.
@@ -417,7 +415,7 @@ age.cat    0    1
 > edges.young.end <- 0.16
 > edges.old.end <- 0.84
 >   
-> young.pctyoung <- 048
+> young.pctyoung <- 0.48
 > young.pctold <- 0.52
 > old.pctyoung <- 0.10
 > old.pctold <- 0.90
@@ -465,23 +463,23 @@ age.cat    0    1
 > race.o.o <- 0.053 #--
 > 
 > target.w.w <- edges_target * pct_to_white * race.w.w
-> target.b.w <- edges_target * pct_to_white * race.b.w
-> target.h.w <- edges_target * pct_to_white * race.h.w
-> target.o.w <- edges_target * pct_to_white * race.o.w
+> target.b.w <- edges_target * pct_to_black * race.b.w
+> target.h.w <- edges_target * pct_to_hispanic * race.h.w
+> target.o.w <- edges_target * pct_to_other * race.o.w
 > 
-> target.w.b <- edges_target * pct_to_black * race.w.b
+> target.w.b <- edges_target * pct_to_white * race.w.b
 > target.b.b <- edges_target * pct_to_black * race.b.b
-> target.h.b <- edges_target * pct_to_black * race.h.b
-> target.o.b <- edges_target * pct_to_black * race.o.b
+> target.h.b <- edges_target * pct_to_hispanic * race.h.b
+> target.o.b <- edges_target * pct_to_other * race.o.b
 > 
-> target.w.h <- edges_target * pct_to_hispanic * race.w.h
-> target.b.h <- edges_target * pct_to_hispanic * race.b.h
+> target.w.h <- edges_target * pct_to_white * race.w.h
+> target.b.h <- edges_target * pct_to_black * race.b.h
 > target.h.h <- edges_target * pct_to_hispanic * race.h.h
-> target.o.h <- edges_target * pct_to_hispanic * race.o.h
+> target.o.h <- edges_target * pct_to_other * race.o.h
 > 
-> target.w.o <- edges_target * pct_to_other * race.w.o
-> target.b.o <- edges_target * pct_to_other * race.b.o
-> target.h.o <- edges_target * pct_to_other * race.h.o
+> target.w.o <- edges_target * pct_to_white * race.w.o
+> target.b.o <- edges_target * pct_to_black * race.b.o
+> target.h.o <- edges_target * pct_to_hispanic * race.h.o
 > target.o.o <- edges_target * pct_to_other * race.o.o
 > 
 > target_race_num  <- c(
@@ -492,9 +490,9 @@ age.cat    0    1
 + )
 > 
 > target_race_num
- [1] 4510.936465 4673.492734 8642.574969  376.083572 2045.729317   45.460651
- [7]  438.075369  433.253785  628.413147 2466.814342  788.443825   27.551910
-[13]    7.576775    7.576775   36.506281
+ [1] 1376.21790 1346.59960  439.45296 1232.71837 2045.72932   42.93506
+ [7]   73.01256 1503.64549  665.37863 2466.81434  139.13715  541.85423
+[13]   45.46065   42.93506   36.50628
 > 
 > # Fit network only with edges ----------
 > fit_edges_only_net <- 
@@ -513,13 +511,35 @@ Finished MPLE.
 Starting Monte Carlo maximum likelihood estimation (MCMLE):
 Iteration 1 of at most 60:
 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.0476.
-Convergence test p-value: 0.0082. Converged with 99% confidence.
+The log-likelihood improved by 0.0001.
+Convergence test p-value: 0.0095. Converged with 99% confidence.
 Finished MCMLE.
 This model was fit using MCMC.  To examine model diagnostics and check
 for degeneracy, use the mcmc.diagnostics() function.
 > 
 > edges_only_net <- simulate(fit_edges_only_net, nsim=1)
+> 
+> # Add `chicago` attribute ----------
+>   ## use zipcode information
+>   z <- edges_only_net %v% "zipcode"
+>   is_chicago <- !is.na(z) & substr(as.character(z), 1, 3) == "606"
+>   edges_only_net %v% "chicago" <- ifelse(is_chicago, 1L, 2L)
+>   table(edges_only_net %v% "chicago", exclude=NULL)
+
+    1     2 
+18395 13607 
+> 
+>   list.vertex.attributes(edges_only_net)
+ [1] "age"                       "age_lb"                   
+ [3] "age_started"               "age_ub"                   
+ [5] "agecat"                    "chicago"                  
+ [7] "daily_injection_intensity" "fraction_recept_sharing"  
+ [9] "hcv_status"                "lat"                      
+[11] "lon"                       "na"                       
+[13] "race"                      "race.num"                 
+[15] "sex"                       "syringe_source"           
+[17] "vertex.names"              "young"                    
+[19] "Zip"                       "zipcode"                  
 > 
 > # Test alignment of race_num ----------
 > 
@@ -533,20 +553,20 @@ for degeneracy, use the mcmc.diagnostics() function.
 >   # Print them for reference
 >   print(race_num_alignment)
 mix.race.num.2.1 mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 
-            2906             2371              515             2883 
+            2814             2438              469             2910 
 mix.race.num.2.2 mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 
-            1594             1296              271             2463 
+            1566             1254              279             2413 
 mix.race.num.2.3 mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 
-            1253             1078              248              507 
+            1229             1011              200              483 
 mix.race.num.2.4 mix.race.num.3.4 mix.race.num.4.4 
-             253              220               56 
+             268              217               47 
 >   print(race_term_alignment)
 mix.race.Hi.Bl mix.race.Ot.Bl mix.race.Wh.Bl mix.race.Bl.Hi mix.race.Hi.Hi 
-          1296            271           2883           1253           1078 
+          1254            279           2910           1229           1011 
 mix.race.Ot.Hi mix.race.Wh.Hi mix.race.Bl.Ot mix.race.Hi.Ot mix.race.Ot.Ot 
-           248           2463            253            220             56 
+           200           2413            268            217             47 
 mix.race.Wh.Ot mix.race.Bl.Wh mix.race.Hi.Wh mix.race.Ot.Wh mix.race.Wh.Wh 
-           507           2906           2371            515           5516 
+           483           2814           2438            469           5358 
 > 
 >   cat("\nChecking all numeric-to-category race mappings:\n\n")
 
@@ -580,21 +600,21 @@ Checking all numeric-to-category race mappings:
 +     }
 +   }
 Term not found for ( 1 , 1 ):  mix.race.num.1.1  or  mix.race.Wh.Wh 
-Confirmed: ( 1 , 2 ) in race.num = ( Wh , Bl ) in race. Count: 2883 
-Confirmed: ( 1 , 3 ) in race.num = ( Wh , Hi ) in race. Count: 2463 
-Confirmed: ( 1 , 4 ) in race.num = ( Wh , Ot ) in race. Count: 507 
-Confirmed: ( 2 , 1 ) in race.num = ( Bl , Wh ) in race. Count: 2906 
+Confirmed: ( 1 , 2 ) in race.num = ( Wh , Bl ) in race. Count: 2910 
+Confirmed: ( 1 , 3 ) in race.num = ( Wh , Hi ) in race. Count: 2413 
+Confirmed: ( 1 , 4 ) in race.num = ( Wh , Ot ) in race. Count: 483 
+Confirmed: ( 2 , 1 ) in race.num = ( Bl , Wh ) in race. Count: 2814 
 Term not found for ( 2 , 2 ):  mix.race.num.2.2  or  mix.race.Bl.Bl 
-Confirmed: ( 2 , 3 ) in race.num = ( Bl , Hi ) in race. Count: 1253 
-Confirmed: ( 2 , 4 ) in race.num = ( Bl , Ot ) in race. Count: 253 
-Confirmed: ( 3 , 1 ) in race.num = ( Hi , Wh ) in race. Count: 2371 
-Confirmed: ( 3 , 2 ) in race.num = ( Hi , Bl ) in race. Count: 1296 
-Confirmed: ( 3 , 3 ) in race.num = ( Hi , Hi ) in race. Count: 1078 
-Confirmed: ( 3 , 4 ) in race.num = ( Hi , Ot ) in race. Count: 220 
-Confirmed: ( 4 , 1 ) in race.num = ( Ot , Wh ) in race. Count: 515 
-Confirmed: ( 4 , 2 ) in race.num = ( Ot , Bl ) in race. Count: 271 
-Confirmed: ( 4 , 3 ) in race.num = ( Ot , Hi ) in race. Count: 248 
-Confirmed: ( 4 , 4 ) in race.num = ( Ot , Ot ) in race. Count: 56 
+Confirmed: ( 2 , 3 ) in race.num = ( Bl , Hi ) in race. Count: 1229 
+Confirmed: ( 2 , 4 ) in race.num = ( Bl , Ot ) in race. Count: 268 
+Confirmed: ( 3 , 1 ) in race.num = ( Hi , Wh ) in race. Count: 2438 
+Confirmed: ( 3 , 2 ) in race.num = ( Hi , Bl ) in race. Count: 1254 
+Confirmed: ( 3 , 3 ) in race.num = ( Hi , Hi ) in race. Count: 1011 
+Confirmed: ( 3 , 4 ) in race.num = ( Hi , Ot ) in race. Count: 217 
+Confirmed: ( 4 , 1 ) in race.num = ( Ot , Wh ) in race. Count: 469 
+Confirmed: ( 4 , 2 ) in race.num = ( Ot , Bl ) in race. Count: 279 
+Confirmed: ( 4 , 3 ) in race.num = ( Ot , Hi ) in race. Count: 200 
+Confirmed: ( 4 , 4 ) in race.num = ( Ot , Ot ) in race. Count: 47 
 > 
 > # ## degree distributions
 > # inedges <- inedges %>% 
@@ -607,10 +627,38 @@ Confirmed: ( 4 , 4 ) in race.num = ( Ot , Ot ) in race. Count: 56
 > # negbin_outedges <- negbin_outdeg %>% 
 > #   mutate(n_nodes = n*nbprob)
 > 
-> ## distance term
+> ## distance as mixing 
 > 
-> dist.prop.distribution <- c(15.7, 35.1, 24.1, 22)/100
-> dist.nedge.distribution <- edges_target*dist.prop.distribution
+> pct_to_near <- 0.66
+> pct_to_far <- 0.38
+> 
+> dist_pct_to_near_pct_to_far <- c(
++   pct_to_near,
++   pct_to_far
++ )
+> 
+> names(dist_pct_to_near_pct_to_far) <- c(
++   "pct_to_near",
++   "pct_to_far"
++ )
+> 
+> non_chicago_to_pct_near <- 0.53
+> non_chicago_to_pct_far <- 0.46
+> chicago_to_pct_near <- 0.66
+> chicago_to_pct_far <- 0.033
+> 
+> dist_as_mixing_matrix <- c(
++   non_chicago_to_pct_near, 
++   non_chicago_to_pct_far,
++   chicago_to_pct_near,
++   chicago_to_pct_far)
+> 
+> names(dist_as_mixing_matrix) <- c(
++   "non_chicago_to_pct_near", 
++   "non_chicago_to_pct_far",
++   "chicago_to_pct_near",
++   "chicago_to_pct_far")
+> 
 > 
 > # Save RDS Objects ----
 > 
@@ -632,7 +680,8 @@ Confirmed: ( 4 , 4 ) in race.num = ( Ot , Ot ) in race. Count: 56
 +   target_race_num = target_race_num,
 +   indegree_data = indegree_data,
 +   outdegree_data = outdegree_data,
-+   dist_nedge_distribution = dist.nedge.distribution
++   dist_as_mixing_matrix = dist_as_mixing_matrix,
++   dist_pct_to_near_pct_to_far = dist_pct_to_near_pct_to_far
 + )
 > 
 > # Print Objects for comparison --------
@@ -644,12 +693,12 @@ Confirmed: ( 4 , 4 ) in race.num = ( Ot , Ot ) in race. Count: 56
   loops = FALSE 
   multiple = FALSE 
   bipartite = FALSE 
-  total edges= 23430 
+  total edges= 22956 
     missing edges= 0 
-    non-missing edges= 23430 
+    non-missing edges= 22956 
 
  Vertex attribute names: 
-    age age_lb age_started age_ub agecat daily_injection_intensity fraction_recept_sharing hcv_status lat lon race race.num sex syringe_source vertex.names young Zip zipcode 
+    age age_lb age_started age_ub agecat chicago daily_injection_intensity fraction_recept_sharing hcv_status lat lon race race.num sex syringe_source vertex.names young Zip zipcode 
 
  Edge attribute names not shown 
 > data_objects$tgt.old.pctyoung
@@ -657,7 +706,7 @@ Confirmed: ( 4 , 4 ) in race.num = ( Ot , Ot ) in race. Count: 56
 > data_objects$tgt.young.pctold
 [1] 1910.266
 > data_objects$tgt.young.pctyoung
-[1] 176332.2
+[1] 1763.322
 > data_objects$edges_target
 [1] 22959.93
 > data_objects$tgt.female.pctmale
@@ -672,19 +721,24 @@ Confirmed: ( 4 , 4 ) in race.num = ( Ot , Ot ) in race. Count: 56
 +     "target.w.h", "target.b.h", "target.h.h", "target.o.h",
 +     "target.w.o", "target.b.o", "target.h.o", "target.o.o")
 > data_objects$target_race_num
- target.b.w  target.h.w  target.o.w  target.w.b  target.b.b  target.h.b 
-4510.936465 4673.492734 8642.574969  376.083572 2045.729317   45.460651 
- target.o.b  target.w.h  target.b.h  target.h.h  target.o.h  target.w.o 
- 438.075369  433.253785  628.413147 2466.814342  788.443825   27.551910 
- target.b.o  target.h.o  target.o.o 
-   7.576775    7.576775   36.506281 
+target.b.w target.h.w target.o.w target.w.b target.b.b target.h.b target.o.b 
+1376.21790 1346.59960  439.45296 1232.71837 2045.72932   42.93506   73.01256 
+target.w.h target.b.h target.h.h target.o.h target.w.o target.b.o target.h.o 
+1503.64549  665.37863 2466.81434  139.13715  541.85423   45.46065   42.93506 
+target.o.o 
+  36.50628 
 > data_objects$negbin_inedges[1:2,]
 NULL
 > data_objects$outedges[1:4,]
 NULL
-> data_objects$dist_nedge_distribution
-[1] 3604.708 8058.934 5533.342 5051.184
-> 
+> data_objects$dist_as_mixing_matrix
+non_chicago_to_pct_near  non_chicago_to_pct_far     chicago_to_pct_near 
+                  0.530                   0.460                   0.660 
+     chicago_to_pct_far 
+                  0.033 
+> data_objects$dist_pct_to_near_pct_to_far
+pct_to_near  pct_to_far 
+       0.66        0.38 
 > 
 > # Save the list as an RDS file
 > saveRDS(data_objects, file = here("fit-ergms", "out", "processed_data.rds"))
@@ -703,4 +757,4 @@ NULL
 > 
 > proc.time()
    user  system elapsed 
- 12.377   0.649  17.137 
+ 13.590   0.735  15.941 

@@ -1,0 +1,9 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 10266458
+##  Job Name : simulate-networks-stepwise-refactored-checkpointing-data-dated-2025-jan23-redone
+##  Nodelist : node2340
+##      CPUs : 1
+##  Mem/Node : 64000 MB
+## Directory : /oscar/home/akhann16/code/net-ergm-v4plus
+##   Job Started : Mon Apr  7 11:13:09 AM EDT 2025
+###############################################################################

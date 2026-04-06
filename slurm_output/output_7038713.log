@@ -1,0 +1,9 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 7038713
+##  Job Name : new-mixing-data-stepwise-dist-odeg-ideg
+##  Nodelist : node1320
+##      CPUs : 1
+##  Mem/Node : 20000 MB
+## Directory : /oscar/home/akhann16/code/net-ergm-v4plus
+##   Job Started : Thu Dec  5 07:11:28 PM EST 2024
+###############################################################################

@@ -1,0 +1,33 @@
+Package: ergm.userterms
+Version: 3.1.1 
+Date: 2020-02-01
+Title: User-specified terms for the statnet suite of packages (hepcep)
+Authors@R: c(
+	   person("Jonathan", "Ozik", role=c("aut"), email="jozik@anl.gov"),
+	   person("Mark S.", "Handcock", role=c("aut"), email="handcock@stat.ucla.edu"),
+           person("David R.", "Hunter", role=c("aut"), email="dhunter@stat.psu.edu"),
+   	   person("Carter T.", "Butts", role=c("aut"), email="buttsc@uci.edu"),
+           person("Steven M.", "Goodreau", role=c("aut"), email="goodreau@u.washington.edu"),
+           person("Pavel N.", "Krivitsky", role=c("aut","cre"), email="pavel@uow.edu.au"),
+     	   person("Martina", "Morris", role=c("aut"), email="morrism@u.washington.edu"))
+LinkingTo: ergm
+Depends: network (>= 1.7-1), ergm (>= 3.1-0), statnet.common (>= 3.1-0)
+Description: A HepCEP project modification of the template package to demonstrate the use of user-specified statistics for use in "ergm" models as part of the "statnet" suite of packages.
+License: GPL-3 + file LICENSE
+URL: http://statnet.org
+Packaged: 2020-02-01 17:04 UTC; jozik
+Author: Jonathan Ozik [aut],
+  Mark S. Handcock [aut],
+  David R. Hunter [aut],
+  Carter T. Butts [aut],
+  Steven M. Goodreau [aut],
+  Pavel N. Krivitsky [aut, cre],
+  Martina Morris [aut]
+Maintainer: Jonathan Ozik <jozik@anl.gov>
+NeedsCompilation: yes
+Repository: CRAN
+Date/Publication: 2020-02-01 11:04:00
+RoxygenNote: 7.3.1
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

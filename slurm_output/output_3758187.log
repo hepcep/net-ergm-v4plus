@@ -1,0 +1,9 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 3758187
+##  Job Name : sim-fromsynthpop-2023-10-12-w-dist-all-plos-one-int-1e5-samplesize-1e6-hotelling
+##  Nodelist : node1602
+##      CPUs : 1
+##  Mem/Node : 64000 MB
+## Directory : /oscar/home/akhann16/code/net-ergm-v4plus
+##   Job Started : Tue Jul 23 09:32:01 AM EDT 2024
+###############################################################################

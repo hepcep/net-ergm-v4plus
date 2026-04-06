@@ -1,9 +1,10 @@
 # Unpack vertex attributes (example)
+# Example for Eric Tatara, HepCEP4Py
 
 rm(list=ls())
 
 # Initialize renv---
-renv::restore()
+#renv::restore()
 
 
 # Libraries ----------
@@ -14,8 +15,8 @@ library(network)
 
 # Read data ----------
 
-vertex.att.all <- readRDS(file = here("simulate-from-ergms", "out","vertex_att_all_july202023.RDS"))
-pwid_w_vertex_names <- readRDS(file=here("simulate-from-ergms", "out", "pwid_w_vertex_names_july2023.RDS"))
+vertex.att.all <- readRDS(file = here("simulate-from-ergms", "out","vertex_att_all_2026_apr06.RDS"))
+pwid_w_vertex_names <- readRDS(file=here("simulate-from-ergms", "out", "pwid_w_vertex_names_2026_apr06.RDS"))
 
 # Data description ----------
 

@@ -1,0 +1,9 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 12261677
+##  Job Name : new-mixing-data-2-2025-july
+##  Nodelist : node2348
+##      CPUs : 1
+##  Mem/Node : 20000 MB
+## Directory : /oscar/home/akhann16/code/net-ergm-v4plus
+##   Job Started : Mon Aug  4 12:07:58 PM EDT 2025
+###############################################################################

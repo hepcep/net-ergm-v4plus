@@ -1,12 +1,12 @@
 # Analyze synthetic dataset with 32K nodes
-
+## Replace old `dist` with new `dnf`
 
 # Fit ERGM with 5 dyadic independent terms
 
 rm(list = ls())
 
 # Label and outputs for this run
-run_label <- "new-mixing-data-2-recomp-race-mix" # set manually to ensure intentional updates
+run_label <- "new-mixing-data-w-dnf" # set manually to ensure intentional updates
 
 # Activate R environment ----------
 
@@ -19,7 +19,8 @@ renv::activate()
 library(network)
 library(ergm)
 library(dplyr)
-library(ergm.userterms)
+#library(ergm.userterms)
+library(ergm.userterms.hepcep)
 library(here)
 library(styler)
 
@@ -46,7 +47,12 @@ sum(outedges_target)
 
 edges_target #target number of total edges
 
-# Degree and dist assignments ---------
+# Load utils ---------
+
+## checkpointing function
+source(here("utils", "load_or_run.R"))
+
+# Degree and dist/dnf assignments ---------
 
 ## outdegrees
 deg.terms <- 0:3
@@ -73,23 +79,27 @@ dist.nedge.distribution <- edges_target*dist.prop.distribution
 class(target_race_num)
 target_race_num <- unname(target_race_num)
 
+## Targets for new `dnf` term (for geographic mixing)
+    ## From prior computation (notion, Jul 21, 2025), we know the following:
+    ## Of all  edges:
+    prop_2.n = 16.3/100 #i.e., 16.3%, and so on...
+    prop_2.f = 14.2/100 
+    prop_1.n = 45.7/100
+    prop_1.f = 22.9/100
 
-# Helper function to only run fits that were not previously saved ----------
+    ## Target number of edges is 22959.93
+    tgt_2.n <- edges_target * prop_2.n
+    tgt_2.f <- edges_target * prop_2.f
+    tgt_1.n <- edges_target * prop_1.n
+    tgt_1.f <- edges_target * prop_1.f
 
-load_or_run <- function(name, expr) {
-  path <- file.path(out_dir, paste0(name, ".rds"))
-  if (file.exists(path)) {
-    message("Loading saved ", name)
-    readRDS(path)
-  } else {
-    message("Running and saving ", name)
-    obj <- eval(expr)
-    saveRDS(obj, path)
-    obj
-  }
-}
+    ## Check term ordering for specifying targets
+    summary(edges_only_net ~ 
+      dnf(by = "chicago", thresholds = c(2,2))
+      )
 
-
+    c(tgt_1.n, tgt_1.f, tgt_2.n) #specified target statistics
+    tgt_2.f #unspecified
 
 # Fit Non-empty net including race term ---------
 sex_mixing_terms <- summary(n0 ~ nodemix("sex", levels2 = -1))
@@ -216,8 +226,8 @@ non_empty_net_w_race_term <- load_or_run("net_nonempty_w_race_term", quote(
 ))
 non_empty_net_w_race_term
 
-fit.stepwise.dist <-
-  load_or_run("fit.stepwise.dist", quote(
+fit.stepwise.dnf <-
+  load_or_run("fit.stepwise.dnf", quote(
     ergm(
       non_empty_net_w_race_term ~
         edges +
@@ -226,7 +236,7 @@ fit.stepwise.dist <-
         nodemix("race.num", levels2 = -1) +
         # idegree(indeg.terms)+
         # odegree(deg.terms)+
-        dist(dist.terms),
+        dnf(by="chicago", thresholds=c(2, 2)),
       target.stats =
         c(
           edges_target,
@@ -235,7 +245,7 @@ fit.stepwise.dist <-
           target_race_num,
           # c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
           # c(outedges$n_nodes[c(deg.terms+1)])
-          c(dist_nedge_distribution[dist.terms])
+          c(tgt_1.n, tgt_1.f, tgt_2.n)
         ),
       eval.loglik = FALSE,
       control = control.ergm(
@@ -253,24 +263,24 @@ fit.stepwise.dist <-
     )
   ))
 
-net_stepwise_dist <- load_or_run(
-  "net.stepwise.dist",
-  quote(simulate(fit.stepwise.dist, nsim = 1))
+net_stepwise_dnf <- load_or_run(
+  "net.stepwise.dnf",
+  quote(simulate(fit.stepwise.dnf, nsim = 1))
 )
 
-net_stepwise_dist
+net_stepwise_dnf
 
-fit.stepwise.dist.odeg.0 <-
-  load_or_run("fit.stepwise.dist.odeg.0", quote(
+fit.stepwise.dnf.odeg.0 <-
+  load_or_run("fit.stepwise.dnf.odeg.0", quote(
     ergm(
-      net_stepwise_dist ~
+      net_stepwise_dnf ~
         edges +
         nodemix("sex", levels2 = -1) +
         nodemix("young", levels2 = -1) +
         nodemix("race.num", levels2 = -1) +
         # idegree(indeg.terms)+
         odegree(deg.terms.0) +
-        dist(dist.terms),
+       dnf(by="chicago", thresholds=c(2, 2)),
       target.stats =
         c(
           edges_target,
@@ -279,7 +289,7 @@ fit.stepwise.dist.odeg.0 <-
           target_race_num,
           # c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
           c(outdegree_data$mean_n[c(deg.terms.0 + 1)]),
-          c(dist_nedge_distribution[dist.terms])
+          c(tgt_1.n, tgt_1.f, tgt_2.n)
         ),
       eval.loglik = FALSE,
       control = control.ergm(
@@ -297,22 +307,22 @@ fit.stepwise.dist.odeg.0 <-
     )
   ))
 
-net_fit_stepwise_dist_odeg0 <- load_or_run("net_fit_stepwise_dist_odeg0", quote(
-  simulate(fit.stepwise.dist.odeg.0, nsim = 1)
+net_fit_stepwise_dnf_odeg0 <- load_or_run("net_fit_stepwise_dnf_odeg0", quote(
+  simulate(fit.stepwise.dnf.odeg.0, nsim = 1)
 ))
-net_fit_stepwise_dist_odeg0
+net_fit_stepwise_dnf_odeg0
 
-fit.stepwise.dist.odeg.0.1 <-
-  load_or_run("fit.stepwise.dist.odeg.0.1", quote(
+fit.stepwise.dnf.odeg.0.1 <-
+  load_or_run("fit.stepwise.dnf.odeg.0.1", quote(
     ergm(
-      net_fit_stepwise_dist_odeg0 ~
+      net_fit_stepwise_dnf_odeg0 ~
         edges +
         nodemix("sex", levels2 = -1) +
         nodemix("young", levels2 = -1) +
         nodemix("race.num", levels2 = -1) +
         # idegree(indeg.terms)+
         odegree(deg.terms.0_1) +
-        dist(dist.terms),
+        dnf(by="chicago", thresholds=c(2, 2)),
       target.stats =
         c(
           edges_target,
@@ -321,7 +331,7 @@ fit.stepwise.dist.odeg.0.1 <-
           target_race_num,
           # c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
           c(outdegree_data$mean_n[c(deg.terms.0_1 + 1)]),
-          c(dist_nedge_distribution[dist.terms])
+          c(tgt_1.n, tgt_1.f, tgt_2.n)
         ),
       eval.loglik = FALSE,
       control = control.ergm(
@@ -339,23 +349,23 @@ fit.stepwise.dist.odeg.0.1 <-
     )
   ))
 
-net_fit_stepwise_dist_odeg0_1 <- 
-load_or_run("net_fit_stepwise_dist_odeg0_1", quote(
-  simulate(fit.stepwise.dist.odeg.0.1, nsim = 1)
+net_fit_stepwise_dnf_odeg0_1 <- 
+load_or_run("net_fit_stepwise_dnf_odeg0_1", quote(
+  simulate(fit.stepwise.dnf.odeg.0.1, nsim = 1)
 ))
-net_fit_stepwise_dist_odeg0_1
+net_fit_stepwise_dnf_odeg0_1
 
-fit.stepwise.dist.odeg.0.2 <-
-  load_or_run("fit.stepwise.dist.odeg.0.2", quote(
+fit.stepwise.dnf.odeg.0.2 <-
+  load_or_run("fit.stepwise.dnf.odeg.0.2", quote(
     ergm(
-      net_fit_stepwise_dist_odeg0_1 ~
+      net_fit_stepwise_dnf_odeg0_1 ~
         edges +
         nodemix("sex", levels2 = -1) +
         nodemix("young", levels2 = -1) +
         nodemix("race.num", levels2 = -1) +
         # idegree(indeg.terms)+
         odegree(deg.terms.0_2) +
-        dist(dist.terms),
+        dnf(by="chicago", thresholds=c(2, 2)),
       target.stats =
         c(
           edges_target,
@@ -364,7 +374,7 @@ fit.stepwise.dist.odeg.0.2 <-
           target_race_num,
           # c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
           c(outdegree_data$mean_n[c(deg.terms.0_2 + 1)]),
-          c(dist_nedge_distribution[dist.terms])
+          c(tgt_1.n, tgt_1.f, tgt_2.n)
         ),
       eval.loglik = FALSE,
       control = control.ergm(
@@ -382,23 +392,23 @@ fit.stepwise.dist.odeg.0.2 <-
     )
   ))
 
-net_fit_stepwise_dist_odeg0_2 <- 
-load_or_run("net_fit_stepwise_dist_odeg0_2", quote(
-  simulate(fit.stepwise.dist.odeg.0.2, nsim = 1)
+net_fit_stepwise_dnf_odeg0_2 <- 
+load_or_run("net_fit_stepwise_dnf_odeg0_2", quote(
+  simulate(fit.stepwise.dnf.odeg.0.2, nsim = 1)
 ))
-net_fit_stepwise_dist_odeg0_2 #this is degenerate
+net_fit_stepwise_dnf_odeg0_2 #this is degenerate
 
-# fit.stepwise.dist.odeg.013 <-
-#   load_or_run("fit.stepwise.dist.odeg.0.2", quote(
+# fit.stepwise.dnf.odeg.013 <-
+#   load_or_run("fit.stepwise.dnf.odeg.0.2", quote(
 #     ergm(
-#       net_fit_stepwise_dist_odeg0_1 ~
+#       net_fit_stepwise_dnf_odeg0_1 ~
 #         edges +
 #         nodemix("sex", levels2 = -1) +
 #         nodemix("young", levels2 = -1) +
 #         nodemix("race.num", levels2 = -1) +
 #         # idegree(indeg.terms)+
 #         odegree(deg.terms.013) +
-#         dist(dist.terms),
+#         dnf(dnf.terms),
 #       target.stats =
 #         c(
 #           edges_target,
@@ -407,7 +417,7 @@ net_fit_stepwise_dist_odeg0_2 #this is degenerate
 #           target_race_num,
 #           # c(negbin_inedges$n_nodes[c(indeg.terms+1)]),
 #           c(outdegree_data$mean_n[c(deg.terms.013 + 1)]),
-#           c(dist_nedge_distribution[dist.terms])
+#           c(dnf_nedge_dnfribution[dnf.terms])
 #         ),
 #       eval.loglik = FALSE,
 #       control = control.ergm(
@@ -425,24 +435,24 @@ net_fit_stepwise_dist_odeg0_2 #this is degenerate
 #     )
 #   ))
 
-# net_fit_stepwise_dist_odeg013 <- 
-# load_or_run("net_fit_stepwise_dist_odeg013", quote(
-#   simulate(fit.stepwise.dist.odeg.013, nsim = 1)
+# net_fit_stepwise_dnf_odeg013 <- 
+# load_or_run("net_fit_stepwise_dnf_odeg013", quote(
+#   simulate(fit.stepwise.dnf.odeg.013, nsim = 1)
 # ))
-# net_fit_stepwise_dist_odeg013 #this is degenerate
+# net_fit_stepwise_dnf_odeg013 #this is degenerate
 
 
-fit.stepwise.dist.odeg.01.indeg0 <-
-  load_or_run("fit.stepwise.dist.odeg.01.indeg0", quote(
+fit.stepwise.dnf.odeg.01.indeg0 <-
+  load_or_run("fit.stepwise.dnf.odeg.01.indeg0", quote(
     ergm(
-      net_fit_stepwise_dist_odeg0_1 ~
+      net_fit_stepwise_dnf_odeg0_1 ~
         edges +
         nodemix("sex", levels2 = -1) +
         nodemix("young", levels2 = -1) +
         nodemix("race.num", levels2 = -1) +
         idegree(indeg.terms.0)+
         odegree(deg.terms.0_1) +
-        dist(dist.terms),
+        dnf(by="chicago", thresholds=c(2, 2)),
       target.stats =
         c(
           edges_target,
@@ -451,7 +461,7 @@ fit.stepwise.dist.odeg.01.indeg0 <-
           target_race_num,
           c(indegree_data$mean_n[c(indeg.terms.0 + 1)]),
           c(outdegree_data$mean_n[c(deg.terms.0_1 + 1)]),
-          c(dist_nedge_distribution[dist.terms])
+          c(tgt_1.n, tgt_1.f, tgt_2.n)
         ),
       eval.loglik = FALSE,
       control = control.ergm(
@@ -469,25 +479,25 @@ fit.stepwise.dist.odeg.01.indeg0 <-
     )
   ))
 
-net_fit_stepwise_dist_odeg01_indeg0 <- 
-  load_or_run("net_fit_stepwise_dist_odeg01_indeg0", quote(
-    simulate(fit.stepwise.dist.odeg.01.indeg0, nsim = 1)
+net_fit_stepwise_dnf_odeg01_indeg0 <- 
+  load_or_run("net_fit_stepwise_dnf_odeg01_indeg0", quote(
+    simulate(fit.stepwise.dnf.odeg.01.indeg0, nsim = 1)
   ))
-net_fit_stepwise_dist_odeg01_indeg0 
+net_fit_stepwise_dnf_odeg01_indeg0 
 
 ###
 
-fit.stepwise.dist.odeg.01.indeg <-
-  load_or_run("fit.stepwise.dist.odeg.01.indeg", quote(
+fit.stepwise.dnf.odeg.01.indeg <-
+  load_or_run("fit.stepwise.dnf.odeg.01.indeg", quote(
     ergm(
-      net_fit_stepwise_dist_odeg0_1 ~
+      net_fit_stepwise_dnf_odeg0_1 ~
         edges +
         nodemix("sex", levels2 = -1) +
         nodemix("young", levels2 = -1) +
         nodemix("race.num", levels2 = -1) +
         idegree(indeg.terms)+
         odegree(deg.terms.0_1) +
-        dist(dist.terms),
+        dnf(by="chicago", thresholds=c(2, 2)),
       target.stats =
         c(
           edges_target,
@@ -496,7 +506,7 @@ fit.stepwise.dist.odeg.01.indeg <-
           target_race_num,
           c(indegree_data$mean_n[c(indeg.terms + 1)]),
           c(outdegree_data$mean_n[c(deg.terms.0_1 + 1)]),
-          c(dist_nedge_distribution[dist.terms])
+          c(tgt_1.n, tgt_1.f, tgt_2.n)
         ),
       eval.loglik = FALSE,
       control = control.ergm(
@@ -514,11 +524,11 @@ fit.stepwise.dist.odeg.01.indeg <-
     )
   ))
 
-net_fit_stepwise_dist_odeg01_indeg <- 
-load_or_run("net_fit_stepwise_dist_odeg01_indeg", quote(
-  simulate(fit.stepwise.dist.odeg.01.indeg0, nsim = 1)
+net_fit_stepwise_dnf_odeg01_indeg <- 
+load_or_run("net_fit_stepwise_dnf_odeg01_indeg", quote(
+  simulate(fit.stepwise.dnf.odeg.01.indeg0, nsim = 1)
 ))
-net_fit_stepwise_dist_odeg01_indeg0 
+net_fit_stepwise_dnf_odeg01_indeg0 
 
 ## save.image(file=here("fit-ergms", "out", "stepwise-refactored-std-order-2025-jan23-targets.RData"))
 save.image(file = file.path(out_dir, paste0(run_label, ".RData")))

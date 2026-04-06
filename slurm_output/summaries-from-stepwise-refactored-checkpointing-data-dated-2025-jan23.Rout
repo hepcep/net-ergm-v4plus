@@ -1,0 +1,119 @@
+
+R version 4.4.0 (2024-04-24) -- "Puppy Cup"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+- Project '/oscar/home/akhann16/code/net-ergm-v4plus' loaded. [renv 1.0.7]
+- The project is out-of-sync -- use `renv::status()` for details.
+> # Summarize simulated statistics across multiple networks
+> 
+> 
+> rm(list = ls())
+> 
+> # Initiate environment ------------------------------
+> 
+> library(renv)
+
+Attaching package: ‘renv’
+
+The following objects are masked from ‘package:stats’:
+
+    embed, update
+
+The following objects are masked from ‘package:utils’:
+
+    history, upgrade
+
+The following objects are masked from ‘package:base’:
+
+    autoload, load, remove, use
+
+> renv::activate()
+> 
+> .libPaths()
+[1] "/oscar/home/akhann16/code/net-ergm-v4plus/renv/library/linux-rhel-9.2/R-4.4/x86_64-pc-linux-gnu"
+[2] "/oscar/home/akhann16/.cache/R/renv/sandbox/linux-rhel-9.2/R-4.4/x86_64-pc-linux-gnu/c8a2d945"   
+> 
+> 
+> # Libraries ----------
+> 
+> library(network)
+
+‘network’ 1.18.2 (2023-12-04), part of the Statnet Project
+* ‘news(package="network")’ for changes since last version
+* ‘citation("network")’ for citation information
+* ‘https://statnet.org’ for help, support, and other information
+
+> library(ergm)
+
+‘ergm’ 4.6.0 (2023-12-17), part of the Statnet Project
+* ‘news(package="ergm")’ for changes since last version
+* ‘citation("ergm")’ for citation information
+* ‘https://statnet.org’ for help, support, and other information
+
+‘ergm’ 4 is a major update that introduces some backwards-incompatible
+changes. Please type ‘news(package="ergm")’ for a list of major
+changes.
+
+> library(dplyr)
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+> library(ergm.userterms)
+Loading required package: statnet.common
+
+Attaching package: ‘statnet.common’
+
+The following objects are masked from ‘package:base’:
+
+    attr, order
+
+
+‘ergm.userterms’ 3.1.1 (2020-02-01), part of the Statnet Project
+* ‘news(package="ergm.userterms")’ for changes since last version
+* ‘citation("ergm.userterms")’ for citation information
+* ‘https://statnet.org’ for help, support, and other information
+
+NOTE: If you use custom ERGM terms based on ‘ergm.userterms’ version
+prior to 3.1, you will need to perform a one-time update of the package
+boilerplate files (the files that you did not write or modify) from
+‘ergm.userterms’ 3.1 or later. See help('eut-upgrade') for
+instructions.
+
+> library(here)
+here() starts at /oscar/home/akhann16/code/net-ergm-v4plus
+> library(ggplot2)
+> 
+> 
+> # Data ----------
+> 
+> 
+> load(here("simulate-from-ergms", "out", "sim-updated-with-oct12-2024-synthpop-ergmv4-6-all-plos1-mcmc-int1e6-samp1e6-hotelling.RData"))
+Error in readChar(con, 5L, useBytes = TRUE) : cannot open the connection
+Calls: load ... renv_load_base_impl -> eval -> eval -> <Anonymous> -> readChar
+In addition: Warning message:
+In readChar(con, 5L, useBytes = TRUE) :
+  cannot open compressed file '/oscar/home/akhann16/code/net-ergm-v4plus/simulate-from-ergms/out/sim-updated-with-oct12-2024-synthpop-ergmv4-6-all-plos1-mcmc-int1e6-samp1e6-hotelling.RData', probable reason 'No such file or directory'
+Execution halted
