@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #SBATCH --job-name="export-edgelists-new-mixing-data-w-dnf"
-#SBATCH --time=3:00:00
+#SBATCH --time=0:30:00
 #SBATCH --mem=64000
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
