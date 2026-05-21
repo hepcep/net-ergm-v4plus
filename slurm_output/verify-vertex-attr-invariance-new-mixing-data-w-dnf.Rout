@@ -1,0 +1,119 @@
+
+R version 4.5.1 (2025-06-13) -- "Great Square Root"
+Copyright (C) 2025 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+- Project '/oscar/home/akhann16/code/net-ergm-v4plus' loaded. [renv 1.0.7]
+> # Verify that vertex attributes are identical across all 100 simulated networks.
+> # If true (expected, since ERGM simulation only resamples edges on a fixed
+> # vertex set with fixed covariates), vertex_att_all_*.RDS can be replaced
+> # with a single 32,000-row attribute table.
+> #
+> # NB: CODE DOES NOT EXECUTE IN RSTUDIO ON OOD (BROWN).
+> # COPYING AND PASTING INTO AN INTERACTIVE TERMINAL WORKS.
+> 
+> rm(list = ls())
+> 
+> 
+> # Libraries ----------
+> 
+> library(here)
+here() starts at /oscar/home/akhann16/code/net-ergm-v4plus
+> library(network)
+
+‘network’ 1.20.0 (2026-02-06), part of the Statnet Project
+* ‘news(package="network")’ for changes since last version
+* ‘citation("network")’ for citation information
+* ‘https://statnet.org’ for help, support, and other information
+
+> library(qs)
+qs 0.27.3. Announcement: https://github.com/qsbase/qs/issues/103
+> 
+> 
+> # Load ----------
+> 
+> run_label   <- "new-mixing-data-w-dnf"
+> sim_results <- qread(here("simulate-from-ergms", "out",
++                           paste0(run_label, "_sim_results_100.qs")))
+> 
+> stopifnot(length(sim_results) == 100)
+> 
+> 
+> # Attribute list ----------
+> 
+> attr_names <- list.vertex.attributes(sim_results[[1]])
+> message("Checking ", length(attr_names), " attributes across ",
++         length(sim_results), " networks: ",
++         paste(attr_names, collapse = ", "))
+Checking 20 attributes across 100 networks: age, age_lb, age_started, age_ub, agecat, chicago, daily_injection_intensity, fraction_recept_sharing, hcv_status, lat, lon, na, race, race.num, sex, syringe_source, vertex.names, young, Zip, zipcode
+> 
+> 
+> # Check invariance ----------
+> # For each attribute, compare every network's vector against network 1.
+> 
+> ref_net <- sim_results[[1]]
+> 
+> results <- vapply(attr_names, function(a) {
++   ref_vals <- get.vertex.attribute(ref_net, a)
++   all(vapply(sim_results[-1], function(net) {
++     identical(get.vertex.attribute(net, a), ref_vals)
++   }, logical(1)))
++ }, logical(1))
+> 
+> names(results) <- attr_names
+> 
+> 
+> # Report ----------
+> 
+> message("\nResults (TRUE = identical across all 100 networks):")
+
+Results (TRUE = identical across all 100 networks):
+> print(results)
+                      age                    age_lb               age_started 
+                     TRUE                      TRUE                      TRUE 
+                   age_ub                    agecat                   chicago 
+                     TRUE                      TRUE                      TRUE 
+daily_injection_intensity   fraction_recept_sharing                hcv_status 
+                     TRUE                      TRUE                      TRUE 
+                      lat                       lon                        na 
+                     TRUE                      TRUE                      TRUE 
+                     race                  race.num                       sex 
+                     TRUE                      TRUE                      TRUE 
+           syringe_source              vertex.names                     young 
+                     TRUE                      TRUE                      TRUE 
+                      Zip                   zipcode 
+                     TRUE                      TRUE 
+> 
+> invariant   <- names(results)[results]
+> varying     <- names(results)[!results]
+> 
+> message("\nInvariant attributes (", length(invariant), "): ",
++         paste(invariant, collapse = ", "))
+
+Invariant attributes (20): age, age_lb, age_started, age_ub, agecat, chicago, daily_injection_intensity, fraction_recept_sharing, hcv_status, lat, lon, na, race, race.num, sex, syringe_source, vertex.names, young, Zip, zipcode
+> if (length(varying) > 0) {
++   message("Varying attributes (", length(varying), "): ",
++           paste(varying, collapse = ", "))
++ } else {
++   message("All vertex attributes are invariant across simulated networks.")
++   message("Conclusion: vertex_att_all_*.RDS is redundant; ",
++           "a single 32k-row attribute table is sufficient.")
++ }
+All vertex attributes are invariant across simulated networks.
+Conclusion: vertex_att_all_*.RDS is redundant; a single 32k-row attribute table is sufficient.
+> 
+> proc.time()
+   user  system elapsed 
+104.408   5.997 113.201 
