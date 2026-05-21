@@ -69,10 +69,13 @@ for (i in 1:length(vertex.att.all)){
 # (lat, lon) pair, so we use these as a fingerprint to confirm that vertex
 # ordering in every simulated network is aligned with the CSV row ordering.
 
-if (nrow(data) == 32001){
-  data <- data[-32001,] #the dataset consists of 32001 agents but the networks only contain 32K nodes
-  # if statement is to avoid miultiple deletions if this code is run more than once
+n_net <- network.size(sim_results[[1]])
+if (nrow(data) > n_net) {
+  message("Dropping ", nrow(data) - n_net,
+          " extra row(s) from end of CSV to match network size.")
+  data <- data[seq_len(n_net), ]
 }
+stopifnot(nrow(data) == n_net)
 dim(data)
 
 for (k in seq_along(sim_results)) {
