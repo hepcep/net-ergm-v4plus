@@ -140,13 +140,19 @@ Violin plots saved via:
 
 #### Extract Networks for HepCep4Py
 
-Output extraction to HepCep4Py at:
+Two artifacts, produced by two SLURM jobs:
 
-```
-simulate-from-ergms/crosswalk-extract-vertex-atts.R
-simulate-from-ergms/unpack-edgelist.R
-simulate-from-ergms/unpack-vertex-atts.R
-```
+- **Node table** (single dataframe, one row per vertex; synthpop columns + `vertex.names`, `na`, `race.num`, `young`, `chicago`)
+  - `simulate-from-ergms/export-node-table-for-hepcep4py.R` (+ `export-node-table-jobscript.sh`)
+  - Verifies vertex-attribute invariance across all 100 networks and bitwise CSV round-trip before saving.
+  - Output: `simulate-from-ergms/out/pwid_node_table_<date>.RDS`
+- **Edgelists** (list of 100 tail/head matrices; integer indices align with node-table rows)
+  - `simulate-from-ergms/export-edgelists-for-hepcep4py.R` (+ `export-edgelists-jobscript.sh`)
+  - Output: `simulate-from-ergms/out/edges_all_<date>.qs`
+
+Reference loaders for the HepCep4Py side: `simulate-from-ergms/unpack-vertex-atts.R`, `simulate-from-ergms/unpack-edgelist.R`.
+
+`simulate-from-ergms/crosswalk-extract-vertex-atts.R` is the legacy two-file vertex exporter; superseded by the node-table script above.
 
 #### Uncertainty in Target Parameters 
 Compute uncertainty in input parameters:
