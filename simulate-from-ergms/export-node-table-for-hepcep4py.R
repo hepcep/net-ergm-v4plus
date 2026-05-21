@@ -43,14 +43,16 @@ sim_results <- qread(sim_path)
 stopifnot(length(sim_results) == 100)
 
 data <- read.csv(synthpop_csv, header = TRUE)
-if (nrow(data) == 32001) {
-  # synthpop has 32,001 rows; networks only contain 32,000 nodes
-  data <- data[-32001, ]
-}
-stopifnot(nrow(data) == 32000)
 
 ref_net <- sim_results[[1]]
-stopifnot(network.size(ref_net) == 32000)
+n_net <- network.size(ref_net)
+
+if (nrow(data) > n_net) {
+  message("Dropping ", nrow(data) - n_net,
+          " extra row(s) from end of CSV to match network size.")
+  data <- data[seq_len(n_net), ]
+}
+stopifnot(nrow(data) == n_net)
 
 
 # Step 1: Verify all vertex attributes invariant across all 100 networks ----------
@@ -116,7 +118,7 @@ node_table <- cbind(
 # Sanity checks ----------
 
 stopifnot(
-  "row count != 32000"             = nrow(node_table) == 32000,
+  "row count != n_net"             = nrow(node_table) == n_net,
   "synthpop columns dropped"       = all(colnames(data) %in% colnames(node_table)),
   "no duplicate vertex.names"      = !anyDuplicated(node_table$vertex.names),
   "all network attrs represented"  = all(attr_names %in% colnames(node_table))
