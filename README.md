@@ -148,7 +148,7 @@ Two artifacts, produced by two SLURM jobs:
   - Output: `simulate-from-ergms/out/pwid_node_table_<date>.RDS`
 - **Edgelists** (list of 100 tail/head matrices; integer indices align with node-table rows)
   - `simulate-from-ergms/export-edgelists-for-hepcep4py.R` (+ `export-edgelists-jobscript.sh`)
-  - Output: `simulate-from-ergms/out/edges_all_<date>.qs`
+  - Output: `simulate-from-ergms/out/edges_all_<date>.qs2` (qs2 format — HepCep4Py reads via `qs2::qs_read()`)
 
 Reference loaders for the HepCep4Py side: `simulate-from-ergms/unpack-vertex-atts.R`, `simulate-from-ergms/unpack-edgelist.R`.
 
