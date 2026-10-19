@@ -1,8 +1,15 @@
 #!/bin/bash
 # Wrapper to launch R in VS Code with correct shared libraries
 
-# Make 'module' available in non-interactive shells (VS Code often runs this way)
-source /etc/profile.d/modules.sh
+# Make 'module' available in non-interactive shells (VS Code often runs this way).
+# The init script moved in the RHEL 9.6 upgrade, so try the usual locations.
+if ! command -v module >/dev/null 2>&1; then
+  for f in /etc/profile.d/zz_activate_lmod_user.sh "${LMOD_PKG:-/nonexistent}/init/bash" \
+           /etc/profile.d/lmod.sh /etc/profile.d/modules.sh; do
+    [ -f "$f" ] && source "$f"
+    command -v module >/dev/null 2>&1 && break
+  done
+fi
 
 module purge 
 
