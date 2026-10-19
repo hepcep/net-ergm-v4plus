@@ -48,41 +48,24 @@ library(qs)
 
 
 # Simulate 100 networks ----------
+## simulate() takes its MCMC settings from the fit's control (ergm 4.11), so none
+## are passed here. A fixed seed lets the ensemble be regenerated.
 
-  nsim.vec <- 1:10
+  resimulate <- TRUE  # FALSE reuses the saved networks
+  sim_path_100 <- here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_100.qs"))
+  sim_path_10  <- here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_10.qs"))
 
-  sim_results <- as.list(nsim.vec)
-  set.seed(Sys.time())
+  if (resimulate) {
+    set.seed(20251019)
+    sims <- simulate(fit.stepwise.dnf.odeg.01.indeg, nsim = 100)
+    sim_results <- lapply(seq_along(sims), function(i) sims[[i]])  # plain list, as before
+    qsave(sim_results, sim_path_100)
+    qsave(sim_results[1:10], sim_path_10)
+  }
 
-#####################
-# COMMENTING OUT CODE BELOW SINCE WE ALREADY HAVE
-# THE SIM OUTPUT GENERATED
-#####################
-
-
-
-# for (iter in 1:length(nsim.vec)){
-#   sim_results[[iter]] <- simulate(
-#     fit.stepwise.dnf.odeg.01.indeg,
-#     nsim=1
-#   )
-# } 
-
-# # Extract 10 networks ----------
-# 
-
-# # Extract 10 networks ----------
-# ## (Save simulated objs before investigating stats)
-
-# qsave(sim_results_10, 
-# here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_10.qs")))
-
-# qsave(sim_results, 
-# here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_100.qs")))
-
-sim_results <- qread(here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_10.qs")))
-#qread(here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_100.qs")))
-sim_results_10 <- sim_results[1:10]
+  sim_results <- qread(sim_path_100)
+  stopifnot(length(sim_results) == 100)
+  sim_results_10 <- sim_results[1:10]
 #####################
 
 
