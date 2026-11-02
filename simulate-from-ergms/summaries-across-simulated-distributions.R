@@ -372,10 +372,10 @@ sim.sex <- lapply(sim_results, function(x) {
       axis.title.y = element_text(size = 14),
       panel.grid.major = element_blank(), 
       panel.grid.minor = element_blank(),
-      strip.text = element_text(size = 12, face = "bold")  # Make panel titles more prominent
+      strip.text = element_text(size = 11, face = "bold")  # Make panel titles more prominent
     )
 
-  ggsave(here("simulate-from-ergms", "out", "racemix_violin_plot.png"), width = 10, height = 6)
+  ggsave(here("simulate-from-ergms", "out", "racemix_violin_plot.png"), width = 11, height = 6)
 
 
 
