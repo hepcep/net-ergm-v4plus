@@ -349,13 +349,21 @@ sim.sex <- lapply(sim_results, function(x) {
   #target_race_mixing_filtered <- target_race_mixing[-1]
   target_race_mixing_filtered <- target_race_mixing
 
-  # plot the data
-  ggplot(race_mixing_df, aes(x = category, y = count)) +
+  # Panel labels: sender -> receiver (race.num: 1 White, 2 Black, 3 Hispanic, 4 Other)
+  race_names <- c("1" = "White", "2" = "Black", "3" = "Hispanic", "4" = "Other")
+  race_label <- function(x) {
+    lv <- strsplit(sub("mix.race.num.", "", x, fixed = TRUE), ".", fixed = TRUE)
+    sapply(lv, function(z) paste(race_names[z[1]], "\u2192", race_names[z[2]]))
+  }
+
+  # plot the data (x = "" centres each violin in its own panel)
+  ggplot(race_mixing_df, aes(x = "", y = count)) +
     geom_violin(trim = FALSE, fill = "#66C2A5") +
     geom_hline(data = data.frame(category = unique(race_mixing_df$category), 
                                 y = target_race_mixing_filtered), aes(yintercept = y), 
               linetype = "solid", color = "black", linewidth = 1.5) +
-    facet_wrap(~ category, scales = "free_y") +
+    facet_wrap(~ category, scales = "free_y", ncol = 5,
+               labeller = as_labeller(race_label)) +
     theme_minimal() +
     labs(y = "Race Mixing Count", x = NULL) +
     theme(
@@ -364,10 +372,10 @@ sim.sex <- lapply(sim_results, function(x) {
       axis.title.y = element_text(size = 14),
       panel.grid.major = element_blank(), 
       panel.grid.minor = element_blank(),
-      strip.text = element_text(size = 14, face = "bold")  # Make panel titles more prominent
+      strip.text = element_text(size = 12, face = "bold")  # Make panel titles more prominent
     )
 
-  ggsave(here("simulate-from-ergms", "out", "racemix_violin_plot.png"), width = 8, height = 6)
+  ggsave(here("simulate-from-ergms", "out", "racemix_violin_plot.png"), width = 10, height = 6)
 
 
 
