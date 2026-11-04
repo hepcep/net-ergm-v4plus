@@ -1,8 +1,8 @@
 #!/bin/sh
 
-#SBATCH --job-name="new-mixing-data-w-dnf"
-#SBATCH --time=5:00:00
-#SBATCH --mem=20000
+#SBATCH --job-name="refit-ergm412"
+#SBATCH --time=48:00:00
+#SBATCH --mem=64000
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --mail-type=ALL

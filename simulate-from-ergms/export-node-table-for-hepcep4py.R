@@ -28,7 +28,7 @@ library(qs)
 
 # Config ----------
 
-run_label    <- "new-mixing-data-w-dnf"
+run_label    <- "refit-ergm412"
 export_date  <- tolower(format(Sys.Date(), "%Y_%b%d"))  # e.g. 2026_may21
 
 out_dir      <- here("simulate-from-ergms", "out")

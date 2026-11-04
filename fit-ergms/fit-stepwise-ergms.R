@@ -6,7 +6,9 @@
 rm(list = ls())
 
 # Label and outputs for this run
-run_label <- "new-mixing-data-w-dnf" # set manually to ensure intentional updates
+run_label <- "refit-ergm412" # set manually to ensure intentional updates
+# Refit of new-mixing-data-w-dnf with ergm 4.12, a fixed seed, and a strictly
+# sequential chain (each step starts from a network simulated from the step before).
 
 # Activate R environment ----------
 
@@ -23,6 +25,8 @@ library(dplyr)
 library(ergm.userterms.hepcep)
 library(here)
 library(styler)
+
+set.seed(20251104) # makes the fits reproducible
 
 
 # Create output directory ---------
@@ -193,7 +197,7 @@ non_empty_net_w_sex_age
 fit_nonempty_network_w_race_num <-
   load_or_run("fit_nonempty_network_w_race_num", quote(
     ergm(
-      edges_only_net ~
+      non_empty_net_w_sex_age ~ # previously edges_only_net
         edges +
         nodemix("sex", levels2 = -1) +
         nodemix("young", levels2 = -1) +
@@ -490,7 +494,7 @@ net_fit_stepwise_dnf_odeg01_indeg0
 fit.stepwise.dnf.odeg.01.indeg <-
   load_or_run("fit.stepwise.dnf.odeg.01.indeg", quote(
     ergm(
-      net_fit_stepwise_dnf_odeg0_1 ~
+      net_fit_stepwise_dnf_odeg01_indeg0 ~ # previously net_fit_stepwise_dnf_odeg0_1
         edges +
         nodemix("sex", levels2 = -1) +
         nodemix("young", levels2 = -1) +
@@ -526,9 +530,9 @@ fit.stepwise.dnf.odeg.01.indeg <-
 
 net_fit_stepwise_dnf_odeg01_indeg <- 
 load_or_run("net_fit_stepwise_dnf_odeg01_indeg", quote(
-  simulate(fit.stepwise.dnf.odeg.01.indeg0, nsim = 1)
+  simulate(fit.stepwise.dnf.odeg.01.indeg, nsim = 1) # previously the step 8 fit
 ))
-net_fit_stepwise_dnf_odeg01_indeg0 
+net_fit_stepwise_dnf_odeg01_indeg
 
 ## save.image(file=here("fit-ergms", "out", "stepwise-refactored-std-order-2025-jan23-targets.RData"))
 save.image(file = file.path(out_dir, paste0(run_label, ".RData")))

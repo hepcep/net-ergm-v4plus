@@ -24,7 +24,7 @@ library(qs)
 
 # Data ----------
 
-run_label <- "new-mixing-data-w-dnf" # set manually to ensure intentional updates
+run_label <- "refit-ergm412" # set manually to ensure intentional updates
 ## should match the object from the ERGM fitting code 
 
   ## load data
@@ -48,8 +48,8 @@ ls()
 ## EVENTUALLY THE DNF TARGETS SHOULD BE INCORPORATED INTO processed_data.rds
 
 load(here("fit-ergms", "out", 
-      "new-mixing-data-w-dnf",
-      "new-mixing-data-w-dnf.RData"
+      "refit-ergm412",
+      "refit-ergm412.RData"
       )
   )
 

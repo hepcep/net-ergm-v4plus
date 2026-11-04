@@ -18,7 +18,7 @@ library(qs2)   # write edges_all_*.qs2 for HepCep4Py
 
 # Config ----------
 
-run_label    <- "new-mixing-data-w-dnf"
+run_label    <- "refit-ergm412"
 export_date  <- format(Sys.Date(), "%Y_%b%d")
 export_date  <- tolower(export_date)  # e.g. 2026_may21
 

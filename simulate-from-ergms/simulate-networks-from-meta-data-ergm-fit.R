@@ -31,8 +31,8 @@ library(qs)
 
 ## fit output
   load(here("fit-ergms", "out", 
-      "new-mixing-data-w-dnf",
-      "new-mixing-data-w-dnf.RData"
+      "refit-ergm412",
+      "refit-ergm412.RData"
       )
   )
 

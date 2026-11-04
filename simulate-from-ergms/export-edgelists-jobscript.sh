@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#SBATCH --job-name="export-edgelists-new-mixing-data-w-dnf"
+#SBATCH --job-name="export-edgelists-refit-ergm412"
 #SBATCH --time=0:30:00
 #SBATCH --mem=64000
 #SBATCH --nodes=1

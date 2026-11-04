@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#SBATCH --job-name="simulate-networks-new-mixing-data-w-dnf"
+#SBATCH --job-name="simulate-networks-refit-ergm412"
 #SBATCH --time=5:00:00
 #SBATCH --mem=64000
 #SBATCH --nodes=1

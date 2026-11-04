@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#SBATCH --job-name="export-node-table-new-mixing-data-w-dnf"
+#SBATCH --job-name="export-node-table-refit-ergm412"
 #SBATCH --time=00:30:00
 #SBATCH --mem=24000
 #SBATCH --nodes=1

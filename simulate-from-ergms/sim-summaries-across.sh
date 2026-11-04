@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#SBATCH --job-name="summaries-mixing-aligned-pop-dated-2025-jan-23-dated-2025-jan23"
+#SBATCH --job-name="summaries-refit-ergm412"
 #SBATCH --time=3:00:00
 #SBATCH --mem=64000
 #SBATCH --nodes=1
