@@ -1,0 +1,140 @@
+
+R version 4.5.1 (2025-06-13) -- "Great Square Root"
+Copyright (C) 2025 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+- Project '/oscar/home/akhann16/code/net-ergm-v4plus' loaded. [renv 1.0.7]
+> # Export edgelists from all simulated networks for HepCep4Py
+> # Produces a .qs containing a list of 100 edgelists, matched to the
+> # vertex export in vertex_att_all_*.RDS / pwid_w_vertex_names_*.RDS.
+> #
+> # NB: CODE DOES NOT EXECUTE IN RSTUDIO ON OOD (BROWN).
+> # COPYING AND PASTING INTO AN INTERACTIVE TERMINAL WORKS.
+> 
+> rm(list = ls())
+> 
+> 
+> # Libraries ----------
+> 
+> library(here)
+here() starts at /oscar/home/akhann16/code/net-ergm-v4plus
+> library(network)
+
+‘network’ 1.20.0 (2026-02-06), part of the Statnet Project
+* ‘news(package="network")’ for changes since last version
+* ‘citation("network")’ for citation information
+* ‘https://statnet.org’ for help, support, and other information
+
+> library(qs)    # read existing sim_results_100.qs (legacy format)
+qs 0.27.3. Announcement: https://github.com/qsbase/qs/issues/103
+> library(qs2)   # write edges_all_*.qs2 for HepCep4Py
+qs2 0.2.1
+
+Attaching package: ‘qs2’
+
+The following objects are masked from ‘package:qs’:
+
+    base85_decode, base85_encode, base91_decode, base91_encode,
+    blosc_shuffle_raw, blosc_unshuffle_raw, catquo, decode_source,
+    encode_source, zstd_compress_bound, zstd_compress_raw,
+    zstd_decompress_raw
+
+> 
+> 
+> # Config ----------
+> 
+> run_label    <- "refit-ergm412"
+> export_date  <- format(Sys.Date(), "%Y_%b%d")
+> export_date  <- tolower(export_date)  # e.g. 2026_may21
+> 
+> out_dir      <- here("simulate-from-ergms", "out")
+> sim_path     <- file.path(out_dir, paste0(run_label, "_sim_results_100.qs"))
+> synthpop_csv <- here("data", "synthpop-2023-10-12 12_01_32.csv")
+> edges_out    <- file.path(out_dir, paste0("edges_all_", export_date, ".qs2"))
+> 
+> 
+> # Load data ----------
+> 
+> sim_results <- qread(sim_path)
+> stopifnot(length(sim_results) == 100)
+> 
+> data <- read.csv(synthpop_csv)
+> if (nrow(data) == 32001) {
++   # synthpop has 32001 rows but networks have 32000 nodes
++   data <- data[-32001, ]
++ }
+> 
+> 
+> # Crosswalk: verify vertex ordering matches synthpop CSV ----------
+> # Same check used in crosswalk-extract-vertex-atts.R so edgelist integer
+> # indices line up with vertex_att_all_*.RDS and pwid_w_vertex_names_*.RDS.
+> 
+> for (k in seq_along(sim_results)) {
++   stopifnot(
++     "Vertex ordering mismatch (lat)" = identical(sim_results[[k]] %v% "lat", data$lat),
++     "Vertex ordering mismatch (lon)" = identical(sim_results[[k]] %v% "lon", data$lon)
++   )
++ }
+> message("Crosswalk verified: all ", length(sim_results),
++         " networks match synthpop ordering.")
+Crosswalk verified: all 100 networks match synthpop ordering.
+> 
+> 
+> # Extract edgelists ----------
+> 
+> edges_all <- lapply(sim_results, function(net) {
++   el <- as.edgelist(net)
++   # strip network-package attributes so the saved object is just a matrix
++   attr(el, "n")          <- NULL
++   attr(el, "vnames")     <- NULL
++   attr(el, "directed")   <- NULL
++   attr(el, "bipartite")  <- NULL
++   attr(el, "loops")      <- NULL
++   el
++ })
+> 
+> 
+> # Sanity-check stats ----------
+> 
+> edge_counts <- vapply(edges_all, nrow, integer(1))
+> message("Edge counts across ", length(edges_all), " networks: ",
++         "min=", min(edge_counts),
++         " median=", stats::median(edge_counts),
++         " max=", max(edge_counts))
+Edge counts across 100 networks: min=22984 median=23617 max=24464
+> 
+> # Confirm vertex indices are in-range for every network
+> n_vertices <- network.size(sim_results[[1]])
+> for (k in seq_along(edges_all)) {
++   stopifnot(
++     "Edge index out of range" =
++       all(edges_all[[k]] >= 1L & edges_all[[k]] <= n_vertices)
++   )
++ }
+> message("All edge indices in range [1, ", n_vertices, "].")
+All edge indices in range [1, 32002].
+> 
+> 
+> # Save ----------
+> 
+> qs_save(edges_all, file = edges_out)
+> message("Saved: ", edges_out)
+Saved: /oscar/home/akhann16/code/net-ergm-v4plus/simulate-from-ergms/out/edges_all_2026_nov05.qs2
+> 
+> proc.time()
+   user  system elapsed 
+ 75.067   9.223  87.496 
