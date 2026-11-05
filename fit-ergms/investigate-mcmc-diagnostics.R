@@ -19,7 +19,7 @@ library(here)
 
 # Load Data ----------
 
-new_dataset <- "refit-ergm412"
+new_dataset <- "refit-ergm412-orig-init"
 new_rdata_object <- paste0(new_dataset, ".RData")
 
 load(file=here("fit-ergms", "out", new_dataset, new_rdata_object))

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#SBATCH --job-name="summaries-refit-ergm412"
+#SBATCH --job-name="summaries-refit-ergm412-orig-init"
 #SBATCH --time=3:00:00
 #SBATCH --mem=64000
 #SBATCH --nodes=1

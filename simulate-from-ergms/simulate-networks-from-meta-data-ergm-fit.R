@@ -31,8 +31,8 @@ library(qs)
 
 ## fit output
   load(here("fit-ergms", "out", 
-      "refit-ergm412",
-      "refit-ergm412.RData"
+      "refit-ergm412-orig-init",
+      "refit-ergm412-orig-init.RData"
       )
   )
 

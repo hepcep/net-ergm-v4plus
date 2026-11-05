@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#SBATCH --job-name="export-node-table-refit-ergm412"
+#SBATCH --job-name="export-node-table-refit-ergm412-orig-init"
 #SBATCH --time=00:30:00
 #SBATCH --mem=24000
 #SBATCH --nodes=1

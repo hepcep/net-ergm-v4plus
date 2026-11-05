@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#SBATCH --job-name="export-edgelists-refit-ergm412"
+#SBATCH --job-name="export-edgelists-refit-ergm412-orig-init"
 #SBATCH --time=0:30:00
 #SBATCH --mem=64000
 #SBATCH --nodes=1

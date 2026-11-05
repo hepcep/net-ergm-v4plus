@@ -18,7 +18,7 @@ library(qs2)   # write edges_all_*.qs2 for HepCep4Py
 
 # Config ----------
 
-run_label    <- "refit-ergm412"
+run_label    <- "refit-ergm412-orig-init"
 export_date  <- format(Sys.Date(), "%Y_%b%d")
 export_date  <- tolower(export_date)  # e.g. 2026_may21
 

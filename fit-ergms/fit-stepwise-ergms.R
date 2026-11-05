@@ -6,9 +6,9 @@
 rm(list = ls())
 
 # Label and outputs for this run
-run_label <- "refit-ergm412" # set manually to ensure intentional updates
-# Refit of new-mixing-data-w-dnf with ergm 4.12, a fixed seed, and a strictly
-# sequential chain (each step starts from a network simulated from the step before).
+run_label <- "refit-ergm412-orig-init" # set manually to ensure intentional updates
+# Refit of new-mixing-data-w-dnf with ergm 4.12 and a fixed seed, keeping the original
+# starting networks (steps 4 and 9 start from steps 1 and 7; see refit-ergm412 for why).
 
 # Activate R environment ----------
 
@@ -197,7 +197,7 @@ non_empty_net_w_sex_age
 fit_nonempty_network_w_race_num <-
   load_or_run("fit_nonempty_network_w_race_num", quote(
     ergm(
-      non_empty_net_w_sex_age ~ # previously edges_only_net
+      edges_only_net ~ # starts from step 1, as in the original fit
         edges +
         nodemix("sex", levels2 = -1) +
         nodemix("young", levels2 = -1) +
@@ -494,7 +494,7 @@ net_fit_stepwise_dnf_odeg01_indeg0
 fit.stepwise.dnf.odeg.01.indeg <-
   load_or_run("fit.stepwise.dnf.odeg.01.indeg", quote(
     ergm(
-      net_fit_stepwise_dnf_odeg01_indeg0 ~ # previously net_fit_stepwise_dnf_odeg0_1
+      net_fit_stepwise_dnf_odeg0_1 ~ # starts from step 7, as in the original fit
         edges +
         nodemix("sex", levels2 = -1) +
         nodemix("young", levels2 = -1) +

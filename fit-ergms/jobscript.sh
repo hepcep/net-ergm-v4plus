@@ -1,8 +1,8 @@
 #!/bin/sh
 
-#SBATCH --job-name="refit-ergm412"
-#SBATCH --time=48:00:00
-#SBATCH --mem=64000
+#SBATCH --job-name="refit-ergm412-orig-init"
+#SBATCH --time=12:00:00
+#SBATCH --mem=16000
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --mail-type=ALL
