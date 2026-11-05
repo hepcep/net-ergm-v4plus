@@ -1,0 +1,440 @@
+
+R version 4.5.1 (2025-06-13) -- "Great Square Root"
+Copyright (C) 2025 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+- Project '/oscar/home/akhann16/code/net-ergm-v4plus' loaded. [renv 1.0.7]
+> # Simulate network (n=32K) from ERGM fit 
+> # parameterized with meta data  
+> 
+> 
+> rm(list=ls())
+> 
+> # Initiate environment ------------------------------
+> 
+> library(renv)
+
+Attaching package: ‘renv’
+
+The following objects are masked from ‘package:stats’:
+
+    embed, update
+
+The following objects are masked from ‘package:utils’:
+
+    history, upgrade
+
+The following objects are masked from ‘package:base’:
+
+    autoload, load, remove, use
+
+> renv::activate()
+> 
+> .libPaths()
+[1] "/oscar/home/akhann16/code/net-ergm-v4plus/renv/library/linux-ol-9.6/R-4.5/x86_64-pc-linux-gnu"
+[2] "/oscar/home/akhann16/.cache/R/renv/sandbox/linux-ol-9.6/R-4.5/x86_64-pc-linux-gnu/8f228e82"   
+> 
+> 
+> # Libraries ----------
+> 
+> library(network)
+
+‘network’ 1.20.0 (2026-02-06), part of the Statnet Project
+* ‘news(package="network")’ for changes since last version
+* ‘citation("network")’ for citation information
+* ‘https://statnet.org’ for help, support, and other information
+
+> library(ergm)
+
+‘ergm’ 4.12.0 (2026-02-17), part of the Statnet Project
+* ‘news(package="ergm")’ for changes since last version
+* ‘citation("ergm")’ for citation information
+* ‘https://statnet.org’ for help, support, and other information
+
+‘ergm’ 4 is a major update that introduces some backwards-incompatible
+changes. Please type ‘news(package="ergm")’ for a list of major
+changes.
+
+> library(dplyr)
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+> #library(ergm.userterms)
+> library(ergm.userterms.hepcep)
+Loading required package: statnet.common
+
+Attaching package: ‘statnet.common’
+
+The following objects are masked from ‘package:base’:
+
+    attr, order, replace
+
+
+‘ergm.userterms.hepcep’ 3.1.1 (2020-02-01), part of the Statnet Project
+* ‘news(package="ergm.userterms.hepcep")’ for changes since last version
+* ‘citation("ergm.userterms.hepcep")’ for citation information
+* ‘https://statnet.org’ for help, support, and other information
+
+NOTE: If you use custom ERGM terms based on ‘ergm.userterms’ version
+prior to 3.1, you will need to perform a one-time update of the package
+boilerplate files (the files that you did not write or modify) from
+‘ergm.userterms’ 3.1 or later. See help('eut-upgrade') for
+instructions.
+
+> library(here)
+here() starts at /oscar/home/akhann16/code/net-ergm-v4plus
+> library(qs)
+qs 0.27.3. Announcement: https://github.com/qsbase/qs/issues/103
+> 
+> # Utils ----------
+> ## Checkpointing
+> # source(here("utils", "load_or_run.R")) ## not currently used
+> 
+> 
+> # Data ----------
+> 
+> ## fit output
+>   load(here("fit-ergms", "out", 
++       "refit-ergm412-orig-init",
++       "refit-ergm412-orig-init.RData"
++       )
++   )
+> 
+> ## input params
+>   data_objects <- readRDS(here("fit-ergms", "out", "processed_data.rds"))
+>   names(data_objects)
+ [1] "data"                        "n0"                         
+ [3] "edges_only_net"              "tgt.old.pctyoung"           
+ [5] "tgt.young.pctold"            "tgt.young.pctyoung"         
+ [7] "edges_target"                "tgt.female.pctmale"         
+ [9] "tgt.male.pctfemale"          "tgt.male.pctmale"           
+[11] "target_race_num"             "indegree_data"              
+[13] "outdegree_data"              "dist_as_mixing_matrix"      
+[15] "dist_pct_to_near_pct_to_far"
+> 
+> ## confirm which run
+>   run_label
+[1] "refit-ergm412-orig-init"
+> 
+> # Model summary
+>   summary(fit.stepwise.dnf.odeg.01.indeg)
+Call:
+ergm(formula = net_fit_stepwise_dnf_odeg0_1 ~ edges + nodemix("sex", 
+    levels2 = -1) + nodemix("young", levels2 = -1) + nodemix("race.num", 
+    levels2 = -1) + idegree(indeg.terms) + odegree(deg.terms.0_1) + 
+    dnf(by = "chicago", thresholds = c(2, 2)), target.stats = c(edges_target, 
+    sex_mixing_align_order, age_mixing_align_order, target_race_num, 
+    c(indegree_data$mean_n[c(indeg.terms + 1)]), c(outdegree_data$mean_n[c(deg.terms.0_1 + 
+        1)]), c(tgt_1.n, tgt_1.f, tgt_2.n)), eval.loglik = FALSE, 
+    control = control.ergm(MCMLE.maxit = 500, main.method = c("Stochastic-Approximation"), 
+        MCMC.interval = 1e+06, MCMC.samplesize = 1e+06, MCMLE.termination = "Hotelling", 
+        MCMC.effectiveSize = NULL, SAN = control.san(SAN.maxit = 500, 
+            SAN.nsteps = 1e+08)))
+
+Stochastic Approximation Maximum Likelihood Results:
+
+                 Estimate Std. Error MCMC %  z value Pr(>|z|)    
+edges            -9.74268    0.02985      0 -326.360   <1e-04 ***
+mix.sex.M.F       0.42983    0.02281      0   18.841   <1e-04 ***
+mix.sex.F.M       0.43353    0.02164      0   20.031   <1e-04 ***
+mix.sex.M.M       0.21142    0.01894      0   11.162   <1e-04 ***
+mix.young.1.0    -0.97894    0.02258      0  -43.349   <1e-04 ***
+mix.young.0.1    -0.84133    0.02155      0  -39.037   <1e-04 ***
+mix.young.1.1     0.09883    0.02523      0    3.917   <1e-04 ***
+mix.race.num.2.1 -1.65562    0.02815      0  -58.805   <1e-04 ***
+mix.race.num.3.1 -1.46826    0.03150      0  -46.614   <1e-04 ***
+mix.race.num.4.1 -0.93492    0.04595      0  -20.347   <1e-04 ***
+mix.race.num.1.2 -1.37212    0.02870      0  -47.806   <1e-04 ***
+mix.race.num.2.2 -0.95670    0.02244      0  -42.626   <1e-04 ***
+mix.race.num.3.2 -4.35389    0.15627      0  -27.861   <1e-04 ***
+mix.race.num.4.2 -2.04081    0.11492      0  -17.759   <1e-04 ***
+mix.race.num.1.3 -1.23351    0.02757      0  -44.734   <1e-04 ***
+mix.race.num.2.3 -1.82609    0.03970      0  -45.994   <1e-04 ***
+mix.race.num.3.3 -0.34276    0.01950      0  -17.573   <1e-04 ***
+mix.race.num.4.3 -1.57511    0.08204      0  -19.199   <1e-04 ***
+mix.race.num.1.4 -0.46720    0.03882      0  -12.034   <1e-04 ***
+mix.race.num.2.4 -2.62403    0.14483      0  -18.118   <1e-04 ***
+mix.race.num.3.4 -2.49750    0.15413      0  -16.204   <1e-04 ***
+mix.race.num.4.4 -1.38233    0.16528      0   -8.364   <1e-04 ***
+idegree0          2.73711    0.03991      0   68.583   <1e-04 ***
+idegree1          1.20634    0.03150      0   38.301   <1e-04 ***
+odegree0          0.49479    0.04120      0   12.011   <1e-04 ***
+odegree1         -0.19326    0.02899      0   -6.667   <1e-04 ***
+dnf.chicago.1.n   4.67691    0.02101      0  222.615   <1e-04 ***
+dnf.chicago.1.f   0.26742    0.02322      0   11.514   <1e-04 ***
+dnf.chicago.2.n   5.31073    0.02460      0  215.905   <1e-04 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Log-likelihood was not estimated for this fit. To get deviances, AIC, and/or BIC, use ‘*fit* <-logLik(*fit*, add=TRUE)’ to add it to the object or rerun this function with eval.loglik=TRUE.
+> 
+> 
+> # Simulate 100 networks ----------
+> ## simulate() takes its MCMC settings from the fit's control (ergm 4.11), so none
+> ## are passed here. A fixed seed lets the ensemble be regenerated.
+> 
+>   resimulate <- TRUE  # FALSE reuses the saved networks
+>   sim_path_100 <- here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_100.qs"))
+>   sim_path_10  <- here("simulate-from-ergms", "out", paste0(run_label, "_sim_results_10.qs"))
+> 
+>   if (resimulate) {
++     set.seed(20251019)
++     sims <- simulate(fit.stepwise.dnf.odeg.01.indeg, nsim = 100)
++     sim_results <- lapply(seq_along(sims), function(i) sims[[i]])  # plain list, as before
++     qsave(sim_results, sim_path_100)
++     qsave(sim_results[1:10], sim_path_10)
++   }
+Burning in ■■■■■■■■■■■■■■                    42% |  ETA:  4s
+Burning in ■■■■■■■■■■■■■■■■■■■■■■■■■■        84% |  ETA:  1s
+Sampling ■■■                                5% |  ETA: 41s
+Sampling ■■■■                              11% |  ETA: 39s
+Sampling ■■■■■■                            18% |  ETA: 36s
+Sampling ■■■■■■■■■                         25% |  ETA: 33s
+Sampling ■■■■■■■■■■■                       32% |  ETA: 30s
+Sampling ■■■■■■■■■■■■■                     39% |  ETA: 27s
+Sampling ■■■■■■■■■■■■■■■                   46% |  ETA: 24s
+Sampling ■■■■■■■■■■■■■■■■■                 52% |  ETA: 21s
+Sampling ■■■■■■■■■■■■■■■■■■■               59% |  ETA: 18s
+Sampling ■■■■■■■■■■■■■■■■■■■■■             66% |  ETA: 15s
+Sampling ■■■■■■■■■■■■■■■■■■■■■■■           73% |  ETA: 12s
+Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■         80% |  ETA:  9s
+Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■       87% |  ETA:  6s
+Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■     94% |  ETA:  3s
+> 
+>   sim_results <- qread(sim_path_100)
+>   stopifnot(length(sim_results) == 100)
+>   sim_results_10 <- sim_results[1:10]
+> #####################
+> 
+> 
+> 
+> #  Investigate netstats on 10 networks ----------
+> 
+> ## edgecount
+>   ecount <- unlist(lapply(sim_results_10, network.edgecount))
+>   summary(ecount)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  22916   23076   23208   23192   23313   23387 
+> 
+>   mean_edges <- mean(ecount)
+>   range_edges <- range(ecount)
+>   target_stats_edges <- edges_target
+> 
+> comparison_df_edges <- data.frame(
++   Parameter = c("edges"),
++   Mean = mean_edges,
++   Range_Min = range_edges[seq(1, length(range_edges), 2)],
++   Range_Max = range_edges[seq(2, length(range_edges), 2)],
++   Target = target_stats_edges
++ )
+> 
+> comparison_df_edges
+  Parameter    Mean Range_Min Range_Max   Target
+1     edges 23192.3     22916     23387 22959.93
+> 
+> ## outdegree
+>   outdeg0 <- unlist(lapply(sim_results_10, 
++                           function (x) summary(x ~ odegree(0))
++                           ))
+>   outdeg1 <- unlist(lapply(sim_results_10, 
++                           function (x) summary(x ~ odegree(1))
++   ))
+> 
+> mean_outdeg <- c(mean(outdeg0), mean(outdeg1))
+> range_outdeg <- c(range(outdeg0), range(outdeg1))
+> 
+> target_stats_outdeg <- outdegree_data$mean_n[1:2] #target
+> 
+> comparison_df_outdeg <- data.frame(
++   Parameter = c("outdeg0", "outdeg1"),
++   Mean = mean_outdeg,
++   Range_Min = range_outdeg[seq(1, length(range_outdeg), 2)],
++   Range_Max = range_outdeg[seq(2, length(range_outdeg), 2)],
++   Target = target_stats_outdeg
++ )
+> 
+> comparison_df_outdeg
+  Parameter    Mean Range_Min Range_Max  Target
+1   outdeg0 19333.2     19244     19503 19387.2
+2   outdeg1  6443.0      6336      6527  6469.3
+> 
+> ## indegree
+> indeg0 <- unlist(lapply(sim_results_10, 
++                          function (x) summary(x ~ idegree(0))
++ ))
+> indeg1 <- unlist(lapply(sim_results_10, 
++                          function (x) summary(x ~ idegree(1))
++ ))
+> 
+> 
+> c(mean(indeg0), mean(indeg1))
+[1] 20563.7  6542.0
+> indegree_data$mean_n[1:2]
+[1] 20666.67  6499.50
+> sum(indegree_data$mean_n[1:2])
+[1] 27166.17
+> 
+> mean_indeg <- c(mean(indeg0), mean(indeg1))
+> range_indeg <- c(range(indeg0), range(indeg1))
+> 
+> target_stats_indeg <- indegree_data$mean_n[1:2] #target
+> 
+> comparison_df_indeg <- data.frame(
++   Parameter = c("indeg0", "indeg1"),
++   Mean = mean_indeg,
++   Range_Min = range_indeg[seq(1, length(range_indeg), 2)],
++   Range_Max = range_indeg[seq(2, length(range_indeg), 2)],
++   Target = target_stats_indeg
++ )
+> 
+> comparison_df_indeg
+  Parameter    Mean Range_Min Range_Max   Target
+1    indeg0 20563.7     20434     20674 20666.67
+2    indeg1  6542.0      6393      6667  6499.50
+> sum(comparison_df_indeg$Mean)
+[1] 27105.7
+> 
+> ## nodemix(race.num)
+> race.num <- unlist(lapply(sim_results_10, 
++                          function (x) summary(x ~ nodemix("race.num"))
++ ))
+> 
+> summary(sim_results_10[[1]] ~ nodemix("race.num"))
+mix.race.num.2.1 mix.race.num.3.1 mix.race.num.4.1 mix.race.num.1.2 
+            1492             1304              480             1246 
+mix.race.num.2.2 mix.race.num.3.2 mix.race.num.4.2 mix.race.num.1.3 
+            2125               47               70             1534 
+mix.race.num.2.3 mix.race.num.3.3 mix.race.num.4.3 mix.race.num.1.4 
+             659             2494              113              538 
+mix.race.num.2.4 mix.race.num.3.4 mix.race.num.4.4 
+              59               51               40 
+> 
+> 
+> 
+> round(target_race_num, 2) # no w.w.
+ [1] 1376.22 1346.60  439.45 1232.72 2045.73   42.94   73.01 1503.65  665.38
+[10] 2466.81  139.14  541.85   45.46   42.94   36.51
+> sum(target_race_num)
+[1] 11998.4
+> 
+> ## nodemix(sex)
+> gender <- unlist(lapply(sim_results_10, 
++                           function (x) summary(x ~ nodemix("sex"))
++ ))
+> gender
+mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
+       6306        6312        7588        6162        6521        7566 
+mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
+       6209        6278        7601        6165        6407        7600 
+mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
+       6229        6378        7656        6059        6323        7477 
+mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
+       6131        6473        7493        6118        6411        7368 
+mix.sex.M.F mix.sex.F.M mix.sex.M.M mix.sex.M.F mix.sex.F.M mix.sex.M.M 
+       6052        6488        7605        6050        6382        7553 
+> 
+> round(c(tgt.female.pctmale, tgt.male.pctfemale, tgt.male.pctmale), 0)
+[1] 6282 6061 7577
+> 
+> ## nodemix(young)
+> young <- unlist(lapply(sim_results_10, 
++                         function (x) summary(x ~ nodemix("young"))
++ )) 
+> young
+mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 
+         1952          1891          1732          1972          1988 
+mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 
+         1794          1922          1928          1700          1940 
+mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 
+         1995          1764          1901          1897          1727 
+mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 
+         1924          1817          1688          1874          1892 
+mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 mix.young.1.0 
+         1762          1883          1913          1775          1963 
+mix.young.0.1 mix.young.1.1 mix.young.1.0 mix.young.0.1 mix.young.1.1 
+         1929          1793          1945          1892          1810 
+> 
+> #summary(sim_results[[10]] ~ nodemix("young"))
+> round(c(tgt.old.pctyoung, tgt.young.pctold, tgt.young.pctyoung))
+[1] 1929 1910 1763
+> 
+> 
+> ## dnf
+> 
+> dnf_sim <- 
++   unlist(lapply(sim_results_10, 
++                             function (x) summary(x ~ dnf(by = "chicago", thresholds = c(2,2)))
++   ))
+> dnf_sim
+dnf.chicago.1.n dnf.chicago.1.f dnf.chicago.2.n dnf.chicago.1.n dnf.chicago.1.f 
+          10636            5285            3829           10562            5248 
+dnf.chicago.2.n dnf.chicago.1.n dnf.chicago.1.f dnf.chicago.2.n dnf.chicago.1.n 
+           3871           10571            5299            3859           10591 
+dnf.chicago.1.f dnf.chicago.2.n dnf.chicago.1.n dnf.chicago.1.f dnf.chicago.2.n 
+           5265            3807           10655            5295            3825 
+dnf.chicago.1.n dnf.chicago.1.f dnf.chicago.2.n dnf.chicago.1.n dnf.chicago.1.f 
+          10550            5189            3837           10555            5233 
+dnf.chicago.2.n dnf.chicago.1.n dnf.chicago.1.f dnf.chicago.2.n dnf.chicago.1.n 
+           3828           10499            5229            3789           10574 
+dnf.chicago.1.f dnf.chicago.2.n dnf.chicago.1.n dnf.chicago.1.f dnf.chicago.2.n 
+           5338            3780           10453            5241            3751 
+> 
+> 
+> names(dnf_sim)
+ [1] "dnf.chicago.1.n" "dnf.chicago.1.f" "dnf.chicago.2.n" "dnf.chicago.1.n"
+ [5] "dnf.chicago.1.f" "dnf.chicago.2.n" "dnf.chicago.1.n" "dnf.chicago.1.f"
+ [9] "dnf.chicago.2.n" "dnf.chicago.1.n" "dnf.chicago.1.f" "dnf.chicago.2.n"
+[13] "dnf.chicago.1.n" "dnf.chicago.1.f" "dnf.chicago.2.n" "dnf.chicago.1.n"
+[17] "dnf.chicago.1.f" "dnf.chicago.2.n" "dnf.chicago.1.n" "dnf.chicago.1.f"
+[21] "dnf.chicago.2.n" "dnf.chicago.1.n" "dnf.chicago.1.f" "dnf.chicago.2.n"
+[25] "dnf.chicago.1.n" "dnf.chicago.1.f" "dnf.chicago.2.n" "dnf.chicago.1.n"
+[29] "dnf.chicago.1.f" "dnf.chicago.2.n"
+> 
+> dnf.chicago.1.n_sim <- dnf_sim[names(dnf_sim) == "dnf.chicago.1.n"]
+> dnf.chicago.1.f_sim <- dnf_sim[names(dnf_sim) == "dnf.chicago.1.f"]
+> dnf.chicago.2.n_sim <- dnf_sim[names(dnf_sim) == "dnf.chicago.2.n"]
+> 
+> mean_dnf <- c(mean(dnf.chicago.1.n_sim), mean(dnf.chicago.1.f_sim), mean(dnf.chicago.2.n_sim))
+> range_dnf <- c(range(dnf.chicago.1.n_sim), range(dnf.chicago.1.f_sim), range(dnf.chicago.2.n_sim))
+> 
+> comparison_df_dnf <- data.frame(
++   Parameter = c("dnf.chicago.1.n", "dnf.chicago.1.f", "dnf.chicago.2.n"),
++   Mean = mean_dnf,
++   Range_Min = range_dnf[seq(1, length(range_dnf), by = 2)],
++   Range_Max = range_dnf[seq(2, length(range_dnf), by = 2)],
++   Target = c(tgt_1.n, tgt_1.f, tgt_2.n)
++ )
+> 
+> comparison_df_dnf
+        Parameter    Mean Range_Min Range_Max    Target
+1 dnf.chicago.1.n 10564.6     10453     10655 10492.686
+2 dnf.chicago.1.f  5262.2      5189      5338  5257.823
+3 dnf.chicago.2.n  3817.6      3751      3871  3742.468
+> 
+> 
+> 
+> proc.time()
+   user  system elapsed 
+240.590  13.438 258.142 
